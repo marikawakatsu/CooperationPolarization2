@@ -32,7 +32,7 @@ mutable struct Sets
                             # or h_bar[i, :] to get all of i's set memberships
     h_base10::Array{Int64, 1}      # N-by-1 vector denoting *opinions* in base 10 (from -(3^M-1)/2 to (3^M-1)/2)
     h_bar_base10::Array{Int64, 1}  # N-by-1 vector denoting *set memberships* in base 10 (from 1 to (3^M-1)/2)
-    p::Array{Int64, 1}      # N-by-1 int array denoting *party memberships* (0, ..., P-1)
+    affiliations::Array{Int64, 1}  # N-by-1 int array denoting *party affiliations* (0, ..., P-1)
                             # call p[i] to get part membership of i
     n_pairs::Int64          # number of pairs = binomial(N,2) for computing pairwise distances later
     n_party_pairs::Int64    # number of within-party pairs = binomial(N÷2, 2)
@@ -43,14 +43,14 @@ mutable struct Sets
         N, M    = size(h) # extract numbers of individuals and sets
         h_bar   = [abs(x) for x in h]              # extract set memberships from h
         K       = compute_total_memberships(h_bar) # each member must belong to K sets
-        p       = party_assignment(N,P)            # each member belongs to a party
+        affiliations           = party_assignment(N,P)            # each member is affiliated with a party
         n_pairs, n_party_pairs = binomial(N, 2), binomial(N÷2, 2) # number of pairs
         set_members, set_pairs = set_members_and_pairs(h_bar)   
 
         h_base10     = [vectobase3(h[i,:]) for i in 1:N] # track opinions in base10
         h_bar_base10 = [vectobase3(h_bar[i,:]) for i in 1:N] # track set memberships in base10
 
-        return new( N, M, K, P, set_members, set_pairs, h, h_bar, h_base10, h_bar_base10, p, n_pairs, n_party_pairs)
+        return new( N, M, K, P, set_members, set_pairs, h, h_bar, h_base10, h_bar_base10, affiliations, n_pairs, n_party_pairs)
     end   
     
     # alternative constructor with N, M, K given explicitly
@@ -59,20 +59,19 @@ mutable struct Sets
         N, M    = size(h) # extract numbers of individuals and sets
         h_bar   = [abs(x) for x in h]              # extract set memberships from h
         K       = compute_total_memberships(h_bar) # each member must belong to K sets
-        p       = party_assignment(N,P)            # each member belongs to a party
+        affiliations           = party_assignment(N,P)            # each member belongs to a party
         n_pairs, n_party_pairs = binomial(N, 2), binomial(N÷2, 2) # number of pairs
         set_members, set_pairs = set_members_and_pairs(h_bar)  
 
         h_base10     = [vectobase3(h[i,:]) for i in 1:N] # track opinions in base10
         h_bar_base10 = [vectobase3(h_bar[i,:]) for i in 1:N] # track set memberships in base10
 
-        return new( N, M, K, P, set_members, set_pairs, h, h_bar, h_base10, h_bar_base10, p, n_pairs, n_party_pairs)
+        return new( N, M, K, P, set_members, set_pairs, h, h_bar, h_base10, h_bar_base10, affiliations, n_pairs, n_party_pairs)
     end
 end
 
 function compute_total_memberships( h_bar::Array{Int64, 2} )::Int64
     # function to compute K, the number of sets to which each individual belongs
-
     total_memberships = sum( h_bar, dims=2 ) # total no. of sets indivduals belong to
     # check that all individuals belong to the same number of sets
     if length( unique(total_memberships) ) == 1   
@@ -112,16 +111,16 @@ function party_assignment( N::Int64, P::Int64=2 )
         @warn("Parties are uneven in size!")
     elseif P == 1
         # everyone is in the same party (party 1)
-        p = ones(Int64, N)
+        affiliations = ones(Int64, N)
     elseif P == 2
         # without loss of generality, first N/2 are in party 1, second N/2 in party 2
         # party 0 is reserved for independents
-        p = vcat( ones(Int64, N÷2), repeat([2],N÷2) ) 
+        affiliations = vcat( ones(Int64, N÷2), repeat([2],N÷2) ) 
     elseif P != 2
         @warn("Party assignment for P>2 is undefined")
     end
 
-    return p
+    return affiliations
 end
 
 function random_sets( N::Int64, M::Int64, K::Int64, P::Int64=2 )
@@ -157,12 +156,11 @@ struct Game
     u::Float64    # strategy mutation rate
     v::Float64    # set mutation rate
     q::Float64    # party bias (q = 1 no bias, q = 0 strong bias)
-    gamma::Float64    # damping parameter attenuating party bias (γ = 1 no damping, γ = 0 full damping)
-    update_rule::String  # update rule: PC or death-birth
+    ε::Float64    # damping parameter attenuating party bias (ε = 1 no damping, ε = 0 full damping)
     A::Array{Float64, 2} # the game matrix
 
-    function Game( b::Float64, c::Float64, β::Float64, u::Float64, v::Float64, q::Float64, gamma::Float64 )
-        return new(b, c, β, u, v, q, gamma, "death-birth", [0.0 b; -c b-c])
+    function Game( b::Float64, c::Float64, β::Float64, u::Float64, v::Float64, q::Float64, ε::Float64 )
+        return new(b, c, β, u, v, q, ε, [0.0 b; -c b-c])
     end
 end
 

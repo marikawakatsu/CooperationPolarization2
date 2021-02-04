@@ -127,9 +127,9 @@ function update_strategies_and_opinions_db!( pop::Population )
     if pop.verbose println("\t\tfitnesses (learner excluded) are $(pop.sim.fitnesses)") end
     
     # compute probability of imitation: 1 if same party, q if different parties
-    pop.sets.p[pop.sim.learner] == pop.sets.p[pop.sim.role_model] ? imit_prob = 1.0 : imit_prob = pop.game.q
+    pop.sets.affiliations[pop.sim.learner] == pop.sets.affiliations[pop.sim.role_model] ? imit_prob = 1.0 : imit_prob = pop.game.q
     if pop.verbose 
-        println("\t\tlearner and role model in the same party? $(pop.sets.p[ pop.sim.learner ] == pop.sets.p[ pop.sim.role_model ])") 
+        println("\t\tlearner and role model in the same party? $(pop.sets.affiliations[ pop.sim.learner ] == pop.sets.affiliations[ pop.sim.role_model ])") 
     end
 
     # update strategies and sets: imitation / mutation occurs with probability imit_prob
@@ -204,14 +204,14 @@ function update_opinions!( pop::Population )
         else
             # with probability 1-q*gamma
             # select a random set of K issues, select opinions corresponding to party
-            if pop.sets.p[pop.sim.learner] == 1
+            if pop.sets.affiliations[pop.sim.learner] == 1
                 pop.sets.h[pop.sim.learner,:] = shuffle( vcat( zeros(Int64, pop.sets.M-pop.sets.K), -ones(Int64, pop.sets.K) ) )
-            elseif pop.sets.p[pop.sim.learner] == 2
+            elseif pop.sets.affiliations[pop.sim.learner] == 2
                 pop.sets.h[pop.sim.learner,:] = shuffle( vcat( zeros(Int64, pop.sets.M-pop.sets.K), ones(Int64, pop.sets.K) ) )
             end
             pop.num_biased_opinions += 1
             if pop.verbose 
-                println("\t\t$(pop.sim.learner) is in party $(pop.sets.p[ pop.sim.learner ]), mutating to biased opinions $(pop.sets.h[ pop.sim.learner,: ])") 
+                println("\t\t$(pop.sim.learner) is in party $(pop.sets.affiliations[ pop.sim.learner ]), mutating to biased opinions $(pop.sets.h[ pop.sim.learner,: ])") 
             end
         end
     else
