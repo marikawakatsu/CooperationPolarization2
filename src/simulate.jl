@@ -127,7 +127,7 @@ function update_strategies_and_opinions_db!( pop::Population )
     if pop.verbose println("\t\tfitnesses (learner excluded) are $(pop.sim.fitnesses)") end
     
     # compute probability of imitation: 1 if same party, q if different parties
-    pop.sets.affiliations[pop.sim.learner] == pop.sets.affiliations[pop.sim.role_model] ? imit_prob = 1.0 : imit_prob = pop.game.q
+    pop.sets.affiliations[pop.sim.learner] == pop.sets.affiliations[pop.sim.role_model] ? imit_prob = 1.0 : imit_prob = pop.game.p
     if pop.verbose 
         println("\t\tlearner and role model in the same party? $(pop.sets.affiliations[ pop.sim.learner ] == pop.sets.affiliations[ pop.sim.role_model ])") 
     end
@@ -195,14 +195,14 @@ function update_opinions!( pop::Population )
     
     if rand() < pop.game.v 
         # with probability v, set mutation occurs
-        if rand() < pop.game.gamma * pop.game.q
-            # with probability q*gamma
+        if rand() < pop.game.ϵ * pop.game.p 
+            # with probability q*ϵ
             # select a random arrangement of K opinions
             pop.sets.h[pop.sim.learner,:] = shuffle( vcat( zeros(Int64, pop.sets.M-pop.sets.K), rand([-1,1], pop.sets.K) ) )
             pop.num_random_opinions += 1
             if pop.verbose println("\t\tmutating $(pop.sim.learner) to random opinions $(pop.sets.h[pop.sim.learner,:])") end
         else
-            # with probability 1-q*gamma
+            # with probability 1-q*ϵ
             # select a random set of K issues, select opinions corresponding to party
             if pop.sets.affiliations[pop.sim.learner] == 1
                 pop.sets.h[pop.sim.learner,:] = shuffle( vcat( zeros(Int64, pop.sets.M-pop.sets.K), -ones(Int64, pop.sets.K) ) )

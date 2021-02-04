@@ -239,29 +239,31 @@ function make_summary_table( tracker::Tracker, gen_cutoff::Int64, generations::I
     # function to process data into summary table
     # ignore generations 1 through gen_cutoff
 
-    short_strat_dist         = tracker.ens_strat_dist[floor(Int64,gen_cutoff):generations,:]
-    short_pop_dist           = tracker.ens_pop_dist[floor(Int64,gen_cutoff):generations,:]
-    short_opn_dist           = tracker.ens_opn_dist[floor(Int64,gen_cutoff):generations,:]
-    short_total_means        = tracker.ens_total_means[floor(Int64,gen_cutoff):generations]
-    short_total_vars         = tracker.ens_total_vars[floor(Int64,gen_cutoff):generations]
-    short_total_cooperation  = tracker.ens_total_cooperation[floor(Int64,gen_cutoff):generations]
-    short_party_cooperation  = tracker.ens_party_cooperation[floor(Int64,gen_cutoff):generations]
-    short_enemy_cooperation  = tracker.ens_enemy_cooperation[floor(Int64,gen_cutoff):generations]
-    short_opn_simpson        = tracker.ens_opn_simpson[floor(Int64,gen_cutoff):generations]
-    short_sets_simpson       = tracker.ens_sets_simpson[floor(Int64,gen_cutoff):generations]
-    short_cityblock_ind      = tracker.ens_cityblock_ind[floor(Int64,gen_cutoff):generations]
-    short_cityblock_party    = tracker.ens_cityblock_party[floor(Int64,gen_cutoff):generations]
-    short_cityblock_enemy    = tracker.ens_cityblock_enemy[floor(Int64,gen_cutoff):generations]
-    short_hamming_ind        = tracker.ens_hamming_ind[floor(Int64,gen_cutoff):generations]
-    short_hamming_party      = tracker.ens_hamming_party[floor(Int64,gen_cutoff):generations]
-    short_hamming_enemy      = tracker.ens_hamming_enemy[floor(Int64,gen_cutoff):generations]
-    short_running_strat_dist = tracker.ens_running_strat_dist[generations,:] # just the last number
+    min_gen = floor(Int64,gen_cutoff)
+
+    short_strat_dist         = tracker.ens_strat_dist[ min_gen:generations,: ]
+    short_pop_dist           = tracker.ens_pop_dist[ min_gen:generations,: ]
+    short_opn_dist           = tracker.ens_opn_dist[ min_gen:generations,: ]
+    short_total_means        = tracker.ens_total_means[ min_gen:generations ]
+    short_total_vars         = tracker.ens_total_vars[ min_gen:generations ]
+    short_total_cooperation  = tracker.ens_total_cooperation[ min_gen:generations ]
+    short_party_cooperation  = tracker.ens_party_cooperation[ min_gen:generations ]
+    short_enemy_cooperation  = tracker.ens_enemy_cooperation[ min_gen:generations ]
+    short_opn_simpson        = tracker.ens_opn_simpson[ min_gen:generations ]
+    short_sets_simpson       = tracker.ens_sets_simpson[ min_gen:generations ]
+    short_cityblock_ind      = tracker.ens_cityblock_ind[ min_gen:generations ]
+    short_cityblock_party    = tracker.ens_cityblock_party[ min_gen:generations ]
+    short_cityblock_enemy    = tracker.ens_cityblock_enemy[ min_gen:generations ]
+    short_hamming_ind        = tracker.ens_hamming_ind[ min_gen:generations ]
+    short_hamming_party      = tracker.ens_hamming_party[ min_gen:generations ]
+    short_hamming_enemy      = tracker.ens_hamming_enemy[ min_gen:generations ]
+    short_running_strat_dist = tracker.ens_running_strat_dist[ generations,: ] # just the last number
    
     # put means into a table
     ens_summary = hcat( generations, 
                         tracker.pop.sets.N, tracker.pop.sets.M, tracker.pop.sets.K, tracker.pop.sets.P, 
                         tracker.pop.game.b, tracker.pop.game.c, tracker.pop.game.β, 
-                        tracker.pop.game.u, tracker.pop.game.v, tracker.pop.game.q, tracker.pop.game.gamma,
+                        tracker.pop.game.u, tracker.pop.game.v, tracker.pop.game.p, tracker.pop.game.ϵ,
                         mean(short_strat_dist, dims=1),        var(short_strat_dist, dims=1),
                         mean(short_pop_dist, dims=1),          var(short_pop_dist, dims=1),
                         mean(short_opn_dist, dims=1),          var(short_opn_dist, dims=1),
@@ -284,7 +286,7 @@ function make_summary_table( tracker::Tracker, gen_cutoff::Int64, generations::I
                         )
 
     # table_summary = DataFrame(vcat(total_summary...)) # remove later
-    col_list = hcat("generations", "N", "M", "K", "P", "b", "c", "β", "u", "v", "q", "gamma",
+    col_list = hcat("generations", "N", "M", "K", "P", "b", "c", "β", "u", "v", "p", "ϵ",
                 "DD_mean", "DC_mean", "CD_mean", "CC_mean", "DD_var", "DC_var", "CD_var", "CC_var",
                 ["set_$(x)_mean" for dummy=1:1, x=1:tracker.pop.sets.M], ["set_$(x)_var" for dummy=1:1, x=1:tracker.pop.sets.M],
                 ["opinion_$(x)_mean" for dummy=1:1, x=tracker.pop.all_opinions], 
@@ -315,29 +317,31 @@ function make_summary_table( tracker::Tracker, gen_cutoff::Int64, generations::I
     # function to process data into summary table
     # ignore generations 1 through gen_cutoff
 
-    short_strat_dist         = tracker.ens_strat_dist[floor(Int64,gen_cutoff):generations,:]
-    short_pop_dist           = tracker.ens_pop_dist[floor(Int64,gen_cutoff):generations,:]
-    short_opn_dist           = tracker.ens_opn_dist[floor(Int64,gen_cutoff):generations,:]
-    short_total_means        = tracker.ens_total_means[floor(Int64,gen_cutoff):generations]
-    short_total_vars         = tracker.ens_total_vars[floor(Int64,gen_cutoff):generations]
-    short_total_cooperation  = tracker.ens_total_cooperation[floor(Int64,gen_cutoff):generations]
-    short_party_cooperation  = tracker.ens_party_cooperation[floor(Int64,gen_cutoff):generations]
-    short_enemy_cooperation  = tracker.ens_enemy_cooperation[floor(Int64,gen_cutoff):generations]
-    short_opn_simpson        = tracker.ens_opn_simpson[floor(Int64,gen_cutoff):generations]
-    short_sets_simpson       = tracker.ens_sets_simpson[floor(Int64,gen_cutoff):generations]
-    short_cityblock_ind      = tracker.ens_cityblock_ind[floor(Int64,gen_cutoff):generations]
-    short_cityblock_party    = tracker.ens_cityblock_party[floor(Int64,gen_cutoff):generations]
-    short_cityblock_enemy    = tracker.ens_cityblock_enemy[floor(Int64,gen_cutoff):generations]
-    short_hamming_ind        = tracker.ens_hamming_ind[floor(Int64,gen_cutoff):generations]
-    short_hamming_party      = tracker.ens_hamming_party[floor(Int64,gen_cutoff):generations]
-    short_hamming_enemy      = tracker.ens_hamming_enemy[floor(Int64,gen_cutoff):generations]
-    short_running_strat_dist = tracker.ens_running_strat_dist[generations,:] # just the last number
+    min_gen = floor(Int64,gen_cutoff)
+
+    short_strat_dist         = tracker.ens_strat_dist[ min_gen:generations,: ]
+    short_pop_dist           = tracker.ens_pop_dist[ min_gen:generations,: ]
+    short_opn_dist           = tracker.ens_opn_dist[ min_gen:generations,: ]
+    short_total_means        = tracker.ens_total_means[ min_gen:generations ]
+    short_total_vars         = tracker.ens_total_vars[ min_gen:generations ]
+    short_total_cooperation  = tracker.ens_total_cooperation[ min_gen:generations ]
+    short_party_cooperation  = tracker.ens_party_cooperation[ min_gen:generations ]
+    short_enemy_cooperation  = tracker.ens_enemy_cooperation[ min_gen:generations ]
+    short_opn_simpson        = tracker.ens_opn_simpson[ min_gen:generations ]
+    short_sets_simpson       = tracker.ens_sets_simpson[ min_gen:generations ]
+    short_cityblock_ind      = tracker.ens_cityblock_ind[ min_gen:generations ]
+    short_cityblock_party    = tracker.ens_cityblock_party[ min_gen:generations ]
+    short_cityblock_enemy    = tracker.ens_cityblock_enemy[ min_gen:generations ]
+    short_hamming_ind        = tracker.ens_hamming_ind[ min_gen:generations ]
+    short_hamming_party      = tracker.ens_hamming_party[ min_gen:generations ]
+    short_hamming_enemy      = tracker.ens_hamming_enemy[ min_gen:generations ]
+    short_running_strat_dist = tracker.ens_running_strat_dist[ generations,: ] # just the last number
    
     # put means into a table
     ens_summary = hcat( generations, 
                         tracker.pop.sets.N, tracker.pop.sets.M, tracker.pop.sets.K, tracker.pop.sets.P, 
                         tracker.pop.game.b, tracker.pop.game.c, tracker.pop.game.β, 
-                        tracker.pop.game.u, tracker.pop.game.v, tracker.pop.game.q, tracker.pop.game.gamma,
+                        tracker.pop.game.u, tracker.pop.game.v, tracker.pop.game.p, tracker.pop.game.ϵ,
                         mean(short_strat_dist, dims=1),        var(short_strat_dist, dims=1),
                         mean(short_pop_dist, dims=1),          var(short_pop_dist, dims=1),
                         mean(short_opn_dist, dims=1),          var(short_opn_dist, dims=1),
@@ -369,7 +373,7 @@ function make_col_list( M::Int64 )
 
     all_opinions = (-3^M+1)÷2 : (3^M-1)÷2 # list of opinions
 
-    col_list = hcat("generations", "N", "M", "K", "P", "b", "c", "β", "u", "v", "q", "gamma",
+    col_list = hcat("generations", "N", "M", "K", "P", "b", "c", "β", "u", "v", "q", "ϵ",
                     "DD_mean", "DC_mean", "CD_mean", "CC_mean", "DD_var", "DC_var", "CD_var", "CC_var",
                     ["set_$(x)_mean" for dummy=1:1, x=1:M], ["set_$(x)_var" for dummy=1:1, x=1:M],
                     ["opinion_$(x)_mean" for dummy=1:1, x=all_opinions], 

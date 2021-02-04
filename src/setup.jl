@@ -56,9 +56,7 @@ mutable struct Sets
     # alternative constructor with N, M, K given explicitly
     function Sets( N::Int64, M::Int64, K::Int64, h::Array{Int64, 2}, P::Int64=2 )
             
-        N, M    = size(h) # extract numbers of individuals and sets
-        h_bar   = [abs(x) for x in h]              # extract set memberships from h
-        K       = compute_total_memberships(h_bar) # each member must belong to K sets
+        h_bar                  = [abs(x) for x in h]              # extract set memberships from h
         affiliations           = party_assignment(N,P)            # each member belongs to a party
         n_pairs, n_party_pairs = binomial(N, 2), binomial(N÷2, 2) # number of pairs
         set_members, set_pairs = set_members_and_pairs(h_bar)  
@@ -100,7 +98,6 @@ function set_members_and_pairs( h::Array{Int64, 2} )
             end
         end
     end
-
     return set_members, set_pairs
 end
 
@@ -119,7 +116,6 @@ function party_assignment( N::Int64, P::Int64=2 )
     elseif P != 2
         @warn("Party assignment for P>2 is undefined")
     end
-
     return affiliations
 end
 
@@ -155,12 +151,12 @@ struct Game
     β::Float64    # selection strength
     u::Float64    # strategy mutation rate
     v::Float64    # set mutation rate
-    q::Float64    # party bias (q = 1 no bias, q = 0 strong bias)
+    p::Float64    # party bias (p = 0 no bias, p = 1 strong bias)
     ε::Float64    # damping parameter attenuating party bias (ε = 1 no damping, ε = 0 full damping)
     A::Array{Float64, 2} # the game matrix
 
-    function Game( b::Float64, c::Float64, β::Float64, u::Float64, v::Float64, q::Float64, ε::Float64 )
-        return new(b, c, β, u, v, q, ε, [0.0 b; -c b-c])
+    function Game( b::Float64, c::Float64, β::Float64, u::Float64, v::Float64, p::Float64, ε::Float64 )
+        return new(b, c, β, u, v, p, ε, [0.0 b; -c b-c])
     end
 end
 
@@ -186,12 +182,11 @@ mutable struct Simulation
     # constructor
     function Simulation( sets::Sets )
         # initialize
-        i_action, j_action  = -1, -1  # initializing with a value other than 0(D)/1(C)
-        learner, role_model = -1, -1
-        non_learners        = zeros(Int64, sets.N-1)
-        strategy_copy       = [-1, -1]
-        sets_copy           = -ones(Int64, sets.M)
-        fitnesses           = -ones(Float64, sets.N-1)
+        i_action, j_action, learner, role_model = -1, -1, -1, -1  # initializing with a value other than 0(D)/1(C)
+        non_learners    = zeros(Int64, sets.N-1)
+        strategy_copy   = [-1, -1]
+        sets_copy       = -ones(Int64, sets.M)
+        fitnesses       = -ones(Float64, sets.N-1)
 
         cityblock_ind   = zeros(Int64, sets.N, sets.N) 
         cityblock_party = zeros(Int64, sets.N÷2, sets.N÷2)
@@ -199,11 +194,8 @@ mutable struct Simulation
         hamming_party   = zeros(Int64, sets.N÷2, sets.N÷2)
         cooperation     = zeros(Int64, sets.M, sets.N÷2, sets.N÷2)
 
-        return new(i_action, j_action, learner, non_learners, role_model, 
-                   strategy_copy, sets_copy, fitnesses,
-                   cityblock_ind, cityblock_party, hamming_ind, hamming_party,
-                   cooperation
-                   )
+        return new(i_action, j_action, learner, non_learners, role_model, strategy_copy, sets_copy, fitnesses,
+                   cityblock_ind, cityblock_party, hamming_ind, hamming_party, cooperation)
     end
 end
 
@@ -237,19 +229,12 @@ mutable struct Population
     num_random_strategies::Int64      # track number of times random strategies were adopted
 
     # constructor for the case where initial strategy distribution is specified
-    function Population(
-        sets::Sets,
-        game::Game,
-        initial_strategies::Array{Int64, 2},
-        verbose::Bool=false,
-        sets_changed::Bool=true,     
-        strategies_changed::Bool=true,
-        prev_learner::Int64=0
-        )
+    function Population( sets::Sets, game::Game, initial_strategies::Array{Int64, 2}, verbose::Bool=false, sets_changed::Bool=true,    strategies_changed::Bool=true )
+
         # initializing the population with specified strategies
-        payoffs        = zeros(Float64, sets.N)
-        generation     = 0
-        payoffs_mat    = zeros(Float64, (sets.N, sets.N))
+        payoffs      = zeros(Float64, sets.N)
+        generation   = 0
+        payoffs_mat  = zeros(Float64, (sets.N, sets.N))
         
         # conditional: 00 (DD), 01 (DC), 01 (CD), or 11 (CC) (in binary)
         strategies        = initial_strategies
@@ -260,18 +245,13 @@ mutable struct Population
         all_opinions      = (-3^sets.M+1)÷2 : (3^sets.M-1)÷2
         all_memberships   = 1 : (3^sets.M-1)÷2
         strategies_base10 = [2*strategies[i,1] + strategies[i,2] for i in 1:sets.N]
-        prev_interactions = 0
+        prev_interactions, prev_learner = 0, 0
 
         # overall trackers
-        num_imitating          = 0
-        num_not_imitating      = 0
-        num_strategies_changed = 0
-        num_sets_changed       = 0
-        num_random_opinions    = 0
-        num_biased_opinions    = 0
-        num_random_strategies  = 0
+        num_imitating, num_not_imitating, num_strategies_changed, num_sets_changed = 0, 0, 0, 0
+        num_random_opinions, num_biased_opinions, num_random_strategies            = 0, 0, 0
 
-        # set up sim::Simulation
+        # initialize sim::Simulation
         sim = Simulation(sets)
 
         return new(sets, game, sim, strategies, payoffs, all_strategies, 
@@ -279,23 +259,16 @@ mutable struct Population
             prev_actions, prev_learner, payoffs_mat, 
             all_opinions, all_memberships, strategies_base10, prev_interactions,
             num_imitating, num_not_imitating, num_strategies_changed, num_sets_changed, 
-            num_both_changed, num_random_opinions, num_biased_opinions, num_random_strategies
-            )
+            num_both_changed, num_random_opinions, num_biased_opinions, num_random_strategies)
     end
 
     # same constructor as above, but allows randomized initial strategies
-    function Population(
-        sets::Sets,
-        game::Game,
-        verbose::Bool=false,
-        sets_changed::Bool=true,     
-        strategies_changed::Bool=true,
-        prev_learner::Int64=0
-        )
+    function Population( sets::Sets, game::Game, verbose::Bool=false, sets_changed::Bool=true, strategies_changed::Bool=true )
+
         # begin by initializing the population with random strategies
-        payoffs        = zeros(Float64, sets.N)
-        generation     = 0
-        payoffs_mat    = zeros(Float64, (sets.N, sets.N))
+        payoffs      = zeros(Float64, sets.N)
+        generation   = 0
+        payoffs_mat  = zeros(Float64, (sets.N, sets.N))
         
         # conditional: 00 (DD), 01 (DC), 01 (CD), or 11 (CC) (in binary)
         strategies        = rand(collect(0:1), sets.N, 2)  # each strat is 0 or 1, total 4
@@ -306,19 +279,13 @@ mutable struct Population
         all_opinions      = (-3^sets.M+1)÷2 : (3^sets.M-1)÷2
         all_memberships   = 1 : (3^sets.M-1)÷2
         strategies_base10 = [2*strategies[i,1] + strategies[i,2] for i in 1:sets.N]
-        prev_interactions = 0
+        prev_interactions, prev_learner = 0, 0
 
         # overall trackers
-        num_imitating          = 0
-        num_not_imitating      = 0
-        num_strategies_changed = 0
-        num_sets_changed       = 0
-        num_both_changed       = 0
-        num_random_opinions    = 0
-        num_biased_opinions    = 0
-        num_random_strategies  = 0
+        num_imitating, num_not_imitating, num_strategies_changed, num_sets_changed = 0, 0, 0, 0
+        num_random_opinions, num_biased_opinions, num_random_strategies            = 0, 0, 0
 
-        # set up sim::Simulation
+        # initialize sim::Simulation
         sim = Simulation(sets)
 
         return new(sets, game, sim, strategies, payoffs, all_strategies, 
@@ -326,9 +293,6 @@ mutable struct Population
             prev_actions, prev_learner, payoffs_mat, 
             all_opinions, all_memberships, strategies_base10, prev_interactions,
             num_imitating, num_not_imitating, num_strategies_changed, num_sets_changed, 
-            num_both_changed, num_random_opinions, num_biased_opinions, num_random_strategies
-            )
+            num_both_changed, num_random_opinions, num_biased_opinions, num_random_strategies)
     end
 end
-
-# end
