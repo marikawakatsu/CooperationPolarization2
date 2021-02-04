@@ -4,7 +4,7 @@
 
 export Sets, Game, Population
 export compute_total_memberships
-export party_assignment
+export assign_parties
 export set_members_and_pairs
 export random_sets
 
@@ -18,10 +18,11 @@ using Combinatorics
 mutable struct Sets
     # structure for storing information about set memberships, opinions, and parties
 
-    N::Int64 # number of individuals
-    M::Int64 # number of sets
-    K::Int64 # number of sets to which each individual belongs
-    P::Int64 # number of parties to which each individual belongs
+    N::Int64   # number of individuals
+    M::Int64   # number of sets
+    K::Int64   # number of sets to which each individual belongs
+    P::Int64   # number of parties to which each individual belongs
+    α::Float64 # fraction of individuals who are independent
     set_members::Array{Array{Int64, 1}, 1}            # lists of individuals in each set
     set_pairs::Array{Array{Tuple{Int64, Int64}, 1},1} # list of tuples, each tuple is a pair of individuals in a set
     h::Array{Int64, 2}      # N-by-M int array denoting *opinions*
@@ -38,45 +39,42 @@ mutable struct Sets
     n_party_pairs::Int64    # number of within-party pairs = binomial(N÷2, 2)
     
     # constructors for pre-specified h
-    function Sets( h::Array{Int64, 2}, P::Int64=2 )
+    function Sets( h::Array{Int64, 2}, P::Int64=2, α::Float64=0.)
         
         N, M    = size(h) # extract numbers of individuals and sets
         h_bar   = [abs(x) for x in h]              # extract set memberships from h
         K       = compute_total_memberships(h_bar) # each member must belong to K sets
-        affiliations           = party_assignment(N,P)            # each member is affiliated with a party
+        affiliations           = assign_parties(N,P,α)            # each member is affiliated with a party
         n_pairs, n_party_pairs = binomial(N, 2), binomial(N÷2, 2) # number of pairs
         set_members, set_pairs = set_members_and_pairs(h_bar)   
 
         h_base10     = [vectobase3(h[i,:]) for i in 1:N] # track opinions in base10
         h_bar_base10 = [vectobase3(h_bar[i,:]) for i in 1:N] # track set memberships in base10
 
-        return new( N, M, K, P, set_members, set_pairs, h, h_bar, h_base10, h_bar_base10, affiliations, n_pairs, n_party_pairs)
+        return new( N, M, K, P, α, set_members, set_pairs, h, h_bar, h_base10, h_bar_base10, affiliations, n_pairs, n_party_pairs)
     end   
     
     # alternative constructor with N, M, K given explicitly
-    function Sets( N::Int64, M::Int64, K::Int64, h::Array{Int64, 2}, P::Int64=2 )
+    function Sets( N::Int64, M::Int64, K::Int64, h::Array{Int64, 2}, P::Int64=2, α::Float64=0 )
             
         h_bar                  = [abs(x) for x in h]              # extract set memberships from h
-        affiliations           = party_assignment(N,P)            # each member belongs to a party
+        affiliations           = assign_parties(N,P)            # each member belongs to a party
         n_pairs, n_party_pairs = binomial(N, 2), binomial(N÷2, 2) # number of pairs
         set_members, set_pairs = set_members_and_pairs(h_bar)  
 
         h_base10     = [vectobase3(h[i,:]) for i in 1:N] # track opinions in base10
         h_bar_base10 = [vectobase3(h_bar[i,:]) for i in 1:N] # track set memberships in base10
 
-        return new( N, M, K, P, set_members, set_pairs, h, h_bar, h_base10, h_bar_base10, affiliations, n_pairs, n_party_pairs)
+        return new( N, M, K, P, α, set_members, set_pairs, h, h_bar, h_base10, h_bar_base10, affiliations, n_pairs, n_party_pairs)
     end
 end
 
 function compute_total_memberships( h_bar::Array{Int64, 2} )::Int64
     # function to compute K, the number of sets to which each individual belongs
     total_memberships = sum( h_bar, dims=2 ) # total no. of sets indivduals belong to
-    # check that all individuals belong to the same number of sets
-    if length( unique(total_memberships) ) == 1   
-        K = total_memberships[1] # K is the unique element of total_memberships
-    else
-        @warn("check that each individual belongs to K sets"); return 
-    end
+
+    # check that all individuals belong to the same number of sets (K)
+    length( unique(total_memberships) ) == 1 ? K = total_memberships[1] : @warn("check that each individual belongs to K sets")
 
     return K
 end
@@ -101,25 +99,29 @@ function set_members_and_pairs( h::Array{Int64, 2} )
     return set_members, set_pairs
 end
 
-function party_assignment( N::Int64, P::Int64=2 )
+function assign_parties( N::Int64, P::Int64=2, α::Float64=0. )
     # return party assignments p given N individuals and P parties
     # P = 2 only for now
-    if N % P != 0
-        @warn("Parties are uneven in size!")
-    elseif P == 1
-        # everyone is in the same party (party 1)
-        affiliations = ones(Int64, N)
-    elseif P == 2
+    # if N*α is not an integer
+    if N * α != round(N*α) @warn("Number of independents is not an integer, check value of α"); return; end
+
+    # if the number of parties is greater than 2
+    if P != 2 @warn("Party assignment for P>2 is undefined"); return; end
+
+    if N * (1-α) % P != 0 # if the number of party members is indivisible by P
+        @warn("Parties are uneven in size!"); 
+        return
+    elseif P == 1 # if everyone is either independent (0) or in party 1
+        affiliations = vcat( ones(Int64, Int(N*(1-α))), zeros(Int64, Int(N*α)) )
+    elseif P == 2 # if everyone is independent (0) or in party 1 or party 2
         # without loss of generality, first N/2 are in party 1, second N/2 in party 2
-        # party 0 is reserved for independents
-        affiliations = vcat( ones(Int64, N÷2), repeat([2],N÷2) ) 
-    elseif P != 2
-        @warn("Party assignment for P>2 is undefined")
+        affiliations = vcat( ones(Int64, Int(N*(1-α)/2)), zeros(Int64, Int(N*α)), repeat([2], Int(N*(1-α)/2)) ) 
     end
+
     return affiliations
 end
 
-function random_sets( N::Int64, M::Int64, K::Int64, P::Int64=2 )
+function random_sets( N::Int64, M::Int64, K::Int64, P::Int64=2, α::Float64=0. )
     # cosntructor for randomized set membership
     # where each individual belongs to K > 0 sets (no loners)
     h = zeros(Int64, N, M) # initializing
@@ -127,12 +129,13 @@ function random_sets( N::Int64, M::Int64, K::Int64, P::Int64=2 )
     if P == 2
         # for each individual, pick K random sets to belong to
         # for each of the K sets, choose -1 for party 1 and +1 for party 2
-        for i in 1:N÷2   h[i,:] = shuffle(vcat(zeros(Int64,M-K),-ones(Int64,K))) end # party 1
-        for i in N÷2+1:N h[i,:] = shuffle(vcat(zeros(Int64,M-K), ones(Int64,K))) end # party 2
-    else
+        for i in 1:Int(N*(1-α)/2)                  h[i,:] = shuffle( vcat( zeros(Int64,M-K), -ones(Int64,K) ) ) end # party 1
+        for i in Int(N*(1-α)/2)+1:N-Int(N*(1-α)/2) h[i,:] = shuffle( vcat( zeros(Int64,M-K), rand([-1,1],K) ) ) end # independents
+        for i in N-Int(N*(1-α)/2)+1:N              h[i,:] = shuffle( vcat( zeros(Int64,M-K),  ones(Int64,K) ) ) end # party 2
+    elseif P == 1
         # for each individual, pick K random sets to belong to
         # for each of the K sets, choose -1 or +1 opinion randomly
-        for i in 1:N h[i,:] = shuffle( vcat(zeros(Int64,M-K),rand([-1,1],K)) ) end
+        for i in 1:N h[i,:] = shuffle( vcat( zeros(Int64,M-K), rand([-1,1],K) ) ) end
     end
     return Sets(h)
 end
