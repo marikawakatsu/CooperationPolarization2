@@ -126,7 +126,7 @@ function assign_parties( N::Int64, P::Int64=2, α::Float64=0. )
 
     if P == 1 # if everyone is either independent (0) or in party 1
         affiliations = vcat( zeros(Int64, Int(N*α)), ones(Int64, Int(N*(1-α))) )
-    elseif P == 2 # without loss of generality, first N/2 are in party 1, second N/2 in party 2
+    elseif P == 2 # without loss of generality, first N*α are independents, then N*(1-α)/2 each for party 1 and party 2
         affiliations = vcat( zeros(Int64, Int(N*α)), ones(Int64, Int(N*(1-α)/2)), repeat([2], Int(N*(1-α)/2)) ) 
     end
 
@@ -140,13 +140,7 @@ function random_sets( N::Int64, M::Int64, K::Int64, P::Int64=2, α::Float64=0. )
     affiliations = assign_parties( N, P, α ) # determine affiliations
 
     if P == 2
-        # # for each individual, pick K random sets to belong to
-        # # for each of the K sets, choose -1 for party 1 and +1 for party 2
-        # for i in 1:Int(N*α)                  h[i,:] = shuffle( vcat( zeros(Int64,M-K), rand([-1,1],K) ) ) end # independents
-        # for i in Int(N*α)+1:N-Int(N*(1-α)/2) h[i,:] = shuffle( vcat( zeros(Int64,M-K), -ones(Int64,K) ) ) end # party 1
-        # for i in N-Int(N*(1-α)/2)+1:N        h[i,:] = shuffle( vcat( zeros(Int64,M-K),  ones(Int64,K) ) ) end # party 2
-
-        # updated: use affiliations explicitly
+        # updated: use affiliations explicitly in case party assignments are changed
         for i in 1:N
             if affiliations[i] == 0  h[i,:] = shuffle( vcat( zeros(Int64,M-K), rand([-1,1],K) ) ) end # independents
             if affiliations[i] == 1  h[i,:] = shuffle( vcat( zeros(Int64,M-K), -ones(Int64,K) ) ) end # party 1
@@ -157,6 +151,7 @@ function random_sets( N::Int64, M::Int64, K::Int64, P::Int64=2, α::Float64=0. )
         # for each of the K sets, choose -1 or +1 opinion randomly
         for i in 1:N h[i,:] = shuffle( vcat( zeros(Int64,M-K), rand([-1,1],K) ) ) end
     end
+
     return Sets(h, affiliations)
 end
 
@@ -174,11 +169,15 @@ struct Game
     β::Float64    # selection strength
     u::Float64    # strategy mutation rate
     v::Float64    # set mutation rate
-    p::Float64    # party bias (p = 0 no bias, p = 1 strong bias)
+    # p::Float64    # party bias (p = 0 no bias, p = 1 strong bias)
+    p::Array{Float64, 1} # array of parby bias (p = 0 no bias, p = 1 strong bias)
     ε::Float64    # damping parameter attenuating party bias (ε = 1 no damping, ε = 0 full damping)
     A::Array{Float64, 2} # the game matrix
 
-    function Game( b::Float64, c::Float64, β::Float64, u::Float64, v::Float64, p::Float64, ε::Float64 )
+    # function Game( b::Float64, c::Float64, β::Float64, u::Float64, v::Float64, p::Float64, ε::Float64 )
+    #     return new(b, c, β, u, v, p, ε, [0.0 b; -c b-c])
+    # end
+    function Game( b::Float64, c::Float64, β::Float64, u::Float64, v::Float64, p::Array{Float64, 1}, ε::Float64 )
         return new(b, c, β, u, v, p, ε, [0.0 b; -c b-c])
     end
 end

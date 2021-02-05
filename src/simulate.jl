@@ -115,8 +115,8 @@ function update_strategies_and_opinions_db!( pop::Population )
     
     # compute the fitnesses of every other individual in the population
     # pop.sim.fitnesses = 1.0 .+ pop.game.β * pop.payoffs[ pop.sim.non_learners ]
-    pop.sim.fitnesses = [1.0 + pop.game.β * pop.payoffs[i] for i in pop.sim.non_learners ] # faster
-    if any(x->x<0.0, pop.sim.fitnesses) @error("!!! negative fitness detected, aborting !!!") end
+    pop.sim.fitnesses = [ 1.0 + pop.game.β * pop.payoffs[i] for i in pop.sim.non_learners ] # faster
+    if any(x->x<0.0, pop.sim.fitnesses) @error("!!! negative fitness detected, aborting !!!"); return end
     
     # choose a role model from the rest of the population, weighted by fitness
     pop.sim.role_model = sample( pop.sim.non_learners, Weights(pop.sim.fitnesses) )
@@ -126,8 +126,9 @@ function update_strategies_and_opinions_db!( pop::Population )
     if pop.verbose println("\t\tall payoffs are $(pop.payoffs)") end
     if pop.verbose println("\t\tfitnesses (learner excluded) are $(pop.sim.fitnesses)") end
     
-    # compute probability of imitation: 1 if same party, q if different parties
-    pop.sets.affiliations[pop.sim.learner] == pop.sets.affiliations[pop.sim.role_model] ? imit_prob = 1.0 : imit_prob = pop.game.p
+    # compute probability of imitation: 1 if same party, 1-p if different parties
+    pop.sets.affiliations[pop.sim.learner] == pop.sets.affiliations[pop.sim.role_model] ? imit_prob = 1.0 : imit_prob = 1-pop.game.p[pop.sim.learner]
+    
     if pop.verbose 
         println("\t\tlearner and role model in the same party? $(pop.sets.affiliations[ pop.sim.learner ] == pop.sets.affiliations[ pop.sim.role_model ])") 
     end
@@ -193,16 +194,13 @@ function update_opinions!( pop::Population )
     pop.sim.sets_copy = copy(pop.sets.h[pop.sim.learner,:])     # save a copy to track changes
     # copy suffices here because the assignments below replace elements of pop.sets.h with Int64 (immutable)
     
-    if rand() < pop.game.v 
-        # with probability v, set mutation occurs
-        if rand() < pop.game.ϵ * pop.game.p 
-            # with probability q*ϵ
+    if rand() < pop.game.v # with probability v, set mutation occurs
+        if rand() < 1 - pop.game.ϵ * pop.game.p[pop.sim.learner] # with probability 1 - p*ϵ
             # select a random arrangement of K opinions
             pop.sets.h[pop.sim.learner,:] = shuffle( vcat( zeros(Int64, pop.sets.M-pop.sets.K), rand([-1,1], pop.sets.K) ) )
             pop.num_random_opinions += 1
             if pop.verbose println("\t\tmutating $(pop.sim.learner) to random opinions $(pop.sets.h[pop.sim.learner,:])") end
-        else
-            # with probability 1-q*ϵ
+        else # with probability p*ϵ
             # select a random set of K issues, select opinions corresponding to party
             if pop.sets.affiliations[pop.sim.learner] == 1
                 pop.sets.h[pop.sim.learner,:] = shuffle( vcat( zeros(Int64, pop.sets.M-pop.sets.K), -ones(Int64, pop.sets.K) ) )
