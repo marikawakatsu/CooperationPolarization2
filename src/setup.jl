@@ -33,7 +33,7 @@ mutable struct Sets
                             # or h_bar[i, :] to get all of i's set memberships
     h_base10::Array{Int64, 1}      # N-by-1 vector denoting *opinions* in base 10 (from -(3^M-1)/2 to (3^M-1)/2)
     h_bar_base10::Array{Int64, 1}  # N-by-1 vector denoting *set memberships* in base 10 (from 1 to (3^M-1)/2)
-    affiliations::Array{Int64, 1}  # N-by-1 int array denoting *party affiliations* (0, ..., P-1)
+    affils::Array{Int64, 1} # N-by-1 int array denoting *party affils* (0, ..., P-1)
                             # call p[i] to get part membership of i
     n_pairs::Int64          # number of pairs = binomial(N,2) for computing pairwise distances later
     n_party_pairs::Int64    # number of within-party pairs = binomial(N÷2, 2)
@@ -44,18 +44,18 @@ mutable struct Sets
         N, M  = size(h) # extract numbers of individuals and sets
         h_bar = [abs(x) for x in h]              # extract set memberships from h
         K     = compute_total_memberships(h_bar) # each member must belong to K sets
-        affiliations           = assign_parties(N,P,α)            # each member is affiliated with a party
+        affils           = assign_parties(N,P,α)            # each member is affiliated with a party
         n_pairs, n_party_pairs = binomial(N, 2), binomial(N÷2, 2) # number of pairs
         set_members, set_pairs = set_members_and_pairs(h_bar)   
 
         h_base10     = [vectobase3(h[i,:]) for i in 1:N] # track opinions in base10
         h_bar_base10 = [vectobase3(h_bar[i,:]) for i in 1:N] # track set memberships in base10
 
-        return new( N, M, K, P, α, set_members, set_pairs, h, h_bar, h_base10, h_bar_base10, affiliations, n_pairs, n_party_pairs)
+        return new( N, M, K, P, α, set_members, set_pairs, h, h_bar, h_base10, h_bar_base10, affils, n_pairs, n_party_pairs)
     end   
     
-    # alternative constructor with affiliations
-    function Sets( h::Array{Int64, 2}, affiliations::Array{Int64, 1}, P::Int64=2, α::Float64=0.)
+    # alternative constructor with affils
+    function Sets( h::Array{Int64, 2}, affils::Array{Int64, 1}, P::Int64=2, α::Float64=0.)
         
         N, M  = size(h) # extract numbers of individuals and sets
         h_bar = [abs(x) for x in h]              # extract set memberships from h
@@ -66,20 +66,20 @@ mutable struct Sets
         h_base10     = [vectobase3(h[i,:]) for i in 1:N] # track opinions in base10
         h_bar_base10 = [vectobase3(h_bar[i,:]) for i in 1:N] # track set memberships in base10
 
-        return new( N, M, K, P, α, set_members, set_pairs, h, h_bar, h_base10, h_bar_base10, affiliations, n_pairs, n_party_pairs)
+        return new( N, M, K, P, α, set_members, set_pairs, h, h_bar, h_base10, h_bar_base10, affils, n_pairs, n_party_pairs)
     end 
     # # alternative constructor with N, M, K given explicitly
     # function Sets( N::Int64, M::Int64, K::Int64, h::Array{Int64, 2}, P::Int64=2, α::Float64=0. )
             
     #     h_bar                  = [abs(x) for x in h]              # extract set memberships from h
-    #     affiliations           = assign_parties(N, P, α)          # each member belongs to a party
+    #     affils           = assign_parties(N, P, α)          # each member belongs to a party
     #     n_pairs, n_party_pairs = binomial(N, 2), binomial(N÷2, 2) # number of pairs
     #     set_members, set_pairs = set_members_and_pairs(h_bar)  
 
     #     h_base10     = [vectobase3(h[i,:]) for i in 1:N] # track opinions in base10
     #     h_bar_base10 = [vectobase3(h_bar[i,:]) for i in 1:N] # track set memberships in base10
 
-    #     return new( N, M, K, P, α, set_members, set_pairs, h, h_bar, h_base10, h_bar_base10, affiliations, n_pairs, n_party_pairs)
+    #     return new( N, M, K, P, α, set_members, set_pairs, h, h_bar, h_base10, h_bar_base10, affils, n_pairs, n_party_pairs)
     # end
 end
 
@@ -124,26 +124,26 @@ function assign_parties( N::Int64, P::Int64=2, α::Float64=0. )
     if N * (1-α) % P != 0 @warn("Parties are uneven in size!"); return; end
 
     if P == 1 # if everyone is either independent (0) or in party 1
-        affiliations = vcat( zeros(Int64, Int(N*α)), ones(Int64, Int(N*(1-α))) )
+        affils = vcat( zeros(Int64, Int(N*α)), ones(Int64, Int(N*(1-α))) )
     elseif P == 2 # without loss of generality, first N*α are independents, then N*(1-α)/2 each for party 1 and party 2
-        affiliations = vcat( zeros(Int64, Int(N*α)), ones(Int64, Int(N*(1-α)/2)), repeat([2], Int(N*(1-α)/2)) ) 
+        affils = vcat( zeros(Int64, Int(N*α)), ones(Int64, Int(N*(1-α)/2)), repeat([2], Int(N*(1-α)/2)) ) 
     end
 
-    return affiliations
+    return affils
 end
 
 function random_sets( N::Int64, M::Int64, K::Int64, P::Int64=2, α::Float64=0. )
     # cosntructor for randomized set membership
     # where each individual belongs to K > 0 sets (no loners)
     h = zeros(Int64, N, M) # initializing
-    affiliations = assign_parties( N, P, α ) # determine affiliations
+    affils = assign_parties( N, P, α ) # determine affils
 
     if P == 2
-        # updated: use affiliations explicitly in case party assignments are changed
+        # updated: use affils explicitly in case party assignments are changed
         for i in 1:N
-            if affiliations[i] == 0  h[i,:] = shuffle( vcat( zeros(Int64,M-K), rand([-1,1],K) ) ) end # independents
-            if affiliations[i] == 1  h[i,:] = shuffle( vcat( zeros(Int64,M-K), -ones(Int64,K) ) ) end # party 1
-            if affiliations[i] == 2  h[i,:] = shuffle( vcat( zeros(Int64,M-K),  ones(Int64,K) ) ) end # party 2
+            if affils[i] == 0  h[i,:] = shuffle( vcat( zeros(Int64,M-K), rand([-1,1],K) ) ) end # independents
+            if affils[i] == 1  h[i,:] = shuffle( vcat( zeros(Int64,M-K), -ones(Int64,K) ) ) end # party 1
+            if affils[i] == 2  h[i,:] = shuffle( vcat( zeros(Int64,M-K),  ones(Int64,K) ) ) end # party 2
         end
     elseif P == 1
         # for each individual, pick K random sets to belong to
@@ -151,7 +151,7 @@ function random_sets( N::Int64, M::Int64, K::Int64, P::Int64=2, α::Float64=0. )
         for i in 1:N h[i,:] = shuffle( vcat( zeros(Int64,M-K), rand([-1,1],K) ) ) end
     end
 
-    return Sets(h, affiliations)
+    return Sets(h, affils)
 end
 
 function vectobase3( vec::Array{Int64, 1} )::Int64
