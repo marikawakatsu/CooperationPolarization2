@@ -115,12 +115,11 @@ end
 
 function assign_parties( N::Int64, P::Int64=2, α::Float64=0. )
     # return party assignments p given N individuals and P parties
+
     # P = 2 only for now; warn if the number of parties is greater than 2
     if P > 2 @warn("Party assignment for P>2 is undefined"); return; end
-
     # warn if N*α is not an integer
     if N * α != round(N*α) @warn("Number of independents is not an integer, check value of α"); return; end
-
     # warn if the number of party members is indivisible by P
     if N * (1-α) % P != 0 @warn("Parties are uneven in size!"); return; end
 
@@ -156,8 +155,7 @@ function random_sets( N::Int64, M::Int64, K::Int64, P::Int64=2, α::Float64=0. )
 end
 
 function vectobase3( vec::Array{Int64, 1} )::Int64
-    # convert vector of opinions to int 
-    # by interpreting the vector as digits in base 3
+    # convert vector of opinions to int by interpreting the vector as digits in base 3
     foldl( (x::Int64, y::Int64) -> 3 * x + y, vec )
 end
 
@@ -170,15 +168,23 @@ struct Game
     u::Float64    # strategy mutation rate
     v::Float64    # set mutation rate
     # p::Float64    # party bias (p = 0 no bias, p = 1 strong bias)
-    p::Array{Float64, 1} # array of parby bias (p = 0 no bias, p = 1 strong bias)
-    ε::Float64    # damping parameter attenuating party bias (ε = 1 no damping, ε = 0 full damping)
+    ps::Array{Float64, 1}   # array of party bias p (p = 0 no bias, p = 1 strong bias)
+                            # if ps = [p], everyone has the same P
+                            # if ps = [p1, p2], party 1 has p1, party 2 has p2
+    ϵ::Float64    # damping parameter attenuating party bias (ε = 1 no damping, ε = 0 full damping)
     A::Array{Float64, 2} # the game matrix
 
     # function Game( b::Float64, c::Float64, β::Float64, u::Float64, v::Float64, p::Float64, ε::Float64 )
     #     return new(b, c, β, u, v, p, ε, [0.0 b; -c b-c])
     # end
-    function Game( b::Float64, c::Float64, β::Float64, u::Float64, v::Float64, p::Array{Float64, 1}, ε::Float64 )
-        return new(b, c, β, u, v, p, ε, [0.0 b; -c b-c])
+    # constructor for uniform p: if p is a Float, assume everyone has the same P
+    function Game( b::Float64, c::Float64, β::Float64, u::Float64, v::Float64, p::Float64, ϵ::Float64 )
+        return new(b, c, β, u, v, [p, p], ϵ, [0.0 b; -c b-c])
+    end
+    # constructor for two values of p: if p is an Array with two elements, assume parties have different p's
+    function Game( b::Float64, c::Float64, β::Float64, u::Float64, v::Float64, ps::Array{Float64, 1}, ϵ::Float64 )
+        if length(ps) != 2 @error("ps should have exactly two entries, one value of p for each party") end
+        return new(b, c, β, u, v, ps, ϵ, [0.0 b; -c b-c])
     end
 end
 
@@ -270,8 +276,9 @@ mutable struct Population
         prev_interactions, prev_learner = 0, 0
 
         # overall trackers
-        num_imitating, num_not_imitating, num_strategies_changed, num_sets_changed = 0, 0, 0, 0
-        num_random_opinions, num_biased_opinions, num_random_strategies            = 0, 0, 0
+        num_imitating, num_not_imitating                                = 0, 0
+        num_strategies_changed, num_sets_changed, num_both_changed      = 0, 0, 0
+        num_random_opinions, num_biased_opinions, num_random_strategies = 0, 0, 0
 
         # initialize sim::Simulation
         sim = Simulation(sets)
@@ -304,8 +311,10 @@ mutable struct Population
         prev_interactions, prev_learner = 0, 0
 
         # overall trackers
-        num_imitating, num_not_imitating, num_strategies_changed, num_sets_changed = 0, 0, 0, 0
-        num_random_opinions, num_biased_opinions, num_random_strategies            = 0, 0, 0
+        num_imitating, num_not_imitating                                = 0, 0
+        num_strategies_changed, num_sets_changed, num_both_changed      = 0, 0, 0
+        num_random_opinions, num_biased_opinions, num_random_strategies = 0, 0, 0
+
 
         # initialize sim::Simulation
         sim = Simulation(sets)

@@ -68,7 +68,7 @@ function update_payoffs_using_matrix!( pop::Population )
     pop.payoffs = [round( x, digits=13 ) for x in vec( sum(pop.payoffs_mat, dims=2) )]  # rounding avoids precision errors
     pop.prev_interactions = 2 * sum([length(x) for x in pop.sets.set_pairs])
 
-    if pop.verbose println( "payoff matrix is now $(pop.payoffs_mat)" ) end
+    if pop.verbose println( "\npayoff matrix is now $(pop.payoffs_mat)" ) end
     if pop.verbose println( "payoffs are now $(pop.payoffs)" ) end
     if pop.verbose println( "there were $(pop.prev_interactions) interactions, $(sum(pop.prev_actions)) of which were C" ) end
 end
@@ -90,7 +90,7 @@ function compute_payoffs!( pop::Population, i::Int64, j::Int64, k::Int64 )
     end
 
     if pop.verbose
-        println("\tupdating actions of $i and $j in set $k; agree on issue $k? $(pop.sets.h[i,k] == pop.sets.h[j,k])")
+        println("\n\tupdating actions of $i and $j in set $k; agree on issue $k? $(pop.sets.h[i,k] == pop.sets.h[j,k])")
         println("\t\t$i has strats $(pop.strategies[i,:]); $i plays strat $(pop.sim.i_action), earns a payoff of $(pop.game.A[pop.sim.i_action+1, pop.sim.j_action+1])")
         println("\t\t$j has strats $(pop.strategies[j,:]); $j plays strat $(pop.sim.j_action), earns a payoff of $(pop.game.A[pop.sim.j_action+1, pop.sim.i_action+1])")
     end
@@ -127,7 +127,7 @@ function update_strategies_and_opinions_db!( pop::Population )
     if pop.verbose println("\t\tfitnesses (learner excluded) are $(pop.sim.fitnesses)") end
     
     # compute probability of imitation: 1 if same party, 1-p if different parties
-    pop.sets.affiliations[pop.sim.learner] == pop.sets.affiliations[pop.sim.role_model] ? imit_prob = 1.0 : imit_prob = 1-pop.game.p[pop.sim.learner]
+    pop.sets.affiliations[pop.sim.learner] == pop.sets.affiliations[pop.sim.role_model] ? imit_prob = 1.0 : imit_prob = 1-pop.game.ps[pop.sets.affiliations[pop.sim.learner]]
     
     if pop.verbose 
         println("\t\tlearner and role model in the same party? $(pop.sets.affiliations[ pop.sim.learner ] == pop.sets.affiliations[ pop.sim.role_model ])") 
@@ -194,13 +194,16 @@ function update_opinions!( pop::Population )
     pop.sim.sets_copy = copy(pop.sets.h[pop.sim.learner,:])     # save a copy to track changes
     # copy suffices here because the assignments below replace elements of pop.sets.h with Int64 (immutable)
     
-    if rand() < pop.game.v # with probability v, set mutation occurs
-        if rand() < 1 - pop.game.ϵ * pop.game.p[pop.sim.learner] # with probability 1 - p*ϵ
+    # with probability v, set mutation occurs
+    if rand() < pop.game.v 
+        if rand() < 1 - pop.game.ϵ * pop.game.ps[pop.sets.affiliations[pop.sim.learner]] 
+            # with probability 1-p*ϵ, select opinions without bias
             # select a random arrangement of K opinions
             pop.sets.h[pop.sim.learner,:] = shuffle( vcat( zeros(Int64, pop.sets.M-pop.sets.K), rand([-1,1], pop.sets.K) ) )
             pop.num_random_opinions += 1
             if pop.verbose println("\t\tmutating $(pop.sim.learner) to random opinions $(pop.sets.h[pop.sim.learner,:])") end
-        else # with probability p*ϵ
+        else 
+            # with probability p*ϵ, select opinions with bias
             # select a random set of K issues, select opinions corresponding to party
             if pop.sets.affiliations[pop.sim.learner] == 1
                 pop.sets.h[pop.sim.learner,:] = shuffle( vcat( zeros(Int64, pop.sets.M-pop.sets.K), -ones(Int64, pop.sets.K) ) )
