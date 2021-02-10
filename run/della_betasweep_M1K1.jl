@@ -76,7 +76,7 @@ total_summary = SharedArray{Float64, 2}(length(pvals)*length(βs)*length(vs),55)
 
     # set parameter(s)
     p::Float64 = parameters[i][1]
-    u::Float64 = parameters[i][2]
+    β::Float64 = parameters[i][2]
     v::Float64 = parameters[i][3]
 
     # set file name and type
