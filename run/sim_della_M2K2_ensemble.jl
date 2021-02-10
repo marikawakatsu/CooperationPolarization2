@@ -41,8 +41,8 @@ const β = 0.001    # selection strength
 # note: α = 0 automatically
 
 # model parameters (varied)
-const M = 1 # number of sets
-const K = 1 # number of issues to care about
+const M = 2 # number of sets
+const K = 2 # number of issues to care about
 
 const pvals = repeat([0.0, 0.25, 0.5, 0.75, 1.0], 10) # uniform populations for now
 const us    = [0.001]
@@ -70,7 +70,7 @@ const start_time = Dates.format(now(),"yymmdd-HHMMSS.sss")
 ## simulation ##
 ################
 # initialize global tracker
-total_summary = SharedArray{Float64, 2}(length(pvals)*length(us)*length(vs),55) # SharedArray{Real}[] 
+total_summary = SharedArray{Float64, 2}(length(pvals)*length(us)*length(vs),69) # SharedArray{Real}[] 
 
 @time @sync @distributed for i in 1:length(pvals)*length(us)*length(vs)
 

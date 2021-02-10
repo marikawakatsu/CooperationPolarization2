@@ -218,9 +218,8 @@ function track_hamming!( tracker::Tracker, g::Int64 )
     # pairwise computes a symmetric N-by-N matrix of pairwise distances; diagonals are zero
     # compute sum, divide by 2 to remove double counting, and divide by the number of pairs
     
-    #OLD: 
-    tracker.pop.sim.hamming_ind = pairwise(Hamming(), tracker.pop.sets.h_bar, dims=1) # h_bar
-    # pairwise!(tracker.pop.sim.hamming_ind, Hamming(), tracker.pop.sets.h_bar, dims=1) # h_bar
+    #OLD: tracker.pop.sim.hamming_ind = pairwise(Hamming(), tracker.pop.sets.h_bar, dims=1) # h_bar
+    pairwise!(tracker.pop.sim.hamming_ind, Hamming(), tracker.pop.sets.h_bar, dims=1) # h_bar
     tracker.ens_hamming_ind[g]  = sum( tracker.pop.sim.hamming_ind ) / 2 / tracker.pop.sets.n_pairs
 
     # track average hamming distance between individuals of the same party 
