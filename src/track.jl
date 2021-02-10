@@ -146,7 +146,7 @@ function track_total_means_and_vars!( tracker::Tracker, g::Int64 )
     if tracker.verbose_track println("\t $(tracker.ens_total_vars[g])") end 
 end
 
-function track_total_cooperation!( tracker::Tracker, g::Int64, byparty = true )
+function track_total_cooperation!( tracker::Tracker, g::Int64, byparty=true )
     # track effective / total cooperation
     # total_interactions::Int64 = 2 * sum([length(x) for x in tracker.pop.sets.set_pairs]) # moved to setup.jl
     tracker.ens_total_cooperation[g] = sum(tracker.pop.prev_actions) / tracker.pop.prev_interactions

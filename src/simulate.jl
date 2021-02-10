@@ -111,11 +111,15 @@ function update_strategies_and_opinions_db!( pop::Population )
     
     # randomly choose a learner and store a list of non_learners
     pop.sim.learner      = sample(1:pop.sets.N)
-    pop.sim.non_learners = filter(x->x!=pop.sim.learner, 1:pop.sets.N)
+    pop.sim.non_learners = deleteat!(collect(1:pop.sets.N), pop.sim.learner) # faster than filter(x->x!=pop.sim.learner, 1:pop.sets.N)
     
     # compute the fitnesses of every other individual in the population
-    # pop.sim.fitnesses = 1.0 .+ pop.game.β * pop.payoffs[ pop.sim.non_learners ]
-    pop.sim.fitnesses = [ 1.0 + pop.game.β * pop.payoffs[i] for i in pop.sim.non_learners ] # faster
+    count = 1;
+    for i in pop.sim.non_learners
+        pop.sim.fitnesses[count] = 1.0 + pop.game.β * pop.payoffs[i]
+        count += 1
+    end
+    # pop.sim.fitnesses = [ 1.0 + pop.game.β * pop.payoffs[i] for i in pop.sim.non_learners ] # slow, replaced with for loop
     if any(x->x<0.0, pop.sim.fitnesses) @error("!!! negative fitness detected, aborting !!!"); return end
     
     # choose a role model from the rest of the population, weighted by fitness
