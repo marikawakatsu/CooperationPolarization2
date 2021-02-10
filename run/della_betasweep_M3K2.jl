@@ -41,8 +41,8 @@ const u = 0.001    # strategy mutation rate
 # note: α = 0 automatically
 
 # model parameters (varied)
-const M = 1 # number of sets
-const K = 1 # number of issues to care about
+const M = 3 # number of sets
+const K = 2 # number of issues to care about
 
 const pvals = repeat([0.0, 1.0], 10) # uniform populations for now
 const βs    = [0.0001, 0.001, 0.01, 0.1]
