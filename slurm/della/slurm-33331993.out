@@ -1256,3 +1256,40 @@ parameters defined
       From worker 16:	data processed and exported
       From worker 13:	replicate complete, ran 20000000 generations:
       From worker 13:	
+ Activating environment at `/tigress/mk28/CooperationPolarization2/Project.toml`
+ Activating environment at `/tigress/mk28/CooperationPolarization2/Project.toml`
+      From worker 13:		num_imitating:			17433146
+      From worker 13:		num_not_imitating:		2566854
+      From worker 13:		num_strategies_changed:  	494459
+      From worker 13:			num_random_strategies: 	17337
+      From worker 13:		num_sets_changed: 		10624736
+      From worker 13:			num_random_opinions: 	1305798
+      From worker 13:			num_biased_opinions: 	436127
+      From worker 13:		num_both_changed: 		348043
+      From worker 13:	
+      From worker 13:	data processed and exported
+      From worker 14:	replicate complete, ran 20000000 generations:
+      From worker 14:	
+      From worker 14:		num_imitating:			14874140
+      From worker 14:		num_not_imitating:		5125860
+      From worker 14:		num_strategies_changed:  	436918
+      From worker 14:			num_random_strategies: 	14851
+      From worker 14:		num_sets_changed: 		8428581
+      From worker 14:			num_random_opinions: 	744311
+      From worker 14:			num_biased_opinions: 	742995
+      From worker 14:		num_both_changed: 		288235
+      From worker 14:	
+      From worker 14:	data processed and exported
+      From worker 15:	replicate complete, ran 20000000 generations:
+      From worker 15:	
+      From worker 15:		num_imitating:			12308971
+      From worker 15:		num_not_imitating:		7691029
+      From worker 15:		num_strategies_changed:  	370678
+      From worker 15:			num_random_strategies: 	12275
+      From worker 15:		num_sets_changed: 		5682211
+      From worker 15:			num_random_opinions: 	1536380
+      From worker 15:			num_biased_opinions: 	4615453
+      From worker 15:		num_both_changed: 		176559
+      From worker 15:	
+      From worker 15:	data processed and exported
+12455.950188 seconds (2.81 M allocations: 123.567 MiB, 0.00% gc time)
