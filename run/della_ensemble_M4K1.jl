@@ -44,7 +44,7 @@ const β = 0.001    # selection strength
 const M = 4 # number of sets
 const K = 1 # number of issues to care about
 
-const pvals = repeat([0.0, 0.25, 0.5, 0.75, 1.0], 1) # uniform populations for now
+const pvals = repeat([0.0, 0.25, 0.5, 0.75, 1.0], 10) # uniform populations for now
 const us    = [0.001]
 const vs    = [0.001, 0.025, 0.1]
 const ϵ     = 1.
