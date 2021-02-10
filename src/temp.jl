@@ -76,3 +76,21 @@ for k in 1:pop.sets.M
     end
 end
 
+function update_set_members_and_pairs!( sets::Sets )
+    # return a list of list of set members given a boolean array of memberships
+    # tried this, but it's not faster than set_members_and_pairs
+
+    sets.set_members = [Int64[] for k in 1:pop.sets.M]
+    for indices in findall(x->x in [1,-1], pop.sets.h) 
+        push!(sets.set_members[indices[2]],indices[1]) 
+    end
+    
+    sets.set_pairs = [Tuple{Int64, Int64}[] for k in 1:pop.sets.M]
+    for k in 1:M
+        for i in sets.set_members[k]
+            for j in sets.set_members[k]
+                if i < j push!(sets.set_pairs[k], (i, j)) end
+            end
+        end
+    end
+end

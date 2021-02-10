@@ -8,7 +8,7 @@ const b = 1.0 # benefit to cooperating
 const c = 0.2 # cost to cooperating
 
 const N = 40 # population size
-const M = 2 # number of sets
+const M = 4 # number of sets
 const K = 1 # number of issues to care about
 const P = 2 # number of parties
 
@@ -22,7 +22,7 @@ const ϵ = 1.       # damping factor (0 = no bias in mutation, 1 = max bias (= p
 # simulation parameters
 const verbose       = false
 const verbose_track = false
-const generations   = 2
+const generations   = 10000
 const testtype      = "test"
 
 # plotting parameters

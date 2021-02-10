@@ -85,18 +85,18 @@ function track!( tracker::Tracker, g::Int64 )
     # main function to track the population dynamics
 
     if tracker.verbose_track println("generation $g") end
-    # pop = tracker.pop
-    # track_payoff_means!(tracker, g) # track mean payoffs
+
+    track_payoff_means!(tracker, g) # track mean payoffs
     track_strat_dist!(tracker, g) # track strategy distribution
     track_pop_dist!(tracker, g) # track set distribution
     track_running_strat_dist!(tracker, g) # track running average
-    # track_opn_dist!(tracker, g) # track opinion distribution
+    track_opn_dist!(tracker, g) # track opinion distribution
     track_total_means_and_vars!(tracker, g) # track mean and variance of total opinion
     track_total_cooperation!(tracker, g, true) # track effective cooperation
     # track_opn_simpson!(tracker, g) # track simpson's index for opinions
     # track_sets_simpson!(tracker, g) # track simpson's index for set memberships
-    # track_cityblock!(tracker, g) # track cityblock distances
-    # track_hamming!(tracker, g) # track hamming distances
+    track_cityblock!(tracker, g) # track cityblock distances
+    track_hamming!(tracker, g) # track hamming distances
 
 end
 
