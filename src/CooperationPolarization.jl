@@ -43,6 +43,7 @@ export track_cityblock!
 export track_hamming!
 export make_summary_table
 export make_col_list
+export make_ens_summary
 
 # load 
 include("setup.jl")
