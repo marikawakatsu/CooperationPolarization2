@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=M3K3_ens      # create a short name for your job
+#SBATCH --job-name=M3K3_betasweep      # create a short name for your job
 #SBATCH --nodes=1                # node count
 #SBATCH --ntasks=1               # total number of tasks across all nodes
 #SBATCH --cpus-per-task=16       # cpu-cores per task (>1 if multi-threaded tasks)
