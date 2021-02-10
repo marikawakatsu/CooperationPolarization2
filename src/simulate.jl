@@ -33,9 +33,8 @@ function update_payoffs_using_matrix!( pop::Population )
         # if (previous) learner's sets have changed, re-compute all payoffs
         if pop.verbose println("updating all payoffs because set_changed = $(pop.sets_changed)") end
         pop.payoffs_mat  .= zero(Float64) # reset all payoffs_mat
-        pop.prev_actions .= zero(Float64) # reset all prev_actions
+        pop.prev_actions .= zero(Int64)   # reset all prev_actions
         
-        ##### !!! #####
         # then, recompute all payoffs
         for k in 1:pop.sets.M  # for each set
             for (i, j) in pop.sets.set_pairs[k]   # for each pair within each set
@@ -43,17 +42,15 @@ function update_payoffs_using_matrix!( pop::Population )
                                                   # this also updates pop.prev_actions accordingly
             end
         end
-        ##### !!! #####
 
     elseif pop.strategies_changed  
         # if (previous) learner's strategy has changed, recompute payoffs involving that individual
         if pop.verbose println("updating payoffs involving $(pop.prev_learner) because strategies_changed = $(pop.strategies_changed)") end
         pop.payoffs_mat[pop.prev_learner,:]    .= zero(Float64) # first, reset payoffs involving prev_learner
         pop.payoffs_mat[:,pop.prev_learner]    .= zero(Float64)
-        pop.prev_actions[:,pop.prev_learner,:] .= zero(Float64)
-        pop.prev_actions[:,:,pop.prev_learner] .= zero(Float64)
+        pop.prev_actions[:,pop.prev_learner,:] .= zero(Int64)
+        pop.prev_actions[:,:,pop.prev_learner] .= zero(Int64)
 
-        ##### !!! #####
         # then, recompute payoffs involving prev_learner
         for k in 1:pop.sets.M  # for each set
             for (i, j) in pop.sets.set_pairs[k]  # for each pair within each set
@@ -63,7 +60,6 @@ function update_payoffs_using_matrix!( pop::Population )
                 end
             end
         end  
-        ##### !!! #####    
     else 
         if pop.verbose println("not updating payoffs b/c sets_changed = $(pop.sets_changed) and strategies_changed = $(pop.strategies_changed)") end
         return # no need to update prev_interactions or payoffs
@@ -153,9 +149,7 @@ function update_strategies_and_opinions_db!( pop::Population )
     pop.prev_learner = pop.sim.learner
     if pop.sets_changed == true
         # h is updated above; need to update h_bar, h_base10, h_bar_base10, set_members, set_pairs
-        ###### !!! ###### 
         pop.sets.set_members, pop.sets.set_pairs = set_members_and_pairs(pop.sets.h)  # update set_members and set_pairs
-        ###### !!! ###### 
         pop.sets.h_bar        = [abs(x) for x in pop.sets.h]
         pop.sets.h_base10     = [vectobase3(pop.sets.h[i,:]) for i in 1:pop.sets.N] 
         pop.sets.h_bar_base10 = [vectobase3(pop.sets.h_bar[i,:]) for i in 1:pop.sets.N] 

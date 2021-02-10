@@ -48,8 +48,8 @@ mutable struct Sets
         n_pairs, n_party_pairs = binomial(N, 2), binomial(N÷2, 2) # number of pairs
         set_members, set_pairs = set_members_and_pairs(h_bar)   
 
-        h_base10     = [vectobase3(h[i,:]) for i in 1:N] # track opinions in base10
-        h_bar_base10 = [vectobase3(h_bar[i,:]) for i in 1:N] # track set memberships in base10
+        h_base10        = [vectobase3(h[i,:]) for i in 1:N] # track opinions in base10
+        h_bar_base10    = [vectobase3(h_bar[i,:]) for i in 1:N] # track set memberships in base10
 
         return new( N, M, K, P, α, set_members, set_pairs, h, h_bar, h_base10, h_bar_base10, affils, n_pairs, n_party_pairs)
     end   
@@ -63,14 +63,13 @@ mutable struct Sets
         n_pairs, n_party_pairs = binomial(N, 2), binomial(N÷2, 2) # number of pairs
         set_members, set_pairs = set_members_and_pairs(h_bar)   
 
-        h_base10     = [vectobase3(h[i,:]) for i in 1:N] # track opinions in base10
-        h_bar_base10 = [vectobase3(h_bar[i,:]) for i in 1:N] # track set memberships in base10
-
+        h_base10        = [vectobase3(h[i,:]) for i in 1:N] # track opinions in base10
+        h_bar_base10    = [vectobase3(h_bar[i,:]) for i in 1:N] # track set memberships in base10
+        
         return new( N, M, K, P, α, set_members, set_pairs, h, h_bar, h_base10, h_bar_base10, affils, n_pairs, n_party_pairs)
     end 
     # # alternative constructor with N, M, K given explicitly
     # function Sets( N::Int64, M::Int64, K::Int64, h::Array{Int64, 2}, P::Int64=2, α::Float64=0. )
-            
     #     h_bar                  = [abs(x) for x in h]              # extract set memberships from h
     #     affils           = assign_parties(N, P, α)          # each member belongs to a party
     #     n_pairs, n_party_pairs = binomial(N, 2), binomial(N÷2, 2) # number of pairs

@@ -22,7 +22,7 @@ const ϵ = 1.       # damping factor (0 = no bias in mutation, 1 = max bias (= p
 # simulation parameters
 const verbose       = false
 const verbose_track = false
-const generations   = 100000
+const generations   = 2
 const testtype      = "test"
 
 # plotting parameters
