@@ -12,7 +12,7 @@ const M = 2 # number of sets
 const K = 1 # number of issues to care about
 const P = 2 # number of parties
 
-const β = 0.001    # selection strength
+const β = 1.    # selection strength
 const u = 0.001    # strategy mutation rate
 const v = 0.001    # set mutation rate
 const p = 0.       # party bias (0 = low, 1 = high)
@@ -22,7 +22,7 @@ const ϵ = 1.       # damping factor (0 = no bias in mutation, 1 = max bias (= p
 # simulation parameters
 const verbose       = false
 const verbose_track = false
-const generations   = 100000
+const generations   = 100
 const testtype      = "test"
 
 # plotting parameters

@@ -120,7 +120,7 @@ function update_strategies_and_opinions_db!( pop::Population )
         count += 1
     end
     # pop.sim.fitnesses = [ 1.0 + pop.game.β * pop.payoffs[i] for i in pop.sim.non_learners ] # slow, replaced with for loop
-    if any(x->x<0.0, pop.sim.fitnesses) @error("!!! negative fitness detected, aborting !!!"); return end
+    if any(x->x<0.0, pop.sim.fitnesses) throw("!!! negative fitness detected, aborting !!!"); end
     
     # choose a role model from the rest of the population, weighted by fitness
     pop.sim.role_model = sample( pop.sim.non_learners, Weights(pop.sim.fitnesses) )
