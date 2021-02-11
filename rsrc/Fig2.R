@@ -15,16 +15,15 @@ source("rsrc/utils/functions.R")
 setwd("~/.julia/dev/CooperationPolarization2/") # to be updated later
 
 # parameters
-# M     <- 1
-# K     <- 1
 epsilon <- 1
-u     <- 0.001 # fixed, for now
-gens  <- 20000000
+u       <- 0.001 # fixed, for now
+beta    <- 0.001 # fixed, for now
+gens    <- 20000000
 saveplots <- 1
 threshold <- 0 # 0 = use all data, 1 = threshold data by min(COUNT)
                # 2 = use separate threshold for A-D and E/F
-# p <- 0.
-vs     <- c(0.001, 0.025)
+# p       <- 0.
+vs      <- c(0.001, 0.025)
 
 # load data
 file_dir  <- sprintf( "data/gens_%s/", format(gens, scientific = FALSE) )
@@ -51,7 +50,7 @@ for (i in 1:length(file_list)){
 }
 
 # select rows with specific M and v values
-simdata <- simdata[(simdata$v %in% vs),]
+simdata <- simdata[(simdata$v %in% vs) & (simdata$β == beta),]
 simdata <- simdata[(simdata$M != 0) & (simdata$M < 4),]
 
 # because the number of simulations is uneven at the moment,
