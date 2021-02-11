@@ -1,6 +1,6 @@
 ################################################################################
 #
-# Figure X: sweep through v
+# Figure Y: sweep through beta
 # Last updated: 11 Feb 2021
 #
 ################################################################################
@@ -17,14 +17,13 @@ setwd("~/.julia/dev/CooperationPolarization2/") # to be updated later
 # parameters
 epsilon <- 1
 u       <- 0.001 # fixed, for now
-beta    <- 0.001 # fixed, for now
 gens    <- 20000000
 saveplots <- 1
 threshold <- 0 # 0 = use all data, 1 = threshold data by min(COUNT)
 # 2 = use separate threshold for A-D and E/F
 # p       <- 0.
-vs      <- c(0.001, 0.005, 0.01, 0.025, 0.05, 0.1, 0.5)
-Mmax    <- 2
+vs      <- c(0.001, 0.025, 0.1)
+Mmax    <- 3
 
 # load data
 file_dir  <- sprintf( "data/gens_%s/", format(gens, scientific = FALSE) )
@@ -51,7 +50,7 @@ for (i in 1:length(file_list)){
 }
 
 # select rows with specific M, v, beta values
-simdata <- simdata[(simdata$v %in% vs) & (simdata$β == beta),]
+simdata <- simdata[(simdata$v %in% vs),]
 simdata <- simdata[(simdata$M != 0) & (simdata$M <= Mmax),]
 
 # because the number of simulations is uneven at the moment,
@@ -190,16 +189,17 @@ simdata_strat_p0 <- simdata_strat_p0 %>% mutate( M2 = paste0( "M=", M ), K2 = pa
 ###########################################
 # Plotting functions
 ###########################################
-plot_figXe <- function(simdata_coop, p, tag = "E", legend = TRUE){
+plot_figYe <- function(simdata_coop, p, v, tag = "E", legend = TRUE){
   
   subdata <- simdata_coop[simdata_coop$Metric == "cooperation_all" & 
-                          simdata_coop$p == p & 
-                          simdata_coop$M <= Mmax, ]
+                            simdata_coop$p == p & 
+                            simdata_coop$v == v & 
+                            simdata_coop$M <= Mmax, ]
   
   subdata <- subdata %>% mutate( MK2 = paste0(M2, ", ", K2) )
   
-  figXe <- ggplot(data = subdata,
-                  aes(x = v, y = Mean, color = MK2, fill = MK2)) +
+  figYe <- ggplot(data = subdata,
+                  aes(x = beta, y = Mean, color = MK2, fill = MK2)) +
     theme_classic() +
     theme(plot.title = element_text(hjust = 0.5)) +
     theme(plot.title = element_text(hjust = 0.5, 
@@ -214,29 +214,30 @@ plot_figXe <- function(simdata_coop, p, tag = "E", legend = TRUE){
     ggtitle( paste0("p = ", p) ) +
     scale_color_manual( values = rev(viridis(6)), name = "") +
     scale_fill_manual( values = rev(viridis(6)), name = "") +
-    labs(x = "Set mutation rate (v)",
+    labs(x = "Selection strength (beta)",
          y = "Effective cooperation",
          tag = tag) + 
     geom_hline(yintercept = 0.5, color = "gray80") + 
-    scale_y_continuous(limits = c(0.2, 0.6), # c(0.47, 0.51),
-                       breaks = seq(0.2, 0.6, 0.1)) +
-    scale_x_continuous(limits = c(0.001, 0.5),
-                       breaks = c(0.001, 0.005, 0.025, 0.1, 0.5),
+    scale_y_continuous(limits = c(0.0, 0.6), # c(0.47, 0.51),
+                       breaks = seq(0.0, 0.6, 0.1)) +
+    scale_x_continuous(# limits = c(0.001, 0.5),
+                       # breaks = c(0.001, 0.005, 0.025, 0.1, 0.5),
                        trans  = 'log10') +
     # geom_errorbar(aes(ymin = Mean - SE, ymax = Mean + SE), width = 0) +
     geom_ribbon(aes(ymin = Mean - SD, ymax = Mean + SD), alpha = 0.1, color = NA) +
     geom_line(size = 0.4, alpha = 1, lty = 1) +
     geom_point(size = 1., alpha = 1, stroke = 0.5)
   
-  return(figXe)
+  return(figYe)
 }
 
 ###########################################
-# Figure X
+# Figure Y
 ###########################################
 # save multiplot
 p <- 0.
-figXe <- plot_figXe( simdata_coop_all, p, "E")
+v <- 0.025
+figYe <- plot_figYe( simdata_coop_all, p, v, "E")
 
 if(saveplots == 1){
   
@@ -248,14 +249,14 @@ if(saveplots == 1){
       paste0("thresh_", threshold, "_", min(casecount$COUNT), "_", min(casecount2$COUNT)) 
     }
   
-  plottype <- paste0("figX_p_", p, "_", threshcount)
+  plottype <- paste0("figY_p_", p, "_v_", v, "_", threshcount)
   
   png(filename = paste0("plots/figs/", plottype, "_", 
                         format(Sys.Date(), format="%y%m%d"), ".png"), 
       width = figW, height = figW*ratio, units = "in", res = 300)
-  # multiplot(figXa, fig2b, fig2c, fig2d, figXe, fig2f,
+  # multiplot(figXa, fig2b, fig2c, fig2d, figYe, fig2f,
   #           layout = matrix(c(1,2,3,4,5,6), ncol = 2, byrow = TRUE))
-  multiplot(figXe)
+  multiplot(figYe)
   dev.off()
   
 }
