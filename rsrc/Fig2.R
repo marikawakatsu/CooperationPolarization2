@@ -23,7 +23,8 @@ saveplots <- 1
 threshold <- 0 # 0 = use all data, 1 = threshold data by min(COUNT)
                # 2 = use separate threshold for A-D and E/F
 # p       <- 0.
-vs      <- c(0.001, 0.025)
+vs      <- c(0.001, 0.025, 0.1)
+Mmax    <- 5
 
 # load data
 file_dir  <- sprintf( "data/gens_%s/", format(gens, scientific = FALSE) )
@@ -51,7 +52,7 @@ for (i in 1:length(file_list)){
 
 # select rows with specific M and v values
 simdata <- simdata[(simdata$v %in% vs) & (simdata$β == beta),]
-simdata <- simdata[(simdata$M != 0) & (simdata$M < 6),]
+simdata <- simdata[(simdata$M != 0) & (simdata$M <= Mmax),]
 
 # because the number of simulations is uneven at the moment,
 # count the minimum number of simulations per case
@@ -195,7 +196,7 @@ plot_fig2a <- function(simdata_coop, p, tag){
   
   subdata <- simdata_coop[simdata_coop$Metric == "cooperation_all" & 
                           simdata_coop$p == p &
-                          simdata_coop$M < 6, ]
+                          simdata_coop$M <= Mmax, ]
   
   fig2a <- ggplot(subdata,
                   aes(x = K2, y = Mean, label = K2, color = v)) +
@@ -236,7 +237,7 @@ plot_fig2a_v2 <- function(simdata_coop, p, tag){
   
   subdata <- simdata_coop[simdata_coop$Metric == "cooperation_all" & 
                             simdata_coop$p == p &
-                            simdata_coop$M < 6, ]
+                            simdata_coop$M <= Mmax, ]
   
   fig2a <- ggplot(subdata,
                   aes(x = M2, y = Mean, label = M2, color = v)) +
@@ -275,7 +276,7 @@ plot_fig2b <- function(simdata_strat, p, v, tag = "B", labeled = TRUE, wlegend =
   
   subdata <- simdata_strat[simdata_strat$p == p & 
                            simdata_strat$v == v &
-                           simdata_strat$M < 6, ]
+                           simdata_strat$M <= Mmax, ]
   
   ylabel <- if(labeled){"Relative abundance"}else{""}
   
