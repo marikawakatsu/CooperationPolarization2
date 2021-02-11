@@ -38,7 +38,7 @@ for (i in 1:length(file_list)){
   # TEMPORARY
   # if == 0:  ignore data sets where there is at least one line with 0's (out_of_memory)
   # if != -1: include all simulation results (later thresholded by min(COUNT))
-  if ( dim(temp_data[temp_data$N == 0,])[1] == 0 ){
+  if ( dim(temp_data[temp_data$N == 0,])[1] != -1 ){
     # select common columns
     if (i == 1){
       simdata    <- rbind(simdata, temp_data) #bind the new data to data
@@ -51,13 +51,13 @@ for (i in 1:length(file_list)){
 
 # select rows with specific M and v values
 simdata <- simdata[(simdata$v %in% vs) & (simdata$β == beta),]
-simdata <- simdata[(simdata$M != 0) & (simdata$M < 4),]
+simdata <- simdata[(simdata$M != 0) & (simdata$M < 6),]
 
 # because the number of simulations is uneven at the moment,
 # count the minimum number of simulations per case
 # so that every case has the same number of simulations
 casecount <- simdata %>% 
-  group_by(M, K, v, p1) %>% 
+  group_by(M, K, v, p1, β) %>% 
   summarize(COUNT = n())
 
 if(threshold == 0){
@@ -195,7 +195,7 @@ plot_fig2a <- function(simdata_coop, p, tag){
   
   subdata <- simdata_coop[simdata_coop$Metric == "cooperation_all" & 
                           simdata_coop$p == p &
-                          simdata_coop$M < 4, ]
+                          simdata_coop$M < 6, ]
   
   fig2a <- ggplot(subdata,
                   aes(x = K2, y = Mean, label = K2, color = v)) +
@@ -236,7 +236,7 @@ plot_fig2a_v2 <- function(simdata_coop, p, tag){
   
   subdata <- simdata_coop[simdata_coop$Metric == "cooperation_all" & 
                             simdata_coop$p == p &
-                            simdata_coop$M < 4, ]
+                            simdata_coop$M < 6, ]
   
   fig2a <- ggplot(subdata,
                   aes(x = M2, y = Mean, label = M2, color = v)) +
@@ -275,7 +275,7 @@ plot_fig2b <- function(simdata_strat, p, v, tag = "B", labeled = TRUE, wlegend =
   
   subdata <- simdata_strat[simdata_strat$p == p & 
                            simdata_strat$v == v &
-                           simdata_strat$M < 4, ]
+                           simdata_strat$M < 6, ]
   
   ylabel <- if(labeled){"Relative abundance"}else{""}
   
@@ -379,7 +379,7 @@ if(saveplots == 1){
   
   png(filename = paste0("plots/figs/", plottype, "_", 
                         format(Sys.Date(), format="%y%m%d"), ".png"), 
-      width = figW*1.75, height = figW*ratio*2.5, units = "in", res = 300)
+      width = figW*1.75*1.6, height = figW*ratio*2.5, units = "in", res = 300)
   multiplot(fig2a, fig2b, fig2c, fig2d, fig2e, fig2f,
             layout = matrix(c(1,2,3,4,5,6), ncol = 2, byrow = TRUE))
   dev.off()
