@@ -1,7 +1,7 @@
 ################################################################################
 #
-# Figure 2
-# Last updated: 10 Feb 2021
+# Figure X
+# Last updated: 11 Feb 2021
 #
 ################################################################################
 
@@ -21,7 +21,7 @@ beta    <- 0.001 # fixed, for now
 gens    <- 20000000
 saveplots <- 1
 threshold <- 0 # 0 = use all data, 1 = threshold data by min(COUNT)
-               # 2 = use separate threshold for A-D and E/F
+# 2 = use separate threshold for A-D and E/F
 # p       <- 0.
 vs      <- c(0.001, 0.025, 0.1)
 Mmax    <- 5
@@ -195,8 +195,8 @@ plot_fig2a <- function(simdata_coop, p, tag){
   simdata_coop$v <- factor(simdata_coop$v)
   
   subdata <- simdata_coop[simdata_coop$Metric == "cooperation_all" & 
-                          simdata_coop$p == p &
-                          simdata_coop$M <= Mmax, ]
+                            simdata_coop$p == p &
+                            simdata_coop$M <= Mmax, ]
   
   fig2a <- ggplot(subdata,
                   aes(x = K2, y = Mean, label = K2, color = v)) +
@@ -275,8 +275,8 @@ plot_fig2a_v2 <- function(simdata_coop, p, tag){
 plot_fig2b <- function(simdata_strat, p, v, tag = "B", labeled = TRUE, wlegend = TRUE){
   
   subdata <- simdata_strat[simdata_strat$p == p & 
-                           simdata_strat$v == v &
-                           simdata_strat$M <= Mmax, ]
+                             simdata_strat$v == v &
+                             simdata_strat$M <= Mmax, ]
   
   ylabel <- if(labeled){"Relative abundance"}else{""}
   
@@ -318,8 +318,8 @@ plot_fig2b <- function(simdata_strat, p, v, tag = "B", labeled = TRUE, wlegend =
 plot_fig2e_v2 <- function(simdata_coop, v, tag = "E", legend = TRUE){
   
   subdata <- simdata_coop[simdata_coop$Metric == "cooperation_all" & 
-                          simdata_coop$v == v & 
-                          simdata_coop$M < 4, ]
+                            simdata_coop$v == v & 
+                            simdata_coop$M < 4, ]
   
   subdata <- subdata %>% mutate( MK2 = paste0(M2, ", ", K2) )
   # subdata$q <- factor(subdata$q)
