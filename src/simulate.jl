@@ -28,7 +28,6 @@ function update_payoffs_using_matrix!( pop::Population )
     # to make the code run faster, we only update payoffs in a given generation 
     # if strategies or sets have changed. sets_changed and strategies_changed are 
     # initialized as true so that payoffs are computed in the first round
-
     if pop.sets_changed 
         # if (previous) learner's sets have changed, re-compute all payoffs
         if pop.verbose println("updating all payoffs because set_changed = $(pop.sets_changed)") end
@@ -112,16 +111,6 @@ function update_strategies_and_opinions_db!( pop::Population )
     # randomly choose a learner and store a list of non_learners
     pop.sim.learner = sample( 1:pop.sets.N )
    
-    # compute the fitnesses of every other individual in the population
-    # pop.sim.non_learners = deleteat!(collect(1:pop.sets.N), pop.sim.learner) # faster than filter(x->x!=pop.sim.learner, 1:pop.sets.N)
-
-    # counter = 1;
-    # for i in pop.sim.non_learners
-    #     pop.sim.fitnesses[counter] = 1.0 + pop.game.β * pop.payoffs[i]
-    #     counter += 1
-    # end
-    # pop.sim.fitnesses = [ 1.0 + pop.game.β * pop.payoffs[i] for i in pop.sim.non_learners ] # slow, replaced with for loop
-
     # compute the fitness of every individual in the population
     for i in 1:pop.sets.N pop.sim.fitnesses[i] = 1.0 + pop.game.β * pop.payoffs[i] end
     if any(x->x<0.0, pop.sim.fitnesses) throw("!!! negative fitness detected, aborting !!!"); end
