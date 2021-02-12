@@ -235,7 +235,7 @@ plot_figXe <- function(simdata_coop, p, tag = "E", legend = TRUE){
 # Figure X
 ###########################################
 # save multiplot
-p <- 0.
+p <- 0.25
 figXe <- plot_figXe( simdata_coop_all, p, "E")
 
 if(saveplots == 1){
