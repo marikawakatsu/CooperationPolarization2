@@ -12,7 +12,7 @@ const M = 2 # number of sets
 const K = 1 # number of issues to care about
 const P = 2 # number of parties
 
-const β = 1.    # selection strength
+const β = 0.001    # selection strength
 const u = 0.001    # strategy mutation rate
 const v = 0.001    # set mutation rate
 const p = 0.       # party bias (0 = low, 1 = high)

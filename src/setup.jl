@@ -41,15 +41,15 @@ mutable struct Sets
     # constructors for pre-specified h
     function Sets( h::Array{Int64, 2}, P::Int64=2, α::Float64=0.)
         
-        N, M  = size(h) # extract numbers of individuals and sets
-        h_bar = [abs(x) for x in h]              # extract set memberships from h
-        K     = compute_total_memberships(h_bar) # each member must belong to K sets
-        affils           = assign_parties(N,P,α)            # each member is affiliated with a party
+        N, M   = size(h) # extract numbers of individuals and sets
+        h_bar  = [abs(x) for x in h]              # extract set memberships from h
+        K      = compute_total_memberships(h_bar) # each member must belong to K sets
+        affils = assign_parties(N,P,α)            # each member is affiliated with a party
         n_pairs, n_party_pairs = binomial(N, 2), binomial(N÷2, 2) # number of pairs
         set_members, set_pairs = set_members_and_pairs(h_bar)   
 
-        h_base10        = [vectobase3(h[i,:]) for i in 1:N] # track opinions in base10
-        h_bar_base10    = [vectobase3(h_bar[i,:]) for i in 1:N] # track set memberships in base10
+        h_base10     = [vectobase3(h[i,:]) for i in 1:N] # track opinions in base10
+        h_bar_base10 = [vectobase3(h_bar[i,:]) for i in 1:N] # track set memberships in base10
 
         return new( N, M, K, P, α, set_members, set_pairs, h, h_bar, h_base10, h_bar_base10, affils, n_pairs, n_party_pairs)
     end   
@@ -63,23 +63,11 @@ mutable struct Sets
         n_pairs, n_party_pairs = binomial(N, 2), binomial(N÷2, 2) # number of pairs
         set_members, set_pairs = set_members_and_pairs(h_bar)   
 
-        h_base10        = [vectobase3(h[i,:]) for i in 1:N] # track opinions in base10
-        h_bar_base10    = [vectobase3(h_bar[i,:]) for i in 1:N] # track set memberships in base10
+        h_base10     = [vectobase3(h[i,:]) for i in 1:N] # track opinions in base10
+        h_bar_base10 = [vectobase3(h_bar[i,:]) for i in 1:N] # track set memberships in base10
         
         return new( N, M, K, P, α, set_members, set_pairs, h, h_bar, h_base10, h_bar_base10, affils, n_pairs, n_party_pairs)
     end 
-    # # alternative constructor with N, M, K given explicitly
-    # function Sets( N::Int64, M::Int64, K::Int64, h::Array{Int64, 2}, P::Int64=2, α::Float64=0. )
-    #     h_bar                  = [abs(x) for x in h]              # extract set memberships from h
-    #     affils           = assign_parties(N, P, α)          # each member belongs to a party
-    #     n_pairs, n_party_pairs = binomial(N, 2), binomial(N÷2, 2) # number of pairs
-    #     set_members, set_pairs = set_members_and_pairs(h_bar)  
-
-    #     h_base10     = [vectobase3(h[i,:]) for i in 1:N] # track opinions in base10
-    #     h_bar_base10 = [vectobase3(h_bar[i,:]) for i in 1:N] # track set memberships in base10
-
-    #     return new( N, M, K, P, α, set_members, set_pairs, h, h_bar, h_base10, h_bar_base10, affils, n_pairs, n_party_pairs)
-    # end
 end
 
 function compute_total_memberships( h_bar::Array{Int64, 2} )::Int64
@@ -182,7 +170,7 @@ struct Game
     end
     # constructor for two values of p: if p is an Array with two elements, assume parties have different p's
     function Game( b::Float64, c::Float64, β::Float64, u::Float64, v::Float64, ps::Array{Float64, 1}, ϵ::Float64 )
-        if length(ps) != 2 @error("ps should have exactly two entries, one value of p for each party") end
+        if length(ps) != 2 @error("ps should have exactly two entries"); return end
         return new(b, c, β, u, v, ps, ϵ, [0.0 b; -c b-c])
     end
 end
@@ -213,7 +201,7 @@ mutable struct Simulation
         non_learners    = zeros(Int64, sets.N-1)
         strategy_copy   = [-1, -1]
         sets_copy       = -ones(Int64, sets.M)
-        fitnesses       = -ones(Float64, sets.N-1)
+        fitnesses       = -ones(Float64, sets.N) # OLD: -ones(Float64, sets.N-1)
 
         cityblock_ind   = zeros(Int64, sets.N, sets.N) 
         cityblock_party = zeros(Int64, sets.N÷2, sets.N÷2)

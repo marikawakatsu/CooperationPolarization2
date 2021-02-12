@@ -110,25 +110,30 @@ function update_strategies_and_opinions_db!( pop::Population )
     if pop.verbose println("Set memberships before updating: $(pop.sets.h)") end
     
     # randomly choose a learner and store a list of non_learners
-    pop.sim.learner      = sample(1:pop.sets.N)
-    pop.sim.non_learners = deleteat!(collect(1:pop.sets.N), pop.sim.learner) # faster than filter(x->x!=pop.sim.learner, 1:pop.sets.N)
-    
+    pop.sim.learner = sample( 1:pop.sets.N )
+   
     # compute the fitnesses of every other individual in the population
-    count = 1;
-    for i in pop.sim.non_learners
-        pop.sim.fitnesses[count] = 1.0 + pop.game.β * pop.payoffs[i]
-        count += 1
-    end
+    # pop.sim.non_learners = deleteat!(collect(1:pop.sets.N), pop.sim.learner) # faster than filter(x->x!=pop.sim.learner, 1:pop.sets.N)
+
+    # counter = 1;
+    # for i in pop.sim.non_learners
+    #     pop.sim.fitnesses[counter] = 1.0 + pop.game.β * pop.payoffs[i]
+    #     counter += 1
+    # end
     # pop.sim.fitnesses = [ 1.0 + pop.game.β * pop.payoffs[i] for i in pop.sim.non_learners ] # slow, replaced with for loop
+
+    # compute the fitness of every individual in the population
+    for i in 1:pop.sets.N pop.sim.fitnesses[i] = 1.0 + pop.game.β * pop.payoffs[i] end
     if any(x->x<0.0, pop.sim.fitnesses) throw("!!! negative fitness detected, aborting !!!"); end
     
     # choose a role model from the rest of the population, weighted by fitness
-    pop.sim.role_model = sample( pop.sim.non_learners, Weights(pop.sim.fitnesses) )
-    
+    # OLD: pop.sim.role_model = sample( pop.sim.non_learners, Weights(pop.sim.fitnesses) )
+    pop.sim.role_model = sample( 1:pop.sets.N, Weights(pop.sim.fitnesses) )
+
     # learner updates
     if pop.verbose println("\n\trandomly chosen learner is $(pop.sim.learner), role_model is $(pop.sim.role_model)") end
     if pop.verbose println("\t\tall payoffs are $(pop.payoffs)") end
-    if pop.verbose println("\t\tfitnesses (learner excluded) are $(pop.sim.fitnesses)") end
+    if pop.verbose println("\t\tfitnesses are $(pop.sim.fitnesses)") end
     
     # compute probability of imitation: 1 if same party, 1-p if different parties
     pop.sets.affils[pop.sim.learner] == pop.sets.affils[pop.sim.role_model] ? imit_prob = 1.0 : imit_prob = 1-pop.game.ps[pop.sets.affils[pop.sim.learner]]
