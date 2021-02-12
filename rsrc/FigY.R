@@ -235,7 +235,7 @@ plot_figYe <- function(simdata_coop, p, v, tag = "E", legend = TRUE){
 # Figure Y
 ###########################################
 # save multiplot
-p <- 0.
+p <- 1.
 v <- 0.025
 figYe <- plot_figYe( simdata_coop_all, p, v, "E")
 
