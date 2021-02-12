@@ -46,7 +46,7 @@ const K = 1 # number of issues to care about
 
 const pvals = repeat([0.0, 0.25, 0.5, 0.75, 1.0], 2) # uniform populations for now
 const us    = [0.001]
-const vs    = [0.001, 0.005, 0.010, 0.015, 0.020, 0.025, 0.05, 0.1, 0.5]
+const vs    = [0.001, 10^((log10(0.001)+log10(0.005))/2), 0.005, 10^((log10(0.005)+log10(0.025))/2), 0.025, 10^((log10(0.025)+log10(0.125))/2), 0.125, 10^((log10(0.125)+log10(0.625))/2), 0.625] 
 const ϵ     = 1.
 const parameters = collect(Iterators.product(pvals,us,vs))
 
