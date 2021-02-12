@@ -13,4 +13,4 @@ module purge
 module load julia/1.5.0
 
 cd /tigress/mk28/CooperationPolarization2/
-julia --project run/sim_della_M2K2_ensemble.jl
+julia --project run/della_ensemble_M2K2.jl
