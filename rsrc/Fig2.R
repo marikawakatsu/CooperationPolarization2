@@ -358,7 +358,7 @@ plot_fig2e_v2 <- function(simdata_coop, v, tag = "E", legend = TRUE){
 # Figure 2
 ###########################################
 # save multiplot
-p <- 1.
+p <- 0.
 fig2b <- plot_fig2a(   simdata_coop_p0,  p, "B")
 fig2a <- plot_fig2a_v2(simdata_coop_p0,  p, "A")
 fig2c <- plot_fig2b(simdata_strat_p0, p, 0.001, "C", TRUE, TRUE)
