@@ -15,15 +15,13 @@ source("rsrc/utils/functions.R")
 setwd("~/.julia/dev/CooperationPolarization2/") # to be updated later
 
 # parameters
-epsilon <- 1
-u       <- 0.001 # fixed, for now
 beta    <- 0.001 # fixed, for now
 gens    <- 20000000
 saveplots <- 1
-threshold <- 0 # 0 = use all data, 1 = threshold data by min(COUNT)
+threshold <- 1 # 0 = use all data, 1 = threshold data by min(COUNT)
 # 2 = use separate threshold for A-D and E/F
 # p       <- 0.
-vs      <- c(0.001, 0.005, 0.01, 0.025, 0.05, 0.1, 0.5)
+# vs      <- c(0.001, 0.005, 0.01, 0.025, 0.05, 0.1, 0.5)
 Mmax    <- 2
 
 # load data
@@ -51,7 +49,7 @@ for (i in 1:length(file_list)){
 }
 
 # select rows with specific M, v, beta values
-simdata <- simdata[(simdata$v %in% vs) & (simdata$β == beta),]
+simdata <- simdata[(simdata$β == beta),]
 simdata <- simdata[(simdata$M != 0) & (simdata$M <= Mmax),]
 
 # because the number of simulations is uneven at the moment,
@@ -220,8 +218,8 @@ plot_figXe <- function(simdata_coop, p, tag = "E", legend = TRUE){
     geom_hline(yintercept = 0.5, color = "gray80") + 
     scale_y_continuous(limits = c(0.2, 0.6), # c(0.47, 0.51),
                        breaks = seq(0.2, 0.6, 0.1)) +
-    scale_x_continuous(limits = c(0.001, 0.5),
-                       breaks = c(0.001, 0.005, 0.025, 0.1, 0.5),
+    scale_x_continuous(limits = c(0.001, 0.625),
+                       breaks = c(0.001, 0.005, 0.025, 0.125, 0.625),
                        trans  = 'log10') +
     # geom_errorbar(aes(ymin = Mean - SE, ymax = Mean + SE), width = 0) +
     geom_ribbon(aes(ymin = Mean - SD, ymax = Mean + SD), alpha = 0.1, color = NA) +
@@ -235,7 +233,7 @@ plot_figXe <- function(simdata_coop, p, tag = "E", legend = TRUE){
 # Figure X
 ###########################################
 # save multiplot
-p <- 1.0
+p <- 0.
 figXe <- plot_figXe( simdata_coop_all, p, "E")
 
 if(saveplots == 1){

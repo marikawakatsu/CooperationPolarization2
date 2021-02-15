@@ -299,7 +299,7 @@ plot_fig2b <- function(simdata_strat, p, v, tag = "B", labeled = TRUE, wlegend =
     # scale_color_manual(values = magma(6)[2:5]) +
     scale_color_manual(values = c("#0571b0","#92c5de","#f4a582","#ca0020"),
     ) +
-    scale_y_continuous(limits = c(0.0, 0.5),
+    scale_y_continuous(limits = c(0.0, 0.55),
                        breaks = seq(0.0, 0.5, 0.1)) +
     # scale_x_continuous(limits = c(qmin, qmax), 
     #                    breaks = seq(qmin, qmax, qinc)) +
@@ -358,7 +358,7 @@ plot_fig2e_v2 <- function(simdata_coop, v, tag = "E", legend = TRUE){
 # Figure 2
 ###########################################
 # save multiplot
-p <- 0.
+p <- 1.
 fig2b <- plot_fig2a(   simdata_coop_p0,  p, "B")
 fig2a <- plot_fig2a_v2(simdata_coop_p0,  p, "A")
 fig2c <- plot_fig2b(simdata_strat_p0, p, 0.001, "C", TRUE, TRUE)
