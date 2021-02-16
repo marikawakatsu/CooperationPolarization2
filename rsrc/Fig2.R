@@ -215,9 +215,9 @@ plot_fig2a <- function(simdata_coop, p, tag){
          tag = tag) +
     ggtitle( paste0("p = ", p, ", grouped by M") ) +
     scale_color_manual(values = magma(6)[2:5]) +
-    scale_y_continuous(limits = c(0.2, 0.6), # c(0.47, 0.51),
-                       breaks = seq(0.2, 0.6, 0.1)) +
-    geom_hline(yintercept = 0.5, color = "gray80") +
+    scale_y_continuous(limits = c(0.1, 0.6), 
+                       breaks = seq(0.1, 0.6, 0.1)) +
+    # geom_hline(yintercept = 0.5, color = "gray80") +
     geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0) +
     # geom_ribbon(aes(ymin = Mean - SE, ymax = Mean + SE), alpha = 0.1, color = NA) +
     geom_line(aes(group = v), size = 0.4, alpha = 1, lty = 1) +
@@ -256,9 +256,9 @@ plot_fig2a_v2 <- function(simdata_coop, p, tag){
          tag = tag) +
     ggtitle( paste0("p = ", p, ", grouped by K") ) +
     scale_color_manual(values = magma(6)[2:5]) +
-    scale_y_continuous(limits = c(0.2, 0.6), # c(0.47, 0.51), 
-                       breaks = seq(0.2, 0.6, 0.1)) +
-    geom_hline(yintercept = 0.5, color = "gray80") +
+    scale_y_continuous(limits = c(0.1, 0.6),  
+                       breaks = seq(0.1, 0.6, 0.1)) +
+    # geom_hline(yintercept = 0.5, color = "gray80") +
     geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0) +
     # geom_ribbon(aes(ymin = Mean - SE, ymax = Mean + SE), alpha = 1) +
     geom_line(aes(group = v), size = 0.4, alpha = 1, lty = 1) +
@@ -343,8 +343,8 @@ plot_fig2e_v2 <- function(simdata_coop, v, tag = "E", legend = TRUE){
     labs(x = "Party bias (p)",
          y = "Effective cooperation",
          tag = tag) +
-    geom_hline(yintercept = 0.5, color = "gray80") + 
-    scale_y_continuous(limits = c(0.2, 0.6), # c(0.47, 0.51),
+    # geom_hline(yintercept = 0.5, color = "gray80") + 
+    scale_y_continuous(limits = c(0.2, 0.6), 
                        breaks = seq(0.2, 0.6, 0.1)) +
     # geom_errorbar(aes(ymin = Mean - SE, ymax = Mean + SE), width = 0) +
     geom_ribbon(aes(ymin = Mean - SD, ymax = Mean + SD), alpha = 0.1, color = NA) +
@@ -358,7 +358,7 @@ plot_fig2e_v2 <- function(simdata_coop, v, tag = "E", legend = TRUE){
 # Figure 2
 ###########################################
 # save multiplot
-p <- 0.
+p <- 1.
 fig2b <- plot_fig2a(   simdata_coop_p0,  p, "B")
 fig2a <- plot_fig2a_v2(simdata_coop_p0,  p, "A")
 fig2c <- plot_fig2b(simdata_strat_p0, p, 0.001, "C", TRUE, TRUE)

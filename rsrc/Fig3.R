@@ -194,10 +194,10 @@ plot_fig3b <- function(simdata_dist, tag = "B", colors = cityblock_colors){
                   # aes(x = q, colour = v, fill = v, lty = Metric)) +
                   aes(x = p, colour = v, fill = v, lty = Metric)) +
     theme_classic() +
-    theme(legend.text = element_text (size = 8),
-          legend.title = element_text (size = 9),
+    theme(legend.text = element_text (size = 8/3*Mmax),
+          legend.title = element_text (size = 9/3*Mmax),
           # legend.key.size = unit(0.03, "npc"),
-          panel.spacing = unit(0.2,  "lines"),
+          panel.spacing = unit(0.2/3*Mmax,  "lines"),
           # legend.margin = margin(t = 0, unit="npc"),
           # axis.text.y = element_text(size=12)
           title = element_text(size = 18)
@@ -212,8 +212,8 @@ plot_fig3b <- function(simdata_dist, tag = "B", colors = cityblock_colors){
                        name   = "Rate of opinion\nmutation (v)") +
     scale_fill_manual(values = colors, 
                       name   = "Rate of opinion\nmutation (v)")  +
-    scale_y_continuous(limits = c(0, 6),
-                       breaks = seq(0, 6, 1)) +
+    scale_y_continuous(limits = c(0, 10),
+                       breaks = seq(0, 10, 2)) +
     scale_x_continuous(limits = c(qmin, qmax), 
                        breaks = seq(qmin, qmax, qinc)) +
     geom_ribbon(aes(ymin = Mean - SD, ymax = Mean + SD), alpha = 0.3, color = NA) +
@@ -223,12 +223,12 @@ plot_fig3b <- function(simdata_dist, tag = "B", colors = cityblock_colors){
                     # switch = "both", 
                     drop = TRUE) +
     theme(strip.placement = "outside",
-          strip.text = element_text(size = 10),
+          strip.text = element_text(size = 11),
           axis.line = element_line() ) +
     theme(axis.title = element_text(size = 18), 
           axis.text = element_text(size = 8), 
           # strip.background = element_blank(),
-          legend.position = c(0.7, 1), 
+          legend.position = c(0.68, 0.97), 
           legend.justification = c(0,1))
   
   fig3b_grob <- ggplotGrob(fig3b)
@@ -257,10 +257,10 @@ plot_fig4a <- function(simdata_dist, tag = "A", colors = hamming_colors){
                   # aes(x = q, colour = v, fill = v, lty = Metric)) +
                   aes(x = p, colour = v, fill = v, lty = Metric)) +
     theme_classic() +
-    theme(legend.text = element_text (size = 8),
-          legend.title = element_text (size = 9),
+    theme(legend.text = element_text (size = 8/3*Mmax),
+          legend.title = element_text (size = 9/3*Mmax),
           # legend.key.size = unit(0.03, "npc"),
-          panel.spacing = unit(0.2,  "lines"),
+          panel.spacing = unit(0.2/3*Mmax,  "lines"),
           # legend.margin = margin(t = 0, unit="npc"),
           # axis.text.y = element_text(size=12)
           title = element_text(size = 18)
@@ -275,8 +275,8 @@ plot_fig4a <- function(simdata_dist, tag = "A", colors = hamming_colors){
                        name   = "Rate of opinion\nmutation (v)" ) +
     scale_fill_manual(values = colors,
                       name   = "Rate of opinion\nmutation (v)" )  +
-    scale_y_continuous(limits = c(0, 1.5),
-                       breaks = seq(0, 1.5, 0.3)) +
+    scale_y_continuous(limits = c(0, 2.4),
+                       breaks = seq(0, 2.4, 0.4)) +
     scale_x_continuous(limits = c(qmin, qmax), 
                        breaks = seq(qmin, qmax, qinc)) +
     geom_ribbon(aes(ymin = Mean - SD, ymax = Mean + SD), alpha = 0.3, color = NA) +
@@ -286,12 +286,12 @@ plot_fig4a <- function(simdata_dist, tag = "A", colors = hamming_colors){
                     # switch = "both", 
                     drop = TRUE) +
     theme(strip.placement = "outside",
-          strip.text = element_text(size = 10),
+          strip.text = element_text(size = 11),
           axis.line = element_line() ) +
     theme(axis.title = element_text(size = 18), 
           axis.text = element_text(size = 8), 
           # strip.background = element_blank(),
-          legend.position = c(0.68, 1), 
+          legend.position = c(0.68, 0.97), 
           legend.justification = c(0,1))
   
   fig4a_grob <- ggplotGrob(fig4a)
@@ -326,10 +326,10 @@ plot_fig3b_normed <- function(simdata_dist, tag = "B", colors = cityblock_colors
                   # aes(x = q, colour = v, fill = v, lty = Metric)) +
                   aes(x = p, colour = v, fill = v, lty = Metric)) +
     theme_classic() +
-    theme(legend.text = element_text (size = 8),
-          legend.title = element_text (size = 9),
+    theme(legend.text = element_text (size = 8/3*Mmax),
+          legend.title = element_text (size = 9/3*Mmax),
           # legend.key.size = unit(0.03, "npc"),
-          panel.spacing = unit(0.2,  "lines"),
+          panel.spacing = unit(0.2/3*Mmax,  "lines"),
           # legend.margin = margin(t = 0, unit="npc"),
           # axis.text.y = element_text(size=12)
           title = element_text(size = 18)
@@ -355,12 +355,12 @@ plot_fig3b_normed <- function(simdata_dist, tag = "B", colors = cityblock_colors
                     # switch = "both", 
                     drop = TRUE) +
     theme(strip.placement = "outside",
-          strip.text = element_text(size = 10),
+          strip.text = element_text(size = 11),
           axis.line = element_line() ) +
     theme(axis.title = element_text(size = 18), 
           axis.text = element_text(size = 8), 
           # strip.background = element_blank(),
-          legend.position = c(0.68, 1), 
+          legend.position = c(0.68, 0.97), 
           legend.justification = c(0,1))
   
   fig3b_grob <- ggplotGrob(fig3b)
@@ -387,13 +387,12 @@ plot_fig4a_normed <- function(simdata_dist, tag = "A", colors = hamming_colors){
   labels <- c("population-level","within-party","between-party")
   
   fig4a <- ggplot(data = subdata, 
-                  # aes(x = q, colour = v, fill = v, lty = Metric)) +
                   aes(x = p, colour = v, fill = v, lty = Metric)) +
     theme_classic() +
-    theme(legend.text = element_text (size = 8),
-          legend.title = element_text (size = 9),
+    theme(legend.text = element_text (size = 8/3*Mmax),
+          legend.title = element_text (size = 9/3*Mmax),
           # legend.key.size = unit(0.03, "npc"),
-          panel.spacing = unit(0.2,  "lines"),
+          panel.spacing = unit(0.2/3*Mmax,  "lines"),
           # legend.margin = margin(t = 0, unit="npc"),
           # axis.text.y = element_text(size=12)
           title = element_text(size = 18)
@@ -408,8 +407,8 @@ plot_fig4a_normed <- function(simdata_dist, tag = "A", colors = hamming_colors){
                        name   = "Rate of opinion\nmutation (v)" ) +
     scale_fill_manual(values = colors,
                       name   = "Rate of opinion\nmutation (v)" )  +
-    scale_y_continuous(limits = c(0, 1),
-                       breaks = seq(0, 1, 0.2)) +
+    scale_y_continuous(limits = c(0, 0.8),
+                       breaks = seq(0, 0.8, 0.2)) +
     scale_x_continuous(limits = c(qmin, qmax), 
                        breaks = seq(qmin, qmax, qinc)) +
     geom_ribbon(aes(ymin = Mean - SD, ymax = Mean + SD), alpha = 0.3, color = NA) +
@@ -419,12 +418,12 @@ plot_fig4a_normed <- function(simdata_dist, tag = "A", colors = hamming_colors){
                     # switch = "both", 
                     drop = TRUE) +
     theme(strip.placement = "outside",
-          strip.text = element_text(size = 10),
+          strip.text = element_text(size = 11),
           axis.line = element_line() ) +
     theme(axis.title = element_text(size = 18), 
           axis.text = element_text(size = 8), 
           # strip.background = element_blank(),
-          legend.position = c(0.68, 1), 
+          legend.position = c(0.68, 0.97), 
           legend.justification = c(0,1))
   
   fig4a_grob <- ggplotGrob(fig4a)

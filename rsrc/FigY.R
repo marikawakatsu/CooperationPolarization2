@@ -207,17 +207,18 @@ plot_figYe <- function(simdata_coop, p, v, tag = "E", legend = TRUE){
                                     margin = margin(0,0,0,0) ) ) +
     theme (legend.text = element_text (size = 7),
            legend.title = element_text(size = 8),
-           legend.key.size = unit(0.02, "npc"),
-           panel.spacing = unit(0.25,"lines"),
+           legend.key.width = unit(0.02, "npc"),
+           legend.key.height = unit(0.04, "npc"),
+           panel.spacing = unit(0, "lines"),
            legend.margin = margin(t = 0, unit="npc")
     ) +
-    ggtitle( paste0("p = ", p) ) +
+    ggtitle( paste0("p = ", p, ", v = ", v) ) +
     scale_color_manual( values = rev(viridis(6)), name = "") +
     scale_fill_manual( values = rev(viridis(6)), name = "") +
     labs(x = "Selection strength (beta)",
          y = "Effective cooperation",
          tag = tag) + 
-    geom_hline(yintercept = 0.5, color = "gray80") + 
+    # geom_hline(yintercept = 0.5, color = "gray80") + 
     scale_y_continuous(limits = c(0.0, 0.6), # c(0.47, 0.51),
                        breaks = seq(0.0, 0.6, 0.1)) +
     scale_x_continuous(# limits = c(0.001, 0.5),
@@ -235,9 +236,25 @@ plot_figYe <- function(simdata_coop, p, v, tag = "E", legend = TRUE){
 # Figure Y
 ###########################################
 # save multiplot
-p <- 1.
-v <- 0.001
-figYe <- plot_figYe( simdata_coop_all, p, v, "E")
+# p <- 1.
+# v <- 0.001
+# figYe <- plot_figYe( simdata_coop_all, p, v, "E")
+
+figYa1 <- plot_figYe( simdata_coop_all, 0.0, 0.001, "A")
+figYa2 <- plot_figYe( simdata_coop_all, 0.0, 0.025, "B")
+# figYa3 <- plot_figYe( simdata_coop_all, 0.0, 0.1, "")
+# figYb1 <- plot_figYe( simdata_coop_all, 0.25, 0.001, "B")
+# figYb2 <- plot_figYe( simdata_coop_all, 0.25, 0.025, "")
+# figYb3 <- plot_figYe( simdata_coop_all, 0.25, 0.1, "")
+# figYc1 <- plot_figYe( simdata_coop_all, 0.5, 0.001, "C")
+# figYc2 <- plot_figYe( simdata_coop_all, 0.5, 0.025, "")
+# figYc3 <- plot_figYe( simdata_coop_all, 0.5, 0.1, "")
+# figYd1 <- plot_figYe( simdata_coop_all, 0.75, 0.001, "D")
+# figYd2 <- plot_figYe( simdata_coop_all, 0.75, 0.025, "")
+# figYd3 <- plot_figYe( simdata_coop_all, 0.75, 0.1, "")
+figYe1 <- plot_figYe( simdata_coop_all, 1.0, 0.001, "C")
+figYe2 <- plot_figYe( simdata_coop_all, 1.0, 0.025, "D")
+# figYe3 <- plot_figYe( simdata_coop_all, 1.0, 0.1, "")
 
 if(saveplots == 1){
   
@@ -249,14 +266,14 @@ if(saveplots == 1){
       paste0("thresh_", threshold, "_", min(casecount$COUNT), "_", min(casecount2$COUNT)) 
     }
   
-  plottype <- paste0("figY_p_", p, "_v_", v, "_", threshcount)
+  plottype <- paste0("figY_", threshcount)
   
   png(filename = paste0("plots/figs/", plottype, "_", 
                         format(Sys.Date(), format="%y%m%d"), ".png"), 
-      width = figW, height = figW*ratio, units = "in", res = 300)
-  # multiplot(figXa, fig2b, fig2c, fig2d, figYe, fig2f,
-  #           layout = matrix(c(1,2,3,4,5,6), ncol = 2, byrow = TRUE))
-  multiplot(figYe)
+      width = figW*1.5, height = figW*ratio*1.5, units = "in", res = 300)
+  multiplot(figYa1, figYe1, 
+            figYa2, figYe2, cols = 2)
+  # multiplot(figYe)
   dev.off()
   
 }

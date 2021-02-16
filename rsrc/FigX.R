@@ -205,8 +205,9 @@ plot_figXe <- function(simdata_coop, p, tag = "E", legend = TRUE){
                                     margin = margin(0,0,0,0) ) ) +
     theme (legend.text = element_text (size = 7),
            legend.title = element_text(size = 8),
-           legend.key.size = unit(0.02, "npc"),
-           panel.spacing = unit(0.25,"lines"),
+           legend.key.width = unit(0.02, "npc"),
+           legend.key.height = unit(0.04, "npc"),
+           panel.spacing = unit(0, "lines"),
            legend.margin = margin(t = 0, unit="npc")
     ) +
     ggtitle( paste0("p = ", p) ) +
@@ -215,7 +216,7 @@ plot_figXe <- function(simdata_coop, p, tag = "E", legend = TRUE){
     labs(x = "Set mutation rate (v)",
          y = "Effective cooperation",
          tag = tag) + 
-    geom_hline(yintercept = 0.5, color = "gray80") + 
+    # geom_hline(yintercept = 0.5, color = "gray80") + 
     scale_y_continuous(limits = c(0.2, 0.6), # c(0.47, 0.51),
                        breaks = seq(0.2, 0.6, 0.1)) +
     scale_x_continuous(limits = c(0.001, 0.625),
@@ -233,8 +234,12 @@ plot_figXe <- function(simdata_coop, p, tag = "E", legend = TRUE){
 # Figure X
 ###########################################
 # save multiplot
-p <- 0.
-figXe <- plot_figXe( simdata_coop_all, p, "E")
+figXa <- plot_figXe( simdata_coop_all, 0.0, "A")
+figXb <- plot_figXe( simdata_coop_all, 0.25, "B")
+figXc <- plot_figXe( simdata_coop_all, 0.5, "C")
+figXd <- plot_figXe( simdata_coop_all, 0.75, "D")
+figXe <- plot_figXe( simdata_coop_all, 1.0, "E")
+emp <- ggplot() + theme_void()
 
 if(saveplots == 1){
   
@@ -246,14 +251,13 @@ if(saveplots == 1){
       paste0("thresh_", threshold, "_", min(casecount$COUNT), "_", min(casecount2$COUNT)) 
     }
   
-  plottype <- paste0("figX_p_", p, "_", threshcount)
+  plottype <- paste0("figX_", threshcount)
   
   png(filename = paste0("plots/figs/", plottype, "_", 
                         format(Sys.Date(), format="%y%m%d"), ".png"), 
-      width = figW, height = figW*ratio, units = "in", res = 300)
-  # multiplot(figXa, fig2b, fig2c, fig2d, figXe, fig2f,
-  #           layout = matrix(c(1,2,3,4,5,6), ncol = 2, byrow = TRUE))
-  multiplot(figXe)
+      width = figW*2.25, height = figW*ratio*1.5, units = "in", res = 300)
+  multiplot(figXa, figXb, figXc, figXd, figXe, emp,
+            layout = matrix(c(1,2,3,4,5, 6), ncol = 3, byrow = TRUE))
   dev.off()
   
 }
