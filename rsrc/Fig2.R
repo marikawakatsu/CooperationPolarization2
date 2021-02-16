@@ -231,7 +231,7 @@ plot_fig2a <- function(simdata_coop, p, tag){
          y = "Effective cooperation",
          tag = tag) +
     ggtitle( paste0("p = ", p, ", grouped by M") ) +
-    scale_color_manual(values = rev(viridis(6)[1:5]), # magma(6)[2:5],
+    scale_color_manual(values = rev(viridis(5)[1:4]), # magma(6)[2:5],
                        name = "Opinion\nmutation\nrate (v)") +
     scale_y_continuous(limits = c(0.1, 0.6), 
                        breaks = seq(0.1, 0.6, 0.1)) +
@@ -277,7 +277,7 @@ plot_fig2a_v2 <- function(simdata_coop, p, tag){
          y = "Effective cooperation",
          tag = tag) +
     ggtitle( paste0("p = ", p, ", grouped by K") ) +
-    scale_color_manual(values = rev(viridis(6)[1:5]), # magma(6)[2:5],
+    scale_color_manual(values = rev(viridis(5)[1:4]), # magma(6)[2:5],
                        name = "Opinion\nmutation\nrate (v)") +
     scale_y_continuous(limits = c(0.1, 0.6),  
                        breaks = seq(0.1, 0.6, 0.1)) +
@@ -323,7 +323,7 @@ plot_fig2b <- function(simdata_strat, p, v, tag = "B", labeled = TRUE, wlegend =
          y = ylabel,
          tag = tag) +
     ggtitle( paste0("p = ", p, ", v = ", v) ) +
-    # scale_color_manual(values = rev(viridis(6)[1:5]), # magma(6)[2:5]) +
+    # scale_color_manual(values = rev(viridis(5)[1:4]), # magma(6)[2:5]) +
     scale_color_manual(values = c("#0571b0","#92c5de","#f4a582","#ca0020"),
     ) +
     scale_y_continuous(limits = c(0.0, 0.55),
@@ -394,15 +394,14 @@ plot_fig2e_v3 <- function(simdata_coop, v, tag = "E", legend = TRUE){
   fig2e <- ggplot(data = subdata,
                   aes(x = p, y = M2, fill = Mean)) +
     theme_classic() +
-    theme(plot.title = element_text(hjust = 0.5)) +
-    theme(plot.title = element_text(hjust = 0.5, 
-                                    size = 10, 
-                                    margin = margin(0,0,-0.5,0) ) ) +
+    theme(plot.title = element_text(hjust  = 0.5,
+                                    size   = 10,  
+                                    margin = margin(-10,0,3,0) ) ) +
     theme (legend.text = element_text (size = 7),
            legend.title = element_text(size = 8),
            legend.key.width = unit(0.01, "npc"),
            legend.key.height = unit(0.03, "npc"),
-           panel.spacing = unit(0.25,"lines"),
+           panel.spacing = unit(0.05,"lines"),
            legend.margin = margin(t=0, r=0, b=0.5, l=0, unit="cm"),
            axis.text.y = element_text(size = 7),
     ) +
@@ -410,14 +409,14 @@ plot_fig2e_v3 <- function(simdata_coop, v, tag = "E", legend = TRUE){
     # scale_fill_gradient(low = "gray90", high = "#00428B", 
     #                     limit = c(0.25, 0.55), 
     #                     space = "Lab",
-    #                     name = "Effective\ncooperation") +
+    #                     name = "Effective\ncooperation") + # option 3
     # scale_fill_distiller(limit = c(0.2, 0.55),
     #                      direction = 1,
     #                      palette = "Greens",
-    #                      name = "Effective\ncooperation") + 
+    #                      name = "Effective\ncooperation") + # option 2
     scale_fill_viridis(limit = c(0.2, 0.55),
                        direction = -1,
-                       name = "Effective\ncooperation") + 
+                       name = "Effective\ncooperation") + # option 3
     labs(x = "Party bias (p)",
          y = "",
          tag = tag) +
@@ -445,8 +444,7 @@ plot_fig2e_v2 <- function(simdata_coop, v, tag = "E", legend = TRUE){
   fig2e <- ggplot(data = subdata,
                   aes(x = p, y = Mean, color = MK2, fill = MK2)) +
     theme_classic() +
-    theme(plot.title = element_text(hjust = 0.5)) +
-    theme(plot.title = element_text(hjust = 0.5, 
+    theme(plot.title = element_text(hjust = 0.5,
                                     size = 10, 
                                     margin = margin(0,0,0,0) ) ) +
     theme (legend.text = element_text (size = 7),
@@ -477,7 +475,7 @@ plot_fig2e_v2 <- function(simdata_coop, v, tag = "E", legend = TRUE){
 # Figure 2
 ###########################################
 # save multiplot
-p <- 0.5
+p <- 1.
 fig2b <- plot_fig2a(   simdata_coop_p0,  p, "B")
 fig2a <- plot_fig2a_v2(simdata_coop_p0,  p, "A")
 fig2c <- plot_fig2b(simdata_strat_p0, p, 0.001, "C", TRUE, TRUE)
@@ -501,7 +499,7 @@ if(saveplots == 1){
   
   png(filename = paste0("plots/figs/", plottype, "_", 
                         format(Sys.Date(), format="%y%m%d"), ".png"), 
-      width = figW*1.75*1.65, height = figW*ratio*1.75, units = "in", res = 300)
+      width = figW*1.75*1.65, height = figW*ratio*1.8, units = "in", res = 300)
   multiplot(fig2a, fig2b, fig2c, fig2d, fig2e, fig2f,
             layout = matrix(c(1,1,1,3,3,3,5,5,2,2,2,4,4,4,6,6), ncol = 8, byrow = TRUE))
             # layout = matrix(c(1,2,3,4,5,6), ncol = 3, byrow = FALSE))
