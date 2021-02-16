@@ -21,14 +21,13 @@ beta    <- 0.001 # fixed, for now
 gens    <- 20000000
 saveplots <- 1
 threshold <- 0 # 0 = use all data, 1 = threshold data by min(COUNT)
-               # 2 = use separate threshold for A-D and E/F
 # p       <- 0.
 vs      <- c(0.001, 0.025, 0.1)
 Mmax    <- 5
 
 # load data
 file_dir  <- sprintf( "data/gens_%s/", format(gens, scientific = FALSE) )
-pattern   <- sprintf( "M" )
+pattern   <- sprintf( "run_multi" )
 file_list <- list.files(path = file_dir, pattern = pattern)
 simdata   <- data.frame() # initialize data frame
 
@@ -183,9 +182,24 @@ simdata_coop_all <-
 ###########################################
 # Add extra labels #
 ###########################################
-simdata_coop_p0  <- simdata_coop_p0  %>% mutate( M2 = paste0( "M=", M ), K2 = paste0( "K=", K ) )
-simdata_coop_all <- simdata_coop_all %>% mutate( M2 = paste0( "M=", M ), K2 = paste0( "K=", K ) )
-simdata_strat_p0 <- simdata_strat_p0 %>% mutate( M2 = paste0( "M=", M ), K2 = paste0( "K=", K ) )
+simdata_coop_p0  <- simdata_coop_p0  %>% 
+  mutate( M2 = paste0( "M=", M ), 
+          K2 = paste0( "K=", K ),
+          M3 = paste0( M ),
+          K3 = paste0( K )
+  )
+simdata_coop_all <- simdata_coop_all %>% 
+  mutate( M2 = paste0( "M=", M ), 
+          K2 = paste0( "K=", K ),
+          M3 = paste0( M ),
+          K3 = paste0( K )
+  )
+simdata_strat_p0 <- simdata_strat_p0 %>% 
+  mutate( M2 = paste0( "M=", M ), 
+          K2 = paste0( "K=", K ),
+          M3 = paste0( M ),
+          K3 = paste0( K )
+  )
 
 ###########################################
 # Plotting functions
@@ -199,13 +213,16 @@ plot_fig2a <- function(simdata_coop, p, tag){
                           simdata_coop$M <= Mmax, ]
   
   fig2a <- ggplot(subdata,
-                  aes(x = K2, y = Mean, label = K2, color = v)) +
+                  aes(x = K3, y = Mean, label = K2, color = v)) +
     theme_classic() +
     theme(plot.title = element_text(hjust = 0.5)) +
     theme (legend.text = element_text (size = 7),
            legend.title = element_text (size = 8),
-           legend.key.size = unit(0.025, "npc"),
-           panel.spacing = unit(0.2,  "lines")
+           # legend.key.size = unit(0.025, "npc"),
+           legend.key.width = unit(0.015, "npc"),
+           legend.key.height = unit(0.03, "npc"),
+           panel.spacing = unit(0.2,  "lines"),
+           legend.margin = margin(t = 0, unit="npc")
     ) +
     theme(plot.title = element_text(hjust = 0.5, 
                                     size = 10, 
@@ -214,19 +231,21 @@ plot_fig2a <- function(simdata_coop, p, tag){
          y = "Effective cooperation",
          tag = tag) +
     ggtitle( paste0("p = ", p, ", grouped by M") ) +
-    scale_color_manual(values = magma(6)[2:5]) +
+    scale_color_manual(values = magma(6)[2:5],
+                       name = "Opinion\nmutation\nrate (v)") +
     scale_y_continuous(limits = c(0.1, 0.6), 
                        breaks = seq(0.1, 0.6, 0.1)) +
     # geom_hline(yintercept = 0.5, color = "gray80") +
     geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0) +
-    # geom_ribbon(aes(ymin = Mean - SE, ymax = Mean + SE), alpha = 0.1, color = NA) +
+    # geom_ribbon(aes(ymin = Mean - SD, ymax = Mean + SD), alpha = 0.1, color = NA) +
     geom_line(aes(group = v), size = 0.4, alpha = 1, lty = 1) +
     geom_point(stat="identity", size = 1.3, alpha = 1, stroke = 0.5, shape = 1) +
     facet_grid( ~ M2, space="free_x",
                 switch = "x", scales="free_x") +
     theme(strip.placement = "outside") +
     theme(axis.title.x = element_blank(), 
-          strip.background = element_blank())
+          strip.background = element_blank(),
+          strip.text.x.bottom = element_text(angle = 45))
   
   return(fig2a)
 }
@@ -240,13 +259,16 @@ plot_fig2a_v2 <- function(simdata_coop, p, tag){
                             simdata_coop$M <= Mmax, ]
   
   fig2a <- ggplot(subdata,
-                  aes(x = M2, y = Mean, label = M2, color = v)) +
+                  aes(x = M3, y = Mean, label = M2, color = v)) +
     theme_classic() +
     theme(plot.title = element_text(hjust = 0.5)) +
     theme (legend.text = element_text (size = 7),
            legend.title = element_text (size = 8),
-           legend.key.size = unit(0.025, "npc"),
-           panel.spacing = unit(0.2,  "lines")
+           # legend.key.size = unit(0.025, "npc"),
+           legend.key.width = unit(0.015, "npc"),
+           legend.key.height = unit(0.03, "npc"),
+           panel.spacing = unit(0.2,  "lines"),
+           legend.margin = margin(t = 0, unit="npc")
     ) +
     theme(plot.title = element_text(hjust = 0.5, 
                                     size = 10, 
@@ -255,19 +277,21 @@ plot_fig2a_v2 <- function(simdata_coop, p, tag){
          y = "Effective cooperation",
          tag = tag) +
     ggtitle( paste0("p = ", p, ", grouped by K") ) +
-    scale_color_manual(values = magma(6)[2:5]) +
+    scale_color_manual(values = magma(6)[2:5],
+                       name = "Opinion\nmutation\nrate (v)") +
     scale_y_continuous(limits = c(0.1, 0.6),  
                        breaks = seq(0.1, 0.6, 0.1)) +
     # geom_hline(yintercept = 0.5, color = "gray80") +
     geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0) +
-    # geom_ribbon(aes(ymin = Mean - SE, ymax = Mean + SE), alpha = 1) +
+    # geom_ribbon(aes(ymin = Mean - SD, ymax = Mean + SD), alpha = 1) +
     geom_line(aes(group = v), size = 0.4, alpha = 1, lty = 1) +
     geom_point(stat="identity", size = 1.3, alpha = 1, stroke = 0.5, shape = 1) +
     facet_grid( ~ K2, space="free_x",
                 switch = "x", scales="free_x") +
     theme(strip.placement = "outside") +
     theme(axis.title.x = element_blank(), 
-          strip.background = element_blank())
+          strip.background = element_blank(),
+          strip.text.x.bottom = element_text(angle = 45))
   
   return(fig2a)
 }
@@ -281,7 +305,7 @@ plot_fig2b <- function(simdata_strat, p, v, tag = "B", labeled = TRUE, wlegend =
   ylabel <- if(labeled){"Relative abundance"}else{""}
   
   fig2b <- ggplot(subdata,
-                  aes(x = K2, y = Mean, label = K2, color = Strategy)) +
+                  aes(x = K3, y = Mean, label = K2, color = Strategy)) +
     theme_classic() +
     theme(plot.title = element_text(hjust = 0.5)) +
     theme(plot.title = element_text(hjust = 0.5, 
@@ -289,8 +313,11 @@ plot_fig2b <- function(simdata_strat, p, v, tag = "B", labeled = TRUE, wlegend =
                                     margin = margin(0,0,0,0) ) ) +
     theme (legend.text = element_text (size = 7),
            legend.title = element_text (size = 8),
-           legend.key.size = unit(0.025, "npc"),
-           panel.spacing = unit(0.2,  "lines")
+           # legend.key.size = unit(0.025, "npc"),
+           legend.key.width = unit(0.015, "npc"),
+           legend.key.height = unit(0.03, "npc"),
+           panel.spacing = unit(0.2,  "lines"),
+           legend.margin = margin(t = 0, unit="npc")
     ) +
     labs(x = "",
          y = ylabel,
@@ -310,11 +337,95 @@ plot_fig2b <- function(simdata_strat, p, v, tag = "B", labeled = TRUE, wlegend =
                 switch = "x", scales="free_x") +
     theme(strip.placement = "outside") +
     theme(axis.title.x = element_blank(), 
-          strip.background = element_blank())
+          strip.background = element_blank(),
+          strip.text.x.bottom = element_text(angle = 45))
   
   return(fig2b)
 }
 
+# heatmap
+plot_fig2e <- function(simdata_coop, v, tag = "E", legend = TRUE){
+  
+  subdata <- simdata_coop[simdata_coop$Metric == "cooperation_all" & 
+                          simdata_coop$v == v & 
+                          simdata_coop$M <= Mmax, ]
+  subdata$p <- factor(subdata$p)
+  
+  fig2e <- ggplot(data = subdata,
+                  aes(x = K3, y = p, fill = Mean)) +
+    theme_classic() +
+    theme(plot.title = element_text(hjust = 0.5)) +
+    theme(plot.title = element_text(hjust = 0.5, 
+                                    size = 10, 
+                                    margin = margin(0,0,0,0) ) ) +
+    theme (legend.text = element_text (size = 7),
+           legend.title = element_text(size = 8),
+           legend.key.size = unit(0.02, "npc"),
+           panel.spacing = unit(0.25,"lines"),
+           legend.margin = margin(t = 0, unit="npc")
+    ) +
+    ggtitle( paste0("v = ", v) ) +
+    scale_fill_gradient2(low = "#BD1513", mid = "#CFD5D9", high = "#00428B", 
+                         midpoint = 0.5,
+                         limit = c(0.2,0.6), 
+                         space = "Lab",
+                         name = "Effective\ncooperation") +
+    labs(x = "Party bias (p)",
+         y = "",
+         tag = tag) +
+    geom_tile( show.legend = legend ) + 
+    facet_grid(. ~ M2, space="free", 
+               switch = "x", scales="free") +
+    theme(strip.placement = "outside") +
+    theme(axis.title.y = element_blank(), 
+          strip.background = element_blank())
+  
+  return(fig2e)
+}
+
+# heatmap, v2
+plot_fig2e_v3 <- function(simdata_coop, v, tag = "E", legend = TRUE){
+  
+  subdata <- simdata_coop[simdata_coop$Metric == "cooperation_all" & 
+                            simdata_coop$v == v & 
+                            simdata_coop$M <= Mmax, ]
+  subdata$p <- factor(subdata$p)
+  
+  fig2e <- ggplot(data = subdata,
+                  aes(x = p, y = M2, fill = Mean)) +
+    theme_classic() +
+    theme(plot.title = element_text(hjust = 0.5)) +
+    theme(plot.title = element_text(hjust = 0.5, 
+                                    size = 10, 
+                                    margin = margin(0,0,0,0) ) ) +
+    theme (legend.text = element_text (size = 7),
+           legend.title = element_text(size = 8),
+           legend.key.size = unit(0.02, "npc"),
+           panel.spacing = unit(0.25,"lines"),
+           legend.margin = margin(t=0, r=0, b=0.5, l=0, unit="cm"),
+           axis.text.y = element_text(size = 7)
+    ) +
+    ggtitle( paste0("v = ", v) ) +
+    scale_fill_gradient2(low = "#BD1513", mid = "#CFD5D9", high = "#00428B", 
+                         midpoint = 0.5,
+                         limit = c(0.2,0.61), 
+                         space = "Lab",
+                         name = "Effective\ncooperation") +
+    labs(x = "Party bias (p)",
+         y = "",
+         tag = tag) +
+    geom_tile( show.legend = legend ) + 
+    facet_grid(K2 ~ ., space="free", 
+               switch = "y", scales="free") +
+    theme(strip.placement = "outside") +
+    theme(axis.title.y = element_blank(), 
+          strip.background = element_blank(),
+          strip.text.y.left = element_text(angle = 0))
+  
+  return(fig2e)
+}
+
+# lineplot
 plot_fig2e_v2 <- function(simdata_coop, v, tag = "E", legend = TRUE){
   
   subdata <- simdata_coop[simdata_coop$Metric == "cooperation_all" & 
@@ -333,7 +444,8 @@ plot_fig2e_v2 <- function(simdata_coop, v, tag = "E", legend = TRUE){
                                     margin = margin(0,0,0,0) ) ) +
     theme (legend.text = element_text (size = 7),
            legend.title = element_text(size = 8),
-           legend.key.size = unit(0.02, "npc"),
+           legend.key.width = unit(0.01, "npc"),
+           legend.key.height = unit(0.03, "npc"),
            panel.spacing = unit(0.25,"lines"),
            legend.margin = margin(t = 0, unit="npc")
     ) +
@@ -344,9 +456,9 @@ plot_fig2e_v2 <- function(simdata_coop, v, tag = "E", legend = TRUE){
          y = "Effective cooperation",
          tag = tag) +
     # geom_hline(yintercept = 0.5, color = "gray80") + 
-    scale_y_continuous(limits = c(0.2, 0.6), 
-                       breaks = seq(0.2, 0.6, 0.1)) +
-    # geom_errorbar(aes(ymin = Mean - SE, ymax = Mean + SE), width = 0) +
+    scale_y_continuous(limits = c(0.1, 0.6), 
+                       breaks = seq(0.1, 0.6, 0.1)) +
+    # geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0) +
     geom_ribbon(aes(ymin = Mean - SD, ymax = Mean + SD), alpha = 0.1, color = NA) +
     geom_line(size = 0.4, alpha = 1, lty = 1) +
     geom_point(size = 1., alpha = 1, stroke = 0.5)
@@ -363,8 +475,10 @@ fig2b <- plot_fig2a(   simdata_coop_p0,  p, "B")
 fig2a <- plot_fig2a_v2(simdata_coop_p0,  p, "A")
 fig2c <- plot_fig2b(simdata_strat_p0, p, 0.001, "C", TRUE, TRUE)
 fig2d <- plot_fig2b(simdata_strat_p0, p, 0.025, "D", TRUE, TRUE)
-fig2e <- plot_fig2e_v2( simdata_coop_all, 0.001, "E")
-fig2f <- plot_fig2e_v2( simdata_coop_all, 0.025, "F")
+# fig2e <- plot_fig2e_v2( simdata_coop_all, 0.001, "E")
+# fig2f <- plot_fig2e_v2( simdata_coop_all, 0.025, "F")
+fig2e <- plot_fig2e_v3( simdata_coop_all, 0.001, "E")
+fig2f <- plot_fig2e_v3( simdata_coop_all, 0.025, "F")
 
 if(saveplots == 1){
   
@@ -380,9 +494,10 @@ if(saveplots == 1){
   
   png(filename = paste0("plots/figs/", plottype, "_", 
                         format(Sys.Date(), format="%y%m%d"), ".png"), 
-      width = figW*1.75*1.6, height = figW*ratio*2.5, units = "in", res = 300)
+      width = figW*1.75*1.65, height = figW*ratio*1.75, units = "in", res = 300)
   multiplot(fig2a, fig2b, fig2c, fig2d, fig2e, fig2f,
-            layout = matrix(c(1,2,3,4,5,6), ncol = 2, byrow = TRUE))
+            layout = matrix(c(1,1,1,3,3,3,5,5,2,2,2,4,4,4,6,6), ncol = 8, byrow = TRUE))
+            # layout = matrix(c(1,2,3,4,5,6), ncol = 3, byrow = FALSE))
   dev.off()
   
 }
