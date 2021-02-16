@@ -18,11 +18,11 @@ setwd("~/.julia/dev/CooperationPolarization2/") # to be updated later
 beta    <- 0.001 # fixed, for now
 gens    <- 20000000
 saveplots <- 1
-threshold <- 1 # 0 = use all data, 1 = threshold data by min(COUNT)
+threshold <- 0 # 0 = use all data, 1 = threshold data by min(COUNT)
 # 2 = use separate threshold for A-D and E/F
 # p       <- 0.
 # vs      <- c(0.001, 0.005, 0.01, 0.025, 0.05, 0.1, 0.5)
-Mmax    <- 2
+Mmax    <- 3
 
 # load data
 file_dir  <- sprintf( "data/gens_%s/", format(gens, scientific = FALSE) )
@@ -188,7 +188,7 @@ simdata_strat_p0 <- simdata_strat_p0 %>% mutate( M2 = paste0( "M=", M ), K2 = pa
 ###########################################
 # Plotting functions
 ###########################################
-plot_figXe <- function(simdata_coop, p, tag = "E", legend = TRUE){
+plot_figSXe <- function(simdata_coop, p, tag = "E", legend = TRUE){
   
   subdata <- simdata_coop[simdata_coop$Metric == "cooperation_all" & 
                           simdata_coop$p == p & 
@@ -196,7 +196,7 @@ plot_figXe <- function(simdata_coop, p, tag = "E", legend = TRUE){
   
   subdata <- subdata %>% mutate( MK2 = paste0(M2, ", ", K2) )
   
-  figXe <- ggplot(data = subdata,
+  figSXe <- ggplot(data = subdata,
                   aes(x = v, y = Mean, color = MK2, fill = MK2)) +
     theme_classic() +
     theme(plot.title = element_text(hjust = 0.5)) +
@@ -227,18 +227,18 @@ plot_figXe <- function(simdata_coop, p, tag = "E", legend = TRUE){
     geom_line(size = 0.4, alpha = 1, lty = 1) +
     geom_point(size = 1., alpha = 1, stroke = 0.5)
   
-  return(figXe)
+  return(figSXe)
 }
 
 ###########################################
 # Figure X
 ###########################################
 # save multiplot
-figXa <- plot_figXe( simdata_coop_all, 0.0, "A")
-figXb <- plot_figXe( simdata_coop_all, 0.25, "B")
-figXc <- plot_figXe( simdata_coop_all, 0.5, "C")
-figXd <- plot_figXe( simdata_coop_all, 0.75, "D")
-figXe <- plot_figXe( simdata_coop_all, 1.0, "E")
+figSXa <- plot_figSXe( simdata_coop_all, 0.0, "A")
+figSXb <- plot_figSXe( simdata_coop_all, 0.25, "B")
+figSXc <- plot_figSXe( simdata_coop_all, 0.5, "C")
+figSXd <- plot_figSXe( simdata_coop_all, 0.75, "D")
+figSXe <- plot_figSXe( simdata_coop_all, 1.0, "E")
 emp <- ggplot() + theme_void()
 
 if(saveplots == 1){
@@ -251,12 +251,12 @@ if(saveplots == 1){
       paste0("thresh_", threshold, "_", min(casecount$COUNT), "_", min(casecount2$COUNT)) 
     }
   
-  plottype <- paste0("figX_", threshcount)
+  plottype <- paste0("figSX_", threshcount)
   
   png(filename = paste0("plots/figs/", plottype, "_", 
                         format(Sys.Date(), format="%y%m%d"), ".png"), 
       width = figW*2.25, height = figW*ratio*1.5, units = "in", res = 300)
-  multiplot(figXa, figXb, figXc, figXd, figXe, emp,
+  multiplot(figSXa, figSXb, figSXc, figSXd, figSXe, emp,
             layout = matrix(c(1,2,3,4,5, 6), ncol = 3, byrow = TRUE))
   dev.off()
   

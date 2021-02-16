@@ -19,7 +19,7 @@ epsilon <- 1
 u       <- 0.001 # fixed, for now
 gens    <- 20000000
 saveplots <- 1
-threshold <- 0 # 0 = use all data, 1 = threshold data by min(COUNT)
+threshold <- 1 # 0 = use all data, 1 = threshold data by min(COUNT)
 # 2 = use separate threshold for A-D and E/F
 # p       <- 0.
 vs      <- c(0.001, 0.025, 0.1)
@@ -189,7 +189,7 @@ simdata_strat_p0 <- simdata_strat_p0 %>% mutate( M2 = paste0( "M=", M ), K2 = pa
 ###########################################
 # Plotting functions
 ###########################################
-plot_figYe <- function(simdata_coop, p, v, tag = "E", legend = TRUE){
+plot_figSYe <- function(simdata_coop, p, v, tag = "E", legend = TRUE){
   
   subdata <- simdata_coop[simdata_coop$Metric == "cooperation_all" & 
                             simdata_coop$p == p & 
@@ -198,7 +198,7 @@ plot_figYe <- function(simdata_coop, p, v, tag = "E", legend = TRUE){
   
   subdata <- subdata %>% mutate( MK2 = paste0(M2, ", ", K2) )
   
-  figYe <- ggplot(data = subdata,
+  figSYe <- ggplot(data = subdata,
                   aes(x = beta, y = Mean, color = MK2, fill = MK2)) +
     theme_classic() +
     theme(plot.title = element_text(hjust = 0.5)) +
@@ -229,7 +229,7 @@ plot_figYe <- function(simdata_coop, p, v, tag = "E", legend = TRUE){
     geom_line(size = 0.4, alpha = 1, lty = 1) +
     geom_point(size = 1., alpha = 1, stroke = 0.5)
   
-  return(figYe)
+  return(figSYe)
 }
 
 ###########################################
@@ -238,23 +238,23 @@ plot_figYe <- function(simdata_coop, p, v, tag = "E", legend = TRUE){
 # save multiplot
 # p <- 1.
 # v <- 0.001
-# figYe <- plot_figYe( simdata_coop_all, p, v, "E")
+# figSYe <- plot_figSYe( simdata_coop_all, p, v, "E")
 
-figYa1 <- plot_figYe( simdata_coop_all, 0.0, 0.001, "A")
-figYa2 <- plot_figYe( simdata_coop_all, 0.0, 0.025, "B")
-# figYa3 <- plot_figYe( simdata_coop_all, 0.0, 0.1, "")
-# figYb1 <- plot_figYe( simdata_coop_all, 0.25, 0.001, "B")
-# figYb2 <- plot_figYe( simdata_coop_all, 0.25, 0.025, "")
-# figYb3 <- plot_figYe( simdata_coop_all, 0.25, 0.1, "")
-# figYc1 <- plot_figYe( simdata_coop_all, 0.5, 0.001, "C")
-# figYc2 <- plot_figYe( simdata_coop_all, 0.5, 0.025, "")
-# figYc3 <- plot_figYe( simdata_coop_all, 0.5, 0.1, "")
-# figYd1 <- plot_figYe( simdata_coop_all, 0.75, 0.001, "D")
-# figYd2 <- plot_figYe( simdata_coop_all, 0.75, 0.025, "")
-# figYd3 <- plot_figYe( simdata_coop_all, 0.75, 0.1, "")
-figYe1 <- plot_figYe( simdata_coop_all, 1.0, 0.001, "C")
-figYe2 <- plot_figYe( simdata_coop_all, 1.0, 0.025, "D")
-# figYe3 <- plot_figYe( simdata_coop_all, 1.0, 0.1, "")
+figSYa1 <- plot_figSYe( simdata_coop_all, 0.0, 0.001, "A")
+figSYa2 <- plot_figSYe( simdata_coop_all, 0.0, 0.025, "B")
+# figSYa3 <- plot_figSYe( simdata_coop_all, 0.0, 0.1, "")
+# figSYb1 <- plot_figSYe( simdata_coop_all, 0.25, 0.001, "B")
+# figSYb2 <- plot_figSYe( simdata_coop_all, 0.25, 0.025, "")
+# figSYb3 <- plot_figSYe( simdata_coop_all, 0.25, 0.1, "")
+# figSYc1 <- plot_figSYe( simdata_coop_all, 0.5, 0.001, "C")
+# figSYc2 <- plot_figSYe( simdata_coop_all, 0.5, 0.025, "")
+# figSYc3 <- plot_figSYe( simdata_coop_all, 0.5, 0.1, "")
+# figSYd1 <- plot_figSYe( simdata_coop_all, 0.75, 0.001, "D")
+# figSYd2 <- plot_figSYe( simdata_coop_all, 0.75, 0.025, "")
+# figSYd3 <- plot_figSYe( simdata_coop_all, 0.75, 0.1, "")
+figSYe1 <- plot_figSYe( simdata_coop_all, 1.0, 0.001, "C")
+figSYe2 <- plot_figSYe( simdata_coop_all, 1.0, 0.025, "D")
+# figSYe3 <- plot_figSYe( simdata_coop_all, 1.0, 0.1, "")
 
 if(saveplots == 1){
   
@@ -266,14 +266,14 @@ if(saveplots == 1){
       paste0("thresh_", threshold, "_", min(casecount$COUNT), "_", min(casecount2$COUNT)) 
     }
   
-  plottype <- paste0("figY_", threshcount)
+  plottype <- paste0("figSY_", threshcount)
   
   png(filename = paste0("plots/figs/", plottype, "_", 
                         format(Sys.Date(), format="%y%m%d"), ".png"), 
       width = figW*1.5, height = figW*ratio*1.5, units = "in", res = 300)
-  multiplot(figYa1, figYe1, 
-            figYa2, figYe2, cols = 2)
-  # multiplot(figYe)
+  multiplot(figSYa1, figSYe1, 
+            figSYa2, figSYe2, cols = 2)
+  # multiplot(figSYe)
   dev.off()
   
 }
