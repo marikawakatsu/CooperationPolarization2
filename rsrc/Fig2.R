@@ -237,7 +237,7 @@ plot_fig2a <- function(simdata_coop, p, tag){
                        breaks = seq(0.1, 0.6, 0.1)) +
     # geom_hline(yintercept = 0.5, color = "gray80") +
     geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0) +
-    # geom_ribbon(aes(ymin = Mean - SD, ymax = Mean + SD), alpha = 0.1, color = NA) +
+    # geom_ribbon(aes(ymin = Mean - SD, ymax = Mean + SD), alpha = 1, color = NA) +
     geom_line(aes(group = v), size = 0.4, alpha = 1, lty = 1) +
     geom_point(stat="identity", size = 1.3, alpha = 1, stroke = 0.5, shape = 1) +
     facet_grid( ~ M2, space="free_x",
