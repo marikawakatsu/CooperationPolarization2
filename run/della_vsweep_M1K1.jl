@@ -123,7 +123,7 @@ total_summary = SharedArray{Float64, 2}(length(pvals)*length(us)*length(vs),55) 
 
     # overwrite file after every parameter set (in case code stops due to memory issues)
     # writedlm("data/$(testtype)_run1.csv"; [colnames; total_summary], ',', header=true)
-    open("data/gens_$(generations)/$(testtype)_run_multi_M$(M)K$(K)_$(start_time).csv", "w") do f
+    open("data/gens_$(generations)/$(testtype)_vsweep_M$(M)K$(K)_$(start_time).csv", "w") do f
         write(f, "$(colnames)\n")
         writedlm(f, total_summary, ',')
     end

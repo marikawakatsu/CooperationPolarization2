@@ -26,7 +26,7 @@ Mmax    <- 2
 
 # load data
 file_dir  <- sprintf( "data/gens_%s/", format(gens, scientific = FALSE) )
-pattern   <- sprintf( "M" )
+pattern   <- sprintf( "vsweep" )
 file_list <- list.files(path = file_dir, pattern = pattern)
 simdata   <- data.frame() # initialize data frame
 
