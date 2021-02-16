@@ -231,7 +231,7 @@ plot_fig2a <- function(simdata_coop, p, tag){
          y = "Effective cooperation",
          tag = tag) +
     ggtitle( paste0("p = ", p, ", grouped by M") ) +
-    scale_color_manual(values = magma(6)[2:5],
+    scale_color_manual(values = rev(viridis(6)[1:5]), # magma(6)[2:5],
                        name = "Opinion\nmutation\nrate (v)") +
     scale_y_continuous(limits = c(0.1, 0.6), 
                        breaks = seq(0.1, 0.6, 0.1)) +
@@ -277,7 +277,7 @@ plot_fig2a_v2 <- function(simdata_coop, p, tag){
          y = "Effective cooperation",
          tag = tag) +
     ggtitle( paste0("p = ", p, ", grouped by K") ) +
-    scale_color_manual(values = magma(6)[2:5],
+    scale_color_manual(values = rev(viridis(6)[1:5]), # magma(6)[2:5],
                        name = "Opinion\nmutation\nrate (v)") +
     scale_y_continuous(limits = c(0.1, 0.6),  
                        breaks = seq(0.1, 0.6, 0.1)) +
@@ -323,7 +323,7 @@ plot_fig2b <- function(simdata_strat, p, v, tag = "B", labeled = TRUE, wlegend =
          y = ylabel,
          tag = tag) +
     ggtitle( paste0("p = ", p, ", v = ", v) ) +
-    # scale_color_manual(values = magma(6)[2:5]) +
+    # scale_color_manual(values = rev(viridis(6)[1:5]), # magma(6)[2:5]) +
     scale_color_manual(values = c("#0571b0","#92c5de","#f4a582","#ca0020"),
     ) +
     scale_y_continuous(limits = c(0.0, 0.55),
@@ -365,9 +365,9 @@ plot_fig2e <- function(simdata_coop, v, tag = "E", legend = TRUE){
            legend.margin = margin(t = 0, unit="npc")
     ) +
     ggtitle( paste0("v = ", v) ) +
-    scale_fill_gradient2(low = "#BD1513", mid = "#CFD5D9", high = "#00428B", 
+    scale_fill_gradient2(low = "#BD1513", mid = "#CFD5D9", high = "#00428B",
                          midpoint = 0.5,
-                         limit = c(0.2,0.6), 
+                         limit = c(0.2,0.55),
                          space = "Lab",
                          name = "Effective\ncooperation") +
     labs(x = "Party bias (p)",
@@ -397,20 +397,27 @@ plot_fig2e_v3 <- function(simdata_coop, v, tag = "E", legend = TRUE){
     theme(plot.title = element_text(hjust = 0.5)) +
     theme(plot.title = element_text(hjust = 0.5, 
                                     size = 10, 
-                                    margin = margin(0,0,0,0) ) ) +
+                                    margin = margin(0,0,-0.5,0) ) ) +
     theme (legend.text = element_text (size = 7),
            legend.title = element_text(size = 8),
-           legend.key.size = unit(0.02, "npc"),
+           legend.key.width = unit(0.01, "npc"),
+           legend.key.height = unit(0.03, "npc"),
            panel.spacing = unit(0.25,"lines"),
            legend.margin = margin(t=0, r=0, b=0.5, l=0, unit="cm"),
-           axis.text.y = element_text(size = 7)
+           axis.text.y = element_text(size = 7),
     ) +
     ggtitle( paste0("v = ", v) ) +
-    scale_fill_gradient2(low = "#BD1513", mid = "#CFD5D9", high = "#00428B", 
-                         midpoint = 0.5,
-                         limit = c(0.2,0.61), 
-                         space = "Lab",
-                         name = "Effective\ncooperation") +
+    # scale_fill_gradient(low = "gray90", high = "#00428B", 
+    #                     limit = c(0.25, 0.55), 
+    #                     space = "Lab",
+    #                     name = "Effective\ncooperation") +
+    # scale_fill_distiller(limit = c(0.2, 0.55),
+    #                      direction = 1,
+    #                      palette = "Greens",
+    #                      name = "Effective\ncooperation") + 
+    scale_fill_viridis(limit = c(0.2, 0.55),
+                       direction = -1,
+                       name = "Effective\ncooperation") + 
     labs(x = "Party bias (p)",
          y = "",
          tag = tag) +
