@@ -18,7 +18,7 @@ setwd("~/.julia/dev/CooperationPolarization2/") # to be updated later
 beta    <- 0.001 # fixed, for now
 gens    <- 20000000
 saveplots <- 1
-threshold <- 0 # 0 = use all data, 1 = threshold data by min(COUNT)
+threshold <- 1 # 0 = use all data, 1 = threshold data by min(COUNT)
 # 2 = use separate threshold for A-D and E/F
 # p       <- 0.
 # vs      <- c(0.001, 0.005, 0.01, 0.025, 0.05, 0.1, 0.5)
