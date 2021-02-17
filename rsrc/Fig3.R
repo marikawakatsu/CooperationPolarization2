@@ -26,7 +26,7 @@ vlabel <- if(length(vs) < 3){ paste0("v_",vs[1],"+",vs[2]) }else{ "all" }
 
 # load data
 file_dir  <- sprintf( "data/gens_%s/", format(gens, scientific = FALSE) )
-pattern   <- sprintf( "M" )
+pattern   <- sprintf( "run_multi" )
 file_list <- list.files(path = file_dir, pattern = pattern)
 simdata   <- data.frame() # initialize data frame
 
