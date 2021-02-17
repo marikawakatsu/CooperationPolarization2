@@ -225,7 +225,7 @@ plot_figSYe <- function(simdata_coop, p, v, tag = "E", legend = TRUE){
                        # breaks = c(0.001, 0.005, 0.025, 0.1, 0.5),
                        trans  = 'log10') +
     # geom_errorbar(aes(ymin = Mean - SE, ymax = Mean + SE), width = 0) +
-    geom_ribbon(aes(ymin = Mean - SD, ymax = Mean + SD), alpha = 0.1, color = NA) +
+    geom_ribbon(aes(ymin = Mean - 1.96*SE, ymax = Mean + 1.96*SE), alpha = 0.1, color = NA) +
     geom_line(size = 0.4, alpha = 1, lty = 1) +
     geom_point(size = 1., alpha = 1, stroke = 0.5)
   
@@ -270,7 +270,7 @@ if(saveplots == 1){
   
   png(filename = paste0("plots/figs/", plottype, "_", 
                         format(Sys.Date(), format="%y%m%d"), ".png"), 
-      width = figW*1.5, height = figW*ratio*1.5, units = "in", res = 300)
+      width = figW*1.5, height = figW*ratio*1.5, units = "in", res = 600)
   multiplot(figSYa1, figSYe1, 
             figSYa2, figSYe2, cols = 2)
   # multiplot(figSYe)

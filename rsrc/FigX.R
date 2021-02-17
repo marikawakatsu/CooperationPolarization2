@@ -22,7 +22,7 @@ threshold <- 0 # 0 = use all data, 1 = threshold data by min(COUNT)
 # 2 = use separate threshold for A-D and E/F
 # p       <- 0.
 # vs      <- c(0.001, 0.005, 0.01, 0.025, 0.05, 0.1, 0.5)
-Mmax    <- 2
+Mmax    <- 5
 
 # load data
 file_dir  <- sprintf( "data/gens_%s/", format(gens, scientific = FALSE) )
@@ -223,7 +223,7 @@ plot_figSXe <- function(simdata_coop, p, tag = "E", legend = TRUE){
                        breaks = c(0.001, 0.005, 0.025, 0.125, 0.625),
                        trans  = 'log10') +
     # geom_errorbar(aes(ymin = Mean - SE, ymax = Mean + SE), width = 0) +
-    geom_ribbon(aes(ymin = Mean - SD, ymax = Mean + SD), alpha = 0.1, color = NA) +
+    geom_ribbon(aes(ymin = Mean - 1.96*SE, ymax = Mean +1.96*SE), alpha = 0.1, color = NA) +
     geom_line(size = 0.4, alpha = 1, lty = 1) +
     geom_point(size = 1., alpha = 1, stroke = 0.5)
   
@@ -255,7 +255,7 @@ if(saveplots == 1){
   
   png(filename = paste0("plots/figs/", plottype, "_", 
                         format(Sys.Date(), format="%y%m%d"), ".png"), 
-      width = figW*2.25, height = figW*ratio*1.5, units = "in", res = 300)
+      width = figW*2.25, height = figW*ratio*1.5, units = "in", res = 600)
   multiplot(figSXa, figSXb, figSXc, figSXd, figSXe, emp,
             layout = matrix(c(1,2,3,4,5, 6), ncol = 3, byrow = TRUE))
   dev.off()
