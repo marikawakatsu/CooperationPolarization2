@@ -22,12 +22,12 @@ gens    <- 20000000
 saveplots <- 1
 threshold <- 1 # 0 = use all data, 1 = threshold data by min(COUNT)
 # p       <- 0.
-vs      <- c(0.001, 0.025, 0.1)
+vs      <- c(0.001, 0.005, 0.025) #, 0.1)
 Mmax    <- 5
 
 # load data
 file_dir  <- sprintf( "data/gens_%s/", format(gens, scientific = FALSE) )
-pattern   <- sprintf( "run_multi" )
+pattern   <- sprintf( "run_multi|vsweep" )
 file_list <- list.files(path = file_dir, pattern = pattern)
 simdata   <- data.frame() # initialize data frame
 
@@ -475,15 +475,17 @@ plot_fig2e_v2 <- function(simdata_coop, v, tag = "E", legend = TRUE){
 # Figure 2
 ###########################################
 # save multiplot
-p <- 0.5
+p <- 1.0
+v1 <- 0.001
+v2 <- 0.005 # 0.025
 fig2b <- plot_fig2a(   simdata_coop_p0,  p, "B")
 fig2a <- plot_fig2a_v2(simdata_coop_p0,  p, "A")
-fig2c <- plot_fig2b(simdata_strat_p0, p, 0.001, "C", TRUE, TRUE)
-fig2d <- plot_fig2b(simdata_strat_p0, p, 0.025, "D", TRUE, TRUE)
-# fig2e <- plot_fig2e_v2( simdata_coop_all, 0.001, "E")
-# fig2f <- plot_fig2e_v2( simdata_coop_all, 0.025, "F")
-fig2e <- plot_fig2e_v3( simdata_coop_all, 0.001, "E")
-fig2f <- plot_fig2e_v3( simdata_coop_all, 0.025, "F")
+fig2c <- plot_fig2b(simdata_strat_p0, p, v1, "C", TRUE, TRUE)
+fig2d <- plot_fig2b(simdata_strat_p0, p, v2, "D", TRUE, TRUE)
+# fig2e <- plot_fig2e_v2( simdata_coop_all, v1, "E")
+# fig2f <- plot_fig2e_v2( simdata_coop_all, v2, "F")
+fig2e <- plot_fig2e_v3( simdata_coop_all, v1, "E")
+fig2f <- plot_fig2e_v3( simdata_coop_all, v2, "F")
 
 if(saveplots == 1){
   
@@ -498,7 +500,7 @@ if(saveplots == 1){
   plottype <- paste0("fig2_p_", p, "_", threshcount)
   
   png(filename = paste0("plots/figs/", plottype, "_", 
-                        format(Sys.Date(), format="%y%m%d"), ".png"), 
+                        format(Sys.Date(), format="%y%m%d"), "_alt.png"), 
       width = figW*1.75*1.65, height = figW*ratio*1.8, units = "in", res = 300)
   multiplot(fig2a, fig2b, fig2c, fig2d, fig2e, fig2f,
             layout = matrix(c(1,1,1,3,3,3,5,5,2,2,2,4,4,4,6,6), ncol = 8, byrow = TRUE))
