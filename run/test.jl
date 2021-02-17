@@ -4,10 +4,10 @@ using Profile
 using PyPlot: plt, savefig
 using Dates
 
-const b = 1.0 # benefit to cooperating
+const b = 200. # benefit to cooperating
 const c = 0.2 # cost to cooperating
 
-const N = 40 # population size
+const N = 10 # population size
 const M = 2 # number of sets
 const K = 1 # number of issues to care about
 const P = 2 # number of parties
@@ -22,7 +22,7 @@ const ϵ = 1.       # damping factor (0 = no bias in mutation, 1 = max bias (= p
 # simulation parameters
 const verbose       = false
 const verbose_track = false
-const generations   = 100
+const generations   = 10000000
 const testtype      = "test"
 
 # plotting parameters
@@ -73,12 +73,12 @@ println("Initial:\t strategies_changed = $(pop.strategies_changed), sets_changed
 end
 
 # plotting
-# fig = plotter( tracker, gen_start, gen_skip, gen_end )
+fig = plotter( tracker, gen_start, gen_skip, gen_end )
 
-# plt.suptitle("Parameters: b=$b, c=$c, N=$N, M=$M, K=$K, β=$β, u=$u, v=$v, p=$p, ϵ=$ϵ", fontsize=12)
-# fig.tight_layout(rect=[0, 0.03, 1, 0.97])
+plt.suptitle("Parameters: b=$b, c=$c, N=$N, M=$M, K=$K, β=$β, u=$u, v=$v, p=$p, ϵ=$ϵ", fontsize=12)
+fig.tight_layout(rect=[0, 0.03, 1, 0.97])
 
-# display(fig)
+display(fig)
 
 # save file
 # savefig("plots/$(testtype)_$(filename).pdf")
