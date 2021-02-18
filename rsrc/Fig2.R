@@ -20,14 +20,14 @@ u       <- 0.001 # fixed, for now
 beta    <- 0.001 # fixed, for now
 gens    <- 20000000
 saveplots <- 1
-threshold <- 1 # 0 = use all data, 1 = threshold data by min(COUNT)
+threshold <- 0 # 0 = use all data, 1 = threshold data by min(COUNT)
 # p       <- 0.
 vs      <- c(0.001, 0.005, 0.025) #, 0.1)
 Mmax    <- 5
 
 # load data
 file_dir  <- sprintf( "data/gens_%s/", format(gens, scientific = FALSE) )
-pattern   <- sprintf( "run_multi|vsweep" )
+pattern   <- sprintf( "run_multi" )
 file_list <- list.files(path = file_dir, pattern = pattern)
 simdata   <- data.frame() # initialize data frame
 
@@ -475,7 +475,7 @@ plot_fig2e_v2 <- function(simdata_coop, v, tag = "E", legend = TRUE){
 # Figure 2
 ###########################################
 # save multiplot
-p <- 1.0
+p  <- 0.
 v1 <- 0.001
 v2 <- 0.005 # 0.025
 fig2b <- plot_fig2a(   simdata_coop_p0,  p, "B")
