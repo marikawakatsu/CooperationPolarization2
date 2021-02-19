@@ -20,14 +20,14 @@ u       <- 0.001 # fixed, for now
 beta    <- 0.001 # fixed, for now
 gens    <- 20000000
 saveplots <- 1
-threshold <- 0 # 0 = use all data, 1 = threshold data by min(COUNT)
+threshold <- 1 # 0 = use all data, 1 = threshold data by min(COUNT)
 # p       <- 0.
-vs      <- c(0.001, 0.005, 0.025) #, 0.1)
+vs      <- c(0.001, 0.005, 0.025) 
 Mmax    <- 5
 
 # load data
 file_dir  <- sprintf( "data/gens_%s/", format(gens, scientific = FALSE) )
-pattern   <- sprintf( "run_multi" )
+pattern   <- sprintf( "run_multi" ) # select files sweeping across M and K
 file_list <- list.files(path = file_dir, pattern = pattern)
 simdata   <- data.frame() # initialize data frame
 
@@ -35,10 +35,11 @@ for (i in 1:length(file_list)){
   temp_data    <- read.csv( paste0(file_dir, file_list[i]), header = TRUE)
   temp_data$id <- paste0("run",i) # add id to identify data source
   
-  # TEMPORARY
-  # if == 0:  ignore data sets where there is at least one line with 0's (out_of_memory)
+  # TEMPORARY WHILE RUNNING SIMULATIONS
+  # if == 0:  ignore data sets where there is at least one line with 0's 
+  #           (ie consider only complete data sets at a given time)
   # if != -1: include all simulation results (later thresholded by min(COUNT))
-  if ( dim(temp_data[temp_data$N == 0,])[1] != -1 ){
+  if ( dim(temp_data[temp_data$N == 0,])[1] == 0 ){
     # select common columns
     if (i == 1){
       simdata    <- rbind(simdata, temp_data) #bind the new data to data
@@ -62,18 +63,10 @@ casecount <- simdata %>%
 
 if(threshold == 0){
   threshdata_all <- simdata %>% group_by(M, K, v, p1) 
-  threshdata_p0  <- threshdata_all
 }else if(threshold == 1){
   threshdata_all <- simdata %>% group_by(M, K, v, p1) %>% 
-    # slice_head( n = round( min(casecount$COUNT), digits = -2) )
     slice_head( n = min(casecount$COUNT) ) 
-  threshdata_p0  <- threshdata_all
-}else if(threshold == 2){
-  threshdata_all <- simdata %>% group_by(M, K, v, p1) %>% slice_head( n = min(casecount$COUNT) )
-  casecount2    <- simdata[simdata$p == p,] %>% group_by(M, K, v, p1) %>% summarize(COUNT = n())
-  threshdata_p0 <- simdata %>% group_by(M, K, v, p1) %>% slice_head( n = min(casecount2$COUNT) )
 }
-
 # plotting parameters
 ymax      <- 0.3    # max y for plotting
 ymin      <- 0.2
@@ -90,9 +83,8 @@ qinc   <- 0.25
 # PREP DATA
 ############################################################################################
 # prep sim data
-simdata <- relabel_cols(simdata)
+simdata        <- relabel_cols(simdata)
 threshdata_all <- relabel_cols(threshdata_all)
-threshdata_p0  <- relabel_cols(threshdata_p0)
 
 # melt data
 select_cols <- c("id","M","K","u","v","p","beta","epsilon","CC","CD","DC","DD",
@@ -119,37 +111,11 @@ simdata_bymeasure_all <- threshdata_all[ select_cols ] %>%
   gather("variable","value",-M,-K,-id,-p,-u,-v,-beta,-epsilon)
 simdata_bymeasure_all$value = as.numeric(simdata_bymeasure_all$value)
 
-simdata_bymeasure_p0 <- threshdata_p0[ select_cols ] %>% 
-  gather("variable","value",-M,-K,-id,-p,-u,-v,-beta,-epsilon)
-simdata_bymeasure_p0$value = as.numeric(simdata_bymeasure_p0$value)
-
 # compute average value per strategy for all simulation data
-# simdata_strat <- 
-#   simdata_bymeasure[which(simdata_bymeasure$variable %in% measure_strat),] %>%
-#   rename( Fraction = value, Strategy = variable ) %>%
-#   group_by( M, K, u, v, p, beta, epsilon, Strategy ) %>%
-#   summarise(
-#     Mean = mean(Fraction),
-#     SD = sd(Fraction),
-#     SE = sd(Fraction) / sqrt(length(Fraction)),
-#     numCases = length(Fraction)
-#   )
-
-simdata_strat_p0 <-
-  simdata_bymeasure_p0[which(simdata_bymeasure_p0$variable %in% measure_strat),] %>%
+simdata_strat_all <-
+  simdata_bymeasure_all[which(simdata_bymeasure_all$variable %in% measure_strat),] %>%
   rename( Fraction = value, Strategy = variable ) %>%
   group_by( M, K, u, v, p, beta, epsilon, Strategy ) %>%
-  summarise(
-    Mean = mean(Fraction),
-    SD = sd(Fraction),
-    SE = sd(Fraction) / sqrt(length(Fraction)),
-    numCases = length(Fraction)
-  )
-
-simdata_coop_p0 <- 
-  simdata_bymeasure_p0[which(simdata_bymeasure_p0$variable %in% measure_coop),] %>%
-  rename( Fraction = value, Metric = variable ) %>%
-  group_by( M, K, u, v, p, beta, epsilon, Metric ) %>%
   summarise(
     Mean = mean(Fraction),
     SD = sd(Fraction),
@@ -168,33 +134,16 @@ simdata_coop_all <-
     numCases = length(Fraction)
   )
 
-# simdata_strat2 <- 
-#   simdata_bymeasure[which(simdata_bymeasure$variable %in% measure_strat2),] %>%
-#   rename( Fraction = value, Strategy = variable ) %>%
-#   group_by( M, K, u, v, p, beta, epsilon Strategy ) %>%
-#   summarise(
-#     Mean = mean(Fraction),
-#     SD = sd(Fraction),
-#     SE = sd(Fraction) / sqrt(length(Fraction)),
-#     numCases = length(Fraction)
-#   )
-
 ###########################################
 # Add extra labels #
 ###########################################
-simdata_coop_p0  <- simdata_coop_p0  %>% 
-  mutate( M2 = paste0( "M=", M ), 
-          K2 = paste0( "K=", K ),
-          M3 = paste0( M ),
-          K3 = paste0( K )
-  )
 simdata_coop_all <- simdata_coop_all %>% 
   mutate( M2 = paste0( "M=", M ), 
           K2 = paste0( "K=", K ),
           M3 = paste0( M ),
           K3 = paste0( K )
   )
-simdata_strat_p0 <- simdata_strat_p0 %>% 
+simdata_strat_all <- simdata_strat_all %>% 
   mutate( M2 = paste0( "M=", M ), 
           K2 = paste0( "K=", K ),
           M3 = paste0( M ),
@@ -236,8 +185,8 @@ plot_fig2a <- function(simdata_coop, p, tag){
     scale_y_continuous(limits = c(0.1, 0.6), 
                        breaks = seq(0.1, 0.6, 0.1)) +
     # geom_hline(yintercept = 0.5, color = "gray80") +
-    geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0) +
-    # geom_ribbon(aes(ymin = Mean - SD, ymax = Mean + SD), alpha = 1, color = NA) +
+    geom_errorbar(aes(ymin = Mean - 1.96*SE, ymax = Mean + 1.96*SE), width = 0) +
+    # geom_ribbon(aes(ymin = Mean - 1.96*SE, ymax = Mean + 1.96*SE), alpha = 1, color = NA) +
     geom_line(aes(group = v), size = 0.4, alpha = 1, lty = 1) +
     geom_point(stat="identity", size = 1.3, alpha = 1, stroke = 0.5, shape = 1) +
     facet_grid( ~ M2, space="free_x",
@@ -282,8 +231,8 @@ plot_fig2a_v2 <- function(simdata_coop, p, tag){
     scale_y_continuous(limits = c(0.1, 0.6),  
                        breaks = seq(0.1, 0.6, 0.1)) +
     # geom_hline(yintercept = 0.5, color = "gray80") +
-    geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0) +
-    # geom_ribbon(aes(ymin = Mean - SD, ymax = Mean + SD), alpha = 1) +
+    geom_errorbar(aes(ymin = Mean - 1.96*SE, ymax = Mean + 1.96*SE), width = 0) +
+    # geom_ribbon(aes(ymin = Mean - 1.96*SE, ymax = Mean + 1.96*SE), alpha = 1) +
     geom_line(aes(group = v), size = 0.4, alpha = 1, lty = 1) +
     geom_point(stat="identity", size = 1.3, alpha = 1, stroke = 0.5, shape = 1) +
     facet_grid( ~ K2, space="free_x",
@@ -323,14 +272,12 @@ plot_fig2b <- function(simdata_strat, p, v, tag = "B", labeled = TRUE, wlegend =
          y = ylabel,
          tag = tag) +
     ggtitle( paste0("p = ", p, ", v = ", v) ) +
-    # scale_color_manual(values = rev(viridis(5)[1:4]), # magma(6)[2:5]) +
-    scale_color_manual(values = c("#0571b0","#92c5de","#f4a582","#ca0020"),
-    ) +
+    scale_color_manual(values = c("#0571b0","#92c5de","#f4a582","#ca0020")) +
     scale_y_continuous(limits = c(0.0, 0.55),
                        breaks = seq(0.0, 0.5, 0.1)) +
     # scale_x_continuous(limits = c(qmin, qmax), 
     #                    breaks = seq(qmin, qmax, qinc)) +
-    geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0) +
+    geom_errorbar(aes(ymin = Mean - 1.96*SE, ymax = Mean + 1.96*SE), width = 0) +
     geom_line(aes(group = Strategy), size = 0.4, alpha = 1, lty = 1) +
     geom_point(stat="identity", size = 1.3, alpha = 1, stroke = 0.5, shape = 1) + 
     facet_grid( ~ M2, space="free_x",
@@ -463,8 +410,8 @@ plot_fig2e_v2 <- function(simdata_coop, v, tag = "E", legend = TRUE){
     # geom_hline(yintercept = 0.5, color = "gray80") + 
     scale_y_continuous(limits = c(0.1, 0.6), 
                        breaks = seq(0.1, 0.6, 0.1)) +
-    # geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0) +
-    geom_ribbon(aes(ymin = Mean - SD, ymax = Mean + SD), alpha = 0.1, color = NA) +
+    # geom_errorbar(aes(ymin = Mean - 1.96*SE, ymax = Mean + 1.96*SE), width = 0) +
+    geom_ribbon(aes(ymin = Mean - 1.96*SE, ymax = Mean + 1.96*SE), alpha = 0.1, color = NA) +
     geom_line(size = 0.4, alpha = 1, lty = 1) +
     geom_point(size = 1., alpha = 1, stroke = 0.5)
   
@@ -477,30 +424,23 @@ plot_fig2e_v2 <- function(simdata_coop, v, tag = "E", legend = TRUE){
 # save multiplot
 p  <- 0.
 v1 <- 0.001
-v2 <- 0.025 # 0.025
-fig2b <- plot_fig2a(   simdata_coop_p0,  p, "B")
-fig2a <- plot_fig2a_v2(simdata_coop_p0,  p, "A")
-fig2c <- plot_fig2b(simdata_strat_p0, p, v1, "C", TRUE, TRUE)
-fig2d <- plot_fig2b(simdata_strat_p0, p, v2, "D", TRUE, TRUE)
-# fig2e <- plot_fig2e_v2( simdata_coop_all, v1, "E")
-# fig2f <- plot_fig2e_v2( simdata_coop_all, v2, "F")
+v2 <- 0.025
+fig2b <- plot_fig2a(   simdata_coop_all,  p, "B")
+fig2a <- plot_fig2a_v2(simdata_coop_all,  p, "A")
+fig2c <- plot_fig2b(simdata_strat_all, p, v1, "C", TRUE, TRUE)
+fig2d <- plot_fig2b(simdata_strat_all, p, v2, "D", TRUE, TRUE)
 fig2e <- plot_fig2e_v3( simdata_coop_all, v1, "E")
 fig2f <- plot_fig2e_v3( simdata_coop_all, v2, "F")
 
 if(saveplots == 1){
   
-  threshcount <- 
-    if(threshold %in% c(0,1)){ 
-      # paste0("thresh_", threshold, "_", round( min(casecount$COUNT), digits = -2 ))
+  threshcount <- if(threshold %in% c(0,1)){ 
       paste0("thresh_", threshold, "_", min(casecount$COUNT))
-    }else if(threshold == 2){ 
-      paste0("thresh_", threshold, "_", min(casecount$COUNT), "_", min(casecount2$COUNT)) 
     }
-  
   plottype <- paste0("fig2_p_", p, "_", threshcount)
   
   png(filename = paste0("plots/figs/", plottype, "_", 
-                        format(Sys.Date(), format="%y%m%d"), "_alt2.png"), 
+                        format(Sys.Date(), format="%y%m%d"), "_CI.png"), # !!! change !!!
       width = figW*1.75*1.65, height = figW*ratio*1.8, units = "in", res = 300)
   multiplot(fig2a, fig2b, fig2c, fig2d, fig2e, fig2f,
             layout = matrix(c(1,1,1,3,3,3,5,5,2,2,2,4,4,4,6,6), ncol = 8, byrow = TRUE))
@@ -508,5 +448,4 @@ if(saveplots == 1){
   dev.off()
   
 }
-
 

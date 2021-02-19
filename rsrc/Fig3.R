@@ -21,7 +21,7 @@ gens  <- 20000000
 saveplots <- 1
 Mmax      <- 5
 
-vs     <- c(0.001, 0.025)
+vs     <- c(0.001, 0.005, 0.025)
 vlabel <- if(length(vs) < 3){ paste0("v_",vs[1],"+",vs[2]) }else{ "all" }
 
 # load data
@@ -36,7 +36,7 @@ for (i in 1:length(file_list)){
   
   # TEMPORARY
   # ignore data sets where there is at least one line with 0's (out_of_memory)
-  if ( dim(temp_data[temp_data$N == 0,])[1] != -1 ){
+  if ( dim(temp_data[temp_data$N == 0,])[1] == 0){
     # select common columns
     if (i == 1){
       simdata    <- rbind(simdata, temp_data) #bind the new data to data
@@ -80,21 +80,20 @@ if(length(vs) == 3){
   hamming_colors <- rev(magma(7)[c(3,5)])
 }
 
-if(length(vs) == 3){
-  topinion_colors <- rev( viridis(6)[2:5] )
-}else if(0.025 %in% vs){
-  topinion_colors <- rev( viridis(6)[3:4] )
-}else if(0.1 %in% vs){
-  topinion_colors <- rev( viridis(6)[c(2,4)] )
-}
+# if(length(vs) == 3){
+#   topinion_colors <- rev( viridis(6)[2:5] )
+# }else if(0.025 %in% vs){
+#   topinion_colors <- rev( viridis(6)[3:4] )
+# }else if(0.1 %in% vs){
+#   topinion_colors <- rev( viridis(6)[c(2,4)] )
+# }
 
 ############################################################################################
 # PREP DATA
 ############################################################################################
 # prep sim data
-simdata <- relabel_cols(simdata)
+simdata        <- relabel_cols(simdata)
 threshdata_all <- relabel_cols(threshdata_all)
-threshdata_p0  <- relabel_cols(threshdata_p0)
 
 # melt data
 select_cols <- c("id","M","K","u","v","p","beta","epsilon","CC","CD","DC","DD",
@@ -216,9 +215,10 @@ plot_fig3b <- function(simdata_dist, tag = "B", colors = cityblock_colors){
                        breaks = seq(0, 10, 2)) +
     scale_x_continuous(limits = c(qmin, qmax), 
                        breaks = seq(qmin, qmax, qinc)) +
-    geom_ribbon(aes(ymin = Mean - SD, ymax = Mean + SD), alpha = 0.3, color = NA) +
-    geom_line(aes(y = Mean), size = 0.4, alpha = 1) +
-    geom_point(aes(y = Mean), size = 1.3, alpha = 1, stroke = 0.5) + 
+    # geom_ribbon(aes(ymin = Mean - SD, ymax = Mean + SD), alpha = 0.3, color = NA) +
+    geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0) +
+    geom_line(aes(y = Mean), size = 0.2, alpha = 0.7) +
+    geom_point(aes(y = Mean), size = 1.0, alpha = 1, stroke = 0.4, shape = 1) + 
     facet_rep_grid( M2 ~ K2, repeat.tick.labels = TRUE,
                     # switch = "both", 
                     drop = TRUE) +
@@ -279,9 +279,10 @@ plot_fig4a <- function(simdata_dist, tag = "A", colors = hamming_colors){
                        breaks = seq(0, 2.4, 0.4)) +
     scale_x_continuous(limits = c(qmin, qmax), 
                        breaks = seq(qmin, qmax, qinc)) +
-    geom_ribbon(aes(ymin = Mean - SD, ymax = Mean + SD), alpha = 0.3, color = NA) +
-    geom_line(aes(y = Mean), size = 0.4, alpha = 1) +
-    geom_point(aes(y = Mean), size = 1.3, alpha = 1, stroke = 0.5) + 
+    # geom_ribbon(aes(ymin = Mean - SD, ymax = Mean + SD), alpha = 0.3, color = NA) +
+    geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0) +
+    geom_line(aes(y = Mean), size = 0.2, alpha = 0.7) +
+    geom_point(aes(y = Mean), size = 1.0, alpha = 1, stroke = 0.4, shape = 1) + 
     facet_rep_grid( M2 ~ K2, repeat.tick.labels = TRUE,
                     # switch = "both", 
                     drop = TRUE) +
@@ -348,9 +349,10 @@ plot_fig3b_normed <- function(simdata_dist, tag = "B", colors = cityblock_colors
                        breaks = seq(0, 1, 0.2)) +
     scale_x_continuous(limits = c(qmin, qmax), 
                        breaks = seq(qmin, qmax, qinc)) +
-    geom_ribbon(aes(ymin = Mean - SD, ymax = Mean + SD), alpha = 0.3, color = NA) +
-    geom_line(aes(y = Mean), size = 0.4, alpha = 1) +
-    geom_point(aes(y = Mean), size = 1.3, alpha = 1, stroke = 0.5) + 
+    # geom_ribbon(aes(ymin = Mean - SD, ymax = Mean + SD), alpha = 0.3, color = NA) +
+    geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0) +
+    geom_line(aes(y = Mean), size = 0.2, alpha = 0.7) +
+    geom_point(aes(y = Mean), size = 1.0, alpha = 1, stroke = 0.4, shape = 1) + 
     facet_rep_grid( M2 ~ K2, repeat.tick.labels = TRUE,
                     # switch = "both", 
                     drop = TRUE) +
@@ -411,9 +413,10 @@ plot_fig4a_normed <- function(simdata_dist, tag = "A", colors = hamming_colors){
                        breaks = seq(0, 0.8, 0.2)) +
     scale_x_continuous(limits = c(qmin, qmax), 
                        breaks = seq(qmin, qmax, qinc)) +
-    geom_ribbon(aes(ymin = Mean - SD, ymax = Mean + SD), alpha = 0.3, color = NA) +
-    geom_line(aes(y = Mean), size = 0.4, alpha = 1) +
-    geom_point(aes(y = Mean), size = 1.3, alpha = 1, stroke = 0.5) + 
+    # geom_ribbon(aes(ymin = Mean - SD, ymax = Mean + SD), alpha = 0.3, color = NA) +
+    geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0) +
+    geom_line(aes(y = Mean), size = 0.2, alpha = 0.7) +
+    geom_point(aes(y = Mean), size = 1.0, alpha = 1, stroke = 0.4, shape = 1) + 
     facet_rep_grid( M2 ~ K2, repeat.tick.labels = TRUE,
                     # switch = "both", 
                     drop = TRUE) +
@@ -451,8 +454,8 @@ if(saveplots == 1){
   
   plottype <- paste0("fig3_unnormed")
   png(filename = paste0("plots/figs/", plottype, "_", vlabel, "_",
-                        format(Sys.Date(), format="%y%m%d"), ".png"),
-      width = figW*1.9/1.5, height = figW*ratio*1.75*2, units = "in", res = 300)
+                        format(Sys.Date(), format="%y%m%d"), "_SD.png"),
+      width = figW*1.9/1.5, height = figW*ratio*1.75*2, units = "in", res = 600)
   multiplot(fig3b, fig3c, cols = 1)
   dev.off()
   
@@ -469,15 +472,15 @@ if(saveplots == 1){
   
   plottype <- paste0("fig3_normed_horizontal")
   png(filename = paste0("plots/figs/", plottype, "_", vlabel, "_",
-                        format(Sys.Date(), format="%y%m%d"), ".png"),
-      width = figW*3.8/1.5, height = figW*ratio*1.75, units = "in", res = 300)
+                        format(Sys.Date(), format="%y%m%d"), "_SD.png"), # !!! change !!! 
+      width = figW*3.8/1.5, height = figW*ratio*1.75, units = "in", res = 600)
   multiplot(fig3b_normed, fig3c_normed, cols = 2)
   dev.off()
   
   plottype <- paste0("fig3_normed")
   png(filename = paste0("plots/figs/", plottype, "_", vlabel, "_",
-                        format(Sys.Date(), format="%y%m%d"), ".png"),
-      width = figW*1.9/1.5, height = figW*ratio*1.75*2, units = "in", res = 300)
+                        format(Sys.Date(), format="%y%m%d"), "_SD.png"), # !!! change !!! 
+      width = figW*1.9/1.5, height = figW*ratio*1.75*2, units = "in", res = 600)
   multiplot(fig3b_normed, fig3c_normed, cols = 1)
   dev.off()
   
