@@ -1,0 +1,604 @@
+packages loaded
+      From worker 3:	 Activating environment at `/tigress/mk28/CooperationPolarization2/Project.toml`
+      From worker 5:	 Activating environment at `/tigress/mk28/CooperationPolarization2/Project.toml`
+      From worker 4:	 Activating environment at `/tigress/mk28/CooperationPolarization2/Project.toml`
+      From worker 2:	 Activating environment at `/tigress/mk28/CooperationPolarization2/Project.toml`
+      From worker 6:	 Activating environment at `/tigress/mk28/CooperationPolarization2/Project.toml`
+      From worker 12:	 Activating environment at `/tigress/mk28/CooperationPolarization2/Project.toml`
+      From worker 14:	 Activating environment at `/tigress/mk28/CooperationPolarization2/Project.toml`
+      From worker 11:	 Activating environment at `/tigress/mk28/CooperationPolarization2/Project.toml`
+      From worker 13:	 Activating environment at `/tigress/mk28/CooperationPolarization2/Project.toml`
+      From worker 9:	 Activating environment at `/tigress/mk28/CooperationPolarization2/Project.toml`
+      From worker 15:	 Activating environment at `/tigress/mk28/CooperationPolarization2/Project.toml`
+      From worker 8:	 Activating environment at `/tigress/mk28/CooperationPolarization2/Project.toml`
+      From worker 10:	 Activating environment at `/tigress/mk28/CooperationPolarization2/Project.toml`
+      From worker 16:	 Activating environment at `/tigress/mk28/CooperationPolarization2/Project.toml`
+      From worker 7:	 Activating environment at `/tigress/mk28/CooperationPolarization2/Project.toml`
+      From worker 4:	packages loaded
+      From worker 5:	packages loaded
+      From worker 13:	packages loaded
+      From worker 11:	packages loaded
+      From worker 15:	packages loaded
+      From worker 9:	packages loaded
+      From worker 3:	packages loaded
+      From worker 6:	packages loaded
+      From worker 14:	packages loaded
+      From worker 12:	packages loaded
+      From worker 2:	packages loaded
+      From worker 8:	packages loaded
+      From worker 16:	packages loaded
+      From worker 7:	packages loaded
+      From worker 10:	packages loaded
+parameters defined
+      From worker 5:	
+      From worker 5:	starting b_1.0_c_0.2_N_40_M_2_K_1_P_2_beta_0.001_u_0.001_v_0.0022360679774997894_p_0.75_ϵ_1.0_gens_20000000_210221-084434.816
+      From worker 16:	
+      From worker 16:	starting b_1.0_c_0.2_N_40_M_2_K_1_P_2_beta_0.001_u_0.001_v_0.625_p_1.0_ϵ_1.0_gens_20000000_210221-084434.816
+      From worker 6:	
+      From worker 6:	starting b_1.0_c_0.2_N_40_M_2_K_1_P_2_beta_0.001_u_0.001_v_0.005_p_1.0_ϵ_1.0_gens_20000000_210221-084434.816
+      From worker 4:	
+      From worker 4:	starting b_1.0_c_0.2_N_40_M_2_K_1_P_2_beta_0.001_u_0.001_v_0.0022360679774997894_p_0.5_ϵ_1.0_gens_20000000_210221-084434.816
+      From worker 10:	
+      From worker 10:	starting b_1.0_c_0.2_N_40_M_2_K_1_P_2_beta_0.001_u_0.001_v_0.025_p_0.75_ϵ_1.0_gens_20000000_210221-084434.816
+      From worker 12:	
+      From worker 12:	starting b_1.0_c_0.2_N_40_M_2_K_1_P_2_beta_0.001_u_0.001_v_0.125_p_0.0_ϵ_1.0_gens_20000000_210221-084434.816
+      From worker 14:	
+      From worker 14:	starting b_1.0_c_0.2_N_40_M_2_K_1_P_2_beta_0.001_u_0.001_v_0.2795084971874737_p_0.5_ϵ_1.0_gens_20000000_210221-084434.816
+      From worker 13:	
+      From worker 13:	starting b_1.0_c_0.2_N_40_M_2_K_1_P_2_beta_0.001_u_0.001_v_0.125_p_0.25_ϵ_1.0_gens_20000000_210221-084434.816
+      From worker 9:	
+      From worker 9:	starting b_1.0_c_0.2_N_40_M_2_K_1_P_2_beta_0.001_u_0.001_v_0.025_p_0.5_ϵ_1.0_gens_20000000_210221-084434.816
+      From worker 15:	
+      From worker 15:	starting b_1.0_c_0.2_N_40_M_2_K_1_P_2_beta_0.001_u_0.001_v_0.2795084971874737_p_0.75_ϵ_1.0_gens_20000000_210221-084434.816
+      From worker 3:	
+      From worker 3:	starting b_1.0_c_0.2_N_40_M_2_K_1_P_2_beta_0.001_u_0.001_v_0.001_p_0.25_ϵ_1.0_gens_20000000_210221-084434.816
+      From worker 2:	
+      From worker 2:	starting b_1.0_c_0.2_N_40_M_2_K_1_P_2_beta_0.001_u_0.001_v_0.001_p_0.0_ϵ_1.0_gens_20000000_210221-084434.816
+      From worker 8:	
+      From worker 8:	starting b_1.0_c_0.2_N_40_M_2_K_1_P_2_beta_0.001_u_0.001_v_0.011180339887498947_p_0.25_ϵ_1.0_gens_20000000_210221-084434.816
+      From worker 11:	
+      From worker 11:	starting b_1.0_c_0.2_N_40_M_2_K_1_P_2_beta_0.001_u_0.001_v_0.055901699437494755_p_1.0_ϵ_1.0_gens_20000000_210221-084434.816
+      From worker 7:	
+      From worker 7:	starting b_1.0_c_0.2_N_40_M_2_K_1_P_2_beta_0.001_u_0.001_v_0.011180339887498947_p_0.0_ϵ_1.0_gens_20000000_210221-084434.816
+      From worker 6:	replicate complete, ran 20000000 generations:
+      From worker 6:	
+      From worker 6:		num_imitating:			10000533
+      From worker 6:		num_not_imitating:		9999467
+      From worker 6:		num_strategies_changed:  	145995
+      From worker 6:			num_random_strategies: 	9973
+      From worker 6:		num_sets_changed: 		456686
+      From worker 6:			num_random_opinions: 	0
+      From worker 6:			num_biased_opinions: 	50125
+      From worker 6:		num_both_changed: 		13207
+      From worker 6:	
+      From worker 6:	data processed and exported
+      From worker 6:	
+      From worker 6:	starting b_1.0_c_0.2_N_40_M_2_K_1_P_2_beta_0.001_u_0.001_v_0.005_p_0.0_ϵ_1.0_gens_20000000_210221-084434.816
+      From worker 3:	replicate complete, ran 20000000 generations:
+      From worker 3:	
+      From worker 3:		num_imitating:			17500791
+      From worker 3:		num_not_imitating:		2499209
+      From worker 3:		num_strategies_changed:  	497816
+      From worker 3:			num_random_strategies: 	17604
+      From worker 3:		num_sets_changed: 		476597
+      From worker 3:			num_random_opinions: 	13186
+      From worker 3:			num_biased_opinions: 	4438
+      From worker 3:		num_both_changed: 		30004
+      From worker 3:	
+      From worker 2:	replicate complete, ran 20000000 generations:
+      From worker 2:	
+      From worker 2:		num_imitating:			20000000
+      From worker 2:		num_not_imitating:		0
+      From worker 2:		num_strategies_changed:  	550926
+      From worker 2:			num_random_strategies: 	19852
+      From worker 2:		num_sets_changed: 		560209
+      From worker 2:			num_random_opinions: 	19928
+      From worker 2:			num_biased_opinions: 	0
+      From worker 2:		num_both_changed: 		31825
+      From worker 2:	
+      From worker 3:	data processed and exported
+      From worker 3:	
+      From worker 3:	starting b_1.0_c_0.2_N_40_M_2_K_1_P_2_beta_0.001_u_0.001_v_0.001_p_0.5_ϵ_1.0_gens_20000000_210221-084434.816
+      From worker 2:	data processed and exported
+      From worker 2:	
+      From worker 2:	starting b_1.0_c_0.2_N_40_M_2_K_1_P_2_beta_0.001_u_0.001_v_0.001_p_0.25_ϵ_1.0_gens_20000000_210221-084434.816
+      From worker 5:	replicate complete, ran 20000000 generations:
+      From worker 5:	
+      From worker 5:		num_imitating:			12500100
+      From worker 5:		num_not_imitating:		7499900
+      From worker 5:		num_strategies_changed:  	364016
+      From worker 5:			num_random_strategies: 	12639
+      From worker 5:		num_sets_changed: 		734312
+      From worker 5:			num_random_opinions: 	7021
+      From worker 5:			num_biased_opinions: 	20776
+      From worker 5:		num_both_changed: 		40670
+      From worker 5:	
+      From worker 5:	data processed and exported
+      From worker 5:	
+      From worker 5:	starting b_1.0_c_0.2_N_40_M_2_K_1_P_2_beta_0.001_u_0.001_v_0.0022360679774997894_p_1.0_ϵ_1.0_gens_20000000_210221-084434.816
+      From worker 4:	replicate complete, ran 20000000 generations:
+      From worker 4:	
+      From worker 4:		num_imitating:			14999125
+      From worker 4:		num_not_imitating:		5000875
+      From worker 4:		num_strategies_changed:  	437613
+      From worker 4:			num_random_strategies: 	14921
+      From worker 4:		num_sets_changed: 		918385
+      From worker 4:			num_random_opinions: 	17002
+      From worker 4:			num_biased_opinions: 	16727
+      From worker 4:		num_both_changed: 		55345
+      From worker 4:	
+      From worker 4:	data processed and exported
+      From worker 4:	
+      From worker 4:	starting b_1.0_c_0.2_N_40_M_2_K_1_P_2_beta_0.001_u_0.001_v_0.0022360679774997894_p_0.75_ϵ_1.0_gens_20000000_210221-084434.816
+      From worker 11:	replicate complete, ran 20000000 generations:
+      From worker 11:	
+      From worker 11:		num_imitating:			9999095
+      From worker 11:		num_not_imitating:		10000905
+      From worker 11:		num_strategies_changed:  	145398
+      From worker 11:			num_random_strategies: 	9896
+      From worker 11:		num_sets_changed: 		2689936
+      From worker 11:			num_random_opinions: 	0
+      From worker 11:			num_biased_opinions: 	557679
+      From worker 11:		num_both_changed: 		57034
+      From worker 11:	
+      From worker 11:	data processed and exported
+      From worker 11:	
+      From worker 11:	starting b_1.0_c_0.2_N_40_M_2_K_1_P_2_beta_0.001_u_0.001_v_0.055901699437494755_p_0.0_ϵ_1.0_gens_20000000_210221-084434.816
+      From worker 8:	replicate complete, ran 20000000 generations:
+      From worker 8:	
+      From worker 8:		num_imitating:			17499538
+      From worker 8:		num_not_imitating:		2500462
+      From worker 8:		num_strategies_changed:  	484960
+      From worker 8:			num_random_strategies: 	17412
+      From worker 8:		num_sets_changed: 		3941447
+      From worker 8:			num_random_opinions: 	146925
+      From worker 8:			num_biased_opinions: 	48827
+      From worker 8:		num_both_changed: 		177309
+      From worker 8:	
+      From worker 8:	data processed and exported
+      From worker 8:	
+      From worker 8:	starting b_1.0_c_0.2_N_40_M_2_K_1_P_2_beta_0.001_u_0.001_v_0.011180339887498947_p_0.5_ϵ_1.0_gens_20000000_210221-084434.816
+      From worker 10:	replicate complete, ran 20000000 generations:
+      From worker 10:	
+      From worker 10:		num_imitating:			12501437
+      From worker 10:		num_not_imitating:		7498563
+      From worker 10:		num_strategies_changed:  	360178
+      From worker 10:			num_random_strategies: 	12487
+      From worker 10:		num_sets_changed: 		4531363
+      From worker 10:			num_random_opinions: 	78065
+      From worker 10:			num_biased_opinions: 	235136
+      From worker 10:		num_both_changed: 		194217
+      From worker 10:	
+      From worker 10:	data processed and exported
+      From worker 10:	
+      From worker 10:	starting b_1.0_c_0.2_N_40_M_2_K_1_P_2_beta_0.001_u_0.001_v_0.025_p_1.0_ϵ_1.0_gens_20000000_210221-084434.816
+      From worker 16:	replicate complete, ran 20000000 generations:
+      From worker 16:	
+      From worker 16:		num_imitating:			9999858
+      From worker 16:		num_not_imitating:		10000142
+      From worker 16:		num_strategies_changed:  	147783
+      From worker 16:			num_random_strategies: 	10041
+      From worker 16:		num_sets_changed: 		4853374
+      From worker 16:			num_random_opinions: 	0
+      From worker 16:			num_biased_opinions: 	6249276
+      From worker 16:		num_both_changed: 		73691
+      From worker 16:	
+      From worker 16:	data processed and exported
+      From worker 16:	
+      From worker 16:	starting b_1.0_c_0.2_N_40_M_2_K_1_P_2_beta_0.001_u_0.001_v_0.625_p_0.0_ϵ_1.0_gens_20000000_210221-084434.816
+      From worker 7:	replicate complete, ran 20000000 generations:
+      From worker 7:	
+      From worker 7:		num_imitating:			20000000
+      From worker 7:		num_not_imitating:		0
+      From worker 7:		num_strategies_changed:  	565637
+      From worker 7:			num_random_strategies: 	19817
+      From worker 7:		num_sets_changed: 		4534276
+      From worker 7:			num_random_opinions: 	223644
+      From worker 7:			num_biased_opinions: 	0
+      From worker 7:		num_both_changed: 		206944
+      From worker 7:	
+      From worker 7:	data processed and exported
+      From worker 7:	
+      From worker 7:	starting b_1.0_c_0.2_N_40_M_2_K_1_P_2_beta_0.001_u_0.001_v_0.011180339887498947_p_0.25_ϵ_1.0_gens_20000000_210221-084434.816
+      From worker 9:	replicate complete, ran 20000000 generations:
+      From worker 9:	
+      From worker 9:		num_imitating:			14998326
+      From worker 9:		num_not_imitating:		5001674
+      From worker 9:		num_strategies_changed:  	431766
+      From worker 9:			num_random_strategies: 	15244
+      From worker 9:		num_sets_changed: 		5525681
+      From worker 9:			num_random_opinions: 	187948
+      From worker 9:			num_biased_opinions: 	187163
+      From worker 9:		num_both_changed: 		239236
+      From worker 9:	
+      From worker 9:	data processed and exported
+      From worker 9:	
+      From worker 9:	starting b_1.0_c_0.2_N_40_M_2_K_1_P_2_beta_0.001_u_0.001_v_0.025_p_0.75_ϵ_1.0_gens_20000000_210221-084434.816
+      From worker 15:	replicate complete, ran 20000000 generations:
+      From worker 15:	
+      From worker 15:		num_imitating:			12501388
+      From worker 15:		num_not_imitating:		7498612
+      From worker 15:		num_strategies_changed:  	356863
+      From worker 15:			num_random_strategies: 	12294
+      From worker 15:		num_sets_changed: 		8253825
+      From worker 15:			num_random_opinions: 	874198
+      From worker 15:			num_biased_opinions: 	2619103
+      From worker 15:		num_both_changed: 		255072
+      From worker 15:	
+      From worker 15:	data processed and exported
+      From worker 15:	
+      From worker 15:	starting b_1.0_c_0.2_N_40_M_2_K_1_P_2_beta_0.001_u_0.001_v_0.2795084971874737_p_1.0_ϵ_1.0_gens_20000000_210221-084434.816
+      From worker 14:	replicate complete, ran 20000000 generations:
+      From worker 14:	
+      From worker 14:		num_imitating:			14997796
+      From worker 14:		num_not_imitating:		5002204
+      From worker 14:		num_strategies_changed:  	439998
+      From worker 14:			num_random_strategies: 	15124
+      From worker 14:		num_sets_changed: 		10362611
+      From worker 14:			num_random_opinions: 	2095350
+      From worker 14:			num_biased_opinions: 	2097289
+      From worker 14:		num_both_changed: 		325242
+      From worker 14:	
+      From worker 14:	data processed and exported
+      From worker 14:	
+      From worker 14:	starting b_1.0_c_0.2_N_40_M_2_K_1_P_2_beta_0.001_u_0.001_v_0.2795084971874737_p_0.75_ϵ_1.0_gens_20000000_210221-084434.816
+      From worker 13:	replicate complete, ran 20000000 generations:
+      From worker 13:	
+      From worker 13:		num_imitating:			17501290
+      From worker 13:		num_not_imitating:		2498710
+      From worker 13:		num_strategies_changed:  	495276
+      From worker 13:			num_random_strategies: 	17258
+      From worker 13:		num_sets_changed: 		11109783
+      From worker 13:			num_random_opinions: 	1641164
+      From worker 13:			num_biased_opinions: 	546221
+      From worker 13:		num_both_changed: 		359996
+      From worker 13:	
+      From worker 13:	data processed and exported
+      From worker 13:	
+      From worker 13:	starting b_1.0_c_0.2_N_40_M_2_K_1_P_2_beta_0.001_u_0.001_v_0.125_p_0.5_ϵ_1.0_gens_20000000_210221-084434.816
+      From worker 12:	replicate complete, ran 20000000 generations:
+      From worker 12:	
+      From worker 12:		num_imitating:			20000000
+      From worker 12:		num_not_imitating:		0
+      From worker 12:		num_strategies_changed:  	608619
+      From worker 12:			num_random_strategies: 	19740
+      From worker 12:		num_sets_changed: 		12729306
+      From worker 12:			num_random_opinions: 	2497567
+      From worker 12:			num_biased_opinions: 	0
+      From worker 12:		num_both_changed: 		443812
+      From worker 12:	
+      From worker 12:	data processed and exported
+      From worker 12:	
+      From worker 12:	starting b_1.0_c_0.2_N_40_M_2_K_1_P_2_beta_0.001_u_0.001_v_0.125_p_0.25_ϵ_1.0_gens_20000000_210221-084434.816
+      From worker 3:	replicate complete, ran 20000000 generations:
+      From worker 3:	
+      From worker 3:		num_imitating:			15000162
+      From worker 3:		num_not_imitating:		4999838
+      From worker 3:		num_strategies_changed:  	419648
+      From worker 3:			num_random_strategies: 	14878
+      From worker 3:		num_sets_changed: 		410589
+      From worker 3:			num_random_opinions: 	7494
+      From worker 3:			num_biased_opinions: 	7481
+      From worker 3:		num_both_changed: 		28966
+      From worker 3:	
+      From worker 5:	replicate complete, ran 20000000 generations:
+      From worker 5:	
+      From worker 5:		num_imitating:			10002451
+      From worker 5:		num_not_imitating:		9997549
+      From worker 5:		num_strategies_changed:  	149081
+      From worker 5:			num_random_strategies: 	10110
+      From worker 5:		num_sets_changed: 		213360
+      From worker 5:			num_random_opinions: 	0
+      From worker 5:			num_biased_opinions: 	22407
+      From worker 5:		num_both_changed: 		6166
+      From worker 5:	
+      From worker 3:	data processed and exported
+      From worker 5:	data processed and exported
+      From worker 3:	
+      From worker 3:	starting b_1.0_c_0.2_N_40_M_2_K_1_P_2_beta_0.001_u_0.001_v_0.001_p_0.75_ϵ_1.0_gens_20000000_210221-084434.816
+      From worker 2:	replicate complete, ran 20000000 generations:
+      From worker 2:	
+      From worker 2:		num_imitating:			17501755
+      From worker 2:		num_not_imitating:		2498245
+      From worker 2:		num_strategies_changed:  	479933
+      From worker 2:			num_random_strategies: 	17352
+      From worker 2:		num_sets_changed: 		479465
+      From worker 2:			num_random_opinions: 	12953
+      From worker 2:			num_biased_opinions: 	4377
+      From worker 2:		num_both_changed: 		27290
+      From worker 2:	
+      From worker 5:	
+      From worker 5:	starting b_1.0_c_0.2_N_40_M_2_K_1_P_2_beta_0.001_u_0.001_v_0.005_p_0.0_ϵ_1.0_gens_20000000_210221-084434.816
+      From worker 2:	data processed and exported
+      From worker 2:	
+      From worker 2:	starting b_1.0_c_0.2_N_40_M_2_K_1_P_2_beta_0.001_u_0.001_v_0.001_p_0.5_ϵ_1.0_gens_20000000_210221-084434.816
+      From worker 4:	replicate complete, ran 20000000 generations:
+      From worker 4:	
+      From worker 4:		num_imitating:			12500011
+      From worker 4:		num_not_imitating:		7499989
+      From worker 4:		num_strategies_changed:  	340416
+      From worker 4:			num_random_strategies: 	12436
+      From worker 4:		num_sets_changed: 		736746
+      From worker 4:			num_random_opinions: 	6975
+      From worker 4:			num_biased_opinions: 	20905
+      From worker 4:		num_both_changed: 		35054
+      From worker 4:	
+      From worker 4:	data processed and exported
+      From worker 4:	
+      From worker 4:	starting b_1.0_c_0.2_N_40_M_2_K_1_P_2_beta_0.001_u_0.001_v_0.0022360679774997894_p_1.0_ϵ_1.0_gens_20000000_210221-084434.816
+      From worker 6:	replicate complete, ran 20000000 generations:
+      From worker 6:	
+      From worker 6:		num_imitating:			20000000
+      From worker 6:		num_not_imitating:		0
+      From worker 6:		num_strategies_changed:  	574681
+      From worker 6:			num_random_strategies: 	19916
+      From worker 6:		num_sets_changed: 		2423222
+      From worker 6:			num_random_opinions: 	100059
+      From worker 6:			num_biased_opinions: 	0
+      From worker 6:		num_both_changed: 		129561
+      From worker 6:	
+      From worker 6:	data processed and exported
+      From worker 6:	
+      From worker 6:	starting b_1.0_c_0.2_N_40_M_2_K_1_P_2_beta_0.001_u_0.001_v_0.005_p_0.25_ϵ_1.0_gens_20000000_210221-084434.816
+      From worker 10:	replicate complete, ran 20000000 generations:
+      From worker 10:	
+      From worker 10:		num_imitating:			10002042
+      From worker 10:		num_not_imitating:		9997958
+      From worker 10:		num_strategies_changed:  	142983
+      From worker 10:			num_random_strategies: 	10081
+      From worker 10:		num_sets_changed: 		1679645
+      From worker 10:			num_random_opinions: 	0
+      From worker 10:			num_biased_opinions: 	250297
+      From worker 10:		num_both_changed: 		37530
+      From worker 10:	
+      From worker 10:	data processed and exported
+      From worker 10:	
+      From worker 10:	starting b_1.0_c_0.2_N_40_M_2_K_1_P_2_beta_0.001_u_0.001_v_0.055901699437494755_p_0.0_ϵ_1.0_gens_20000000_210221-084434.816
+      From worker 8:	replicate complete, ran 20000000 generations:
+      From worker 8:	
+      From worker 8:		num_imitating:			15000706
+      From worker 8:		num_not_imitating:		4999294
+      From worker 8:		num_strategies_changed:  	446801
+      From worker 8:			num_random_strategies: 	14824
+      From worker 8:		num_sets_changed: 		3383765
+      From worker 8:			num_random_opinions: 	83581
+      From worker 8:			num_biased_opinions: 	83819
+      From worker 8:		num_both_changed: 		163713
+      From worker 8:	
+      From worker 8:	data processed and exported
+      From worker 8:	
+      From worker 8:	starting b_1.0_c_0.2_N_40_M_2_K_1_P_2_beta_0.001_u_0.001_v_0.011180339887498947_p_0.75_ϵ_1.0_gens_20000000_210221-084434.816
+      From worker 7:	replicate complete, ran 20000000 generations:
+      From worker 7:	
+      From worker 7:		num_imitating:			17498007
+      From worker 7:		num_not_imitating:		2501993
+      From worker 7:		num_strategies_changed:  	534511
+      From worker 7:			num_random_strategies: 	17603
+      From worker 7:		num_sets_changed: 		3970841
+      From worker 7:			num_random_opinions: 	147308
+      From worker 7:			num_biased_opinions: 	48775
+      From worker 7:		num_both_changed: 		200095
+      From worker 7:	
+      From worker 7:	data processed and exported
+      From worker 7:	
+      From worker 7:	starting b_1.0_c_0.2_N_40_M_2_K_1_P_2_beta_0.001_u_0.001_v_0.011180339887498947_p_0.5_ϵ_1.0_gens_20000000_210221-084434.816
+      From worker 9:	replicate complete, ran 20000000 generations:
+      From worker 9:	
+      From worker 9:		num_imitating:			12500518
+      From worker 9:		num_not_imitating:		7499482
+      From worker 9:		num_strategies_changed:  	362440
+      From worker 9:			num_random_strategies: 	12542
+      From worker 9:		num_sets_changed: 		4535826
+      From worker 9:			num_random_opinions: 	77990
+      From worker 9:			num_biased_opinions: 	234177
+      From worker 9:		num_both_changed: 		200208
+      From worker 9:	
+      From worker 9:	data processed and exported
+      From worker 9:	
+      From worker 9:	starting b_1.0_c_0.2_N_40_M_2_K_1_P_2_beta_0.001_u_0.001_v_0.025_p_1.0_ϵ_1.0_gens_20000000_210221-084434.816
+      From worker 15:	replicate complete, ran 20000000 generations:
+      From worker 15:	
+      From worker 15:		num_imitating:			10001046
+      From worker 15:		num_not_imitating:		9998954
+      From worker 15:		num_strategies_changed:  	141343
+      From worker 15:			num_random_strategies: 	10032
+      From worker 15:		num_sets_changed: 		4425333
+      From worker 15:			num_random_opinions: 	0
+      From worker 15:			num_biased_opinions: 	2796710
+      From worker 15:		num_both_changed: 		68934
+      From worker 15:	
+      From worker 15:	data processed and exported
+      From worker 15:	
+      From worker 15:	starting b_1.0_c_0.2_N_40_M_2_K_1_P_2_beta_0.001_u_0.001_v_0.625_p_0.0_ϵ_1.0_gens_20000000_210221-084434.816
+      From worker 11:	replicate complete, ran 20000000 generations:
+      From worker 11:	
+      From worker 11:		num_imitating:			20000000
+      From worker 11:		num_not_imitating:		0
+      From worker 11:		num_strategies_changed:  	605604
+      From worker 11:			num_random_strategies: 	19865
+      From worker 11:		num_sets_changed: 		10498784
+      From worker 11:			num_random_opinions: 	1118756
+      From worker 11:			num_biased_opinions: 	0
+      From worker 11:		num_both_changed: 		412951
+      From worker 11:	
+      From worker 11:	data processed and exported
+      From worker 11:	
+      From worker 11:	starting b_1.0_c_0.2_N_40_M_2_K_1_P_2_beta_0.001_u_0.001_v_0.055901699437494755_p_0.25_ϵ_1.0_gens_20000000_210221-084434.816
+      From worker 3:	replicate complete, ran 20000000 generations:
+      From worker 3:	
+      From worker 3:		num_imitating:			12497394
+      From worker 3:		num_not_imitating:		7502606
+      From worker 3:		num_strategies_changed:  	351915
+      From worker 3:			num_random_strategies: 	12543
+      From worker 3:		num_sets_changed: 		347812
+      From worker 3:			num_random_opinions: 	3136
+      From worker 3:			num_biased_opinions: 	9471
+      From worker 3:		num_both_changed: 		15199
+      From worker 3:	
+      From worker 3:	data processed and exported
+      From worker 4:	replicate complete, ran 20000000 generations:
+      From worker 4:	
+      From worker 4:		num_imitating:			10002004
+      From worker 4:		num_not_imitating:		9997996
+      From worker 4:		num_strategies_changed:  	143378
+      From worker 4:			num_random_strategies: 	9891
+      From worker 4:		num_sets_changed: 		212916
+      From worker 4:			num_random_opinions: 	0
+      From worker 4:			num_biased_opinions: 	22513
+      From worker 4:		num_both_changed: 		6371
+      From worker 4:	
+      From worker 3:	
+      From worker 3:	starting b_1.0_c_0.2_N_40_M_2_K_1_P_2_beta_0.001_u_0.001_v_0.001_p_1.0_ϵ_1.0_gens_20000000_210221-084434.816
+      From worker 2:	replicate complete, ran 20000000 generations:
+      From worker 2:	
+      From worker 2:		num_imitating:			14994651
+      From worker 2:		num_not_imitating:		5005349
+      From worker 2:		num_strategies_changed:  	443308
+      From worker 2:			num_random_strategies: 	15054
+      From worker 2:		num_sets_changed: 		413727
+      From worker 2:			num_random_opinions: 	7372
+      From worker 2:			num_biased_opinions: 	7513
+      From worker 2:		num_both_changed: 		22426
+      From worker 2:	
+      From worker 4:	data processed and exported
+      From worker 4:	
+      From worker 4:	starting b_1.0_c_0.2_N_40_M_2_K_1_P_2_beta_0.001_u_0.001_v_0.0022360679774997894_p_0.0_ϵ_1.0_gens_20000000_210221-084434.816
+      From worker 2:	data processed and exported
+      From worker 2:	
+      From worker 2:	starting b_1.0_c_0.2_N_40_M_2_K_1_P_2_beta_0.001_u_0.001_v_0.001_p_0.75_ϵ_1.0_gens_20000000_210221-084434.816
+      From worker 5:	replicate complete, ran 20000000 generations:
+      From worker 5:	
+      From worker 5:		num_imitating:			20000000
+      From worker 5:		num_not_imitating:		0
+      From worker 5:		num_strategies_changed:  	575536
+      From worker 5:			num_random_strategies: 	20121
+      From worker 5:		num_sets_changed: 		2407365
+      From worker 5:			num_random_opinions: 	99838
+      From worker 5:			num_biased_opinions: 	0
+      From worker 5:		num_both_changed: 		126811
+      From worker 5:	
+      From worker 5:	data processed and exported
+      From worker 5:	
+      From worker 5:	starting b_1.0_c_0.2_N_40_M_2_K_1_P_2_beta_0.001_u_0.001_v_0.005_p_0.25_ϵ_1.0_gens_20000000_210221-084434.816
+      From worker 14:	replicate complete, ran 20000000 generations:
+      From worker 14:	
+      From worker 14:		num_imitating:			12500253
+      From worker 14:		num_not_imitating:		7499747
+      From worker 14:		num_strategies_changed:  	361981
+      From worker 14:			num_random_strategies: 	12442
+      From worker 14:		num_sets_changed: 		8258614
+      From worker 14:			num_random_opinions: 	873645
+      From worker 14:			num_biased_opinions: 	2618162
+      From worker 14:		num_both_changed: 		258989
+      From worker 14:	
+      From worker 14:	data processed and exported
+      From worker 14:	
+      From worker 14:	starting b_1.0_c_0.2_N_40_M_2_K_1_P_2_beta_0.001_u_0.001_v_0.2795084971874737_p_1.0_ϵ_1.0_gens_20000000_210221-084434.816
+      From worker 6:	replicate complete, ran 20000000 generations:
+      From worker 6:	
+      From worker 6:		num_imitating:			17498414
+      From worker 6:		num_not_imitating:		2501586
+      From worker 6:		num_strategies_changed:  	505854
+      From worker 6:			num_random_strategies: 	17762
+      From worker 6:		num_sets_changed: 		2130846
+      From worker 6:			num_random_opinions: 	65926
+      From worker 6:			num_biased_opinions: 	21725
+      From worker 6:		num_both_changed: 		111105
+      From worker 6:	
+      From worker 6:	data processed and exported
+      From worker 6:	
+      From worker 6:	starting b_1.0_c_0.2_N_40_M_2_K_1_P_2_beta_0.001_u_0.001_v_0.005_p_0.5_ϵ_1.0_gens_20000000_210221-084434.816
+      From worker 16:	replicate complete, ran 20000000 generations:
+      From worker 16:	
+      From worker 16:		num_imitating:			20000000
+      From worker 16:		num_not_imitating:		0
+      From worker 16:		num_strategies_changed:  	547569
+      From worker 16:			num_random_strategies: 	19655
+      From worker 16:		num_sets_changed: 		14776557
+      From worker 16:			num_random_opinions: 	12502818
+      From worker 16:			num_biased_opinions: 	0
+      From worker 16:		num_both_changed: 		410194
+      From worker 16:	
+      From worker 16:	data processed and exported
+      From worker 16:	
+      From worker 16:	starting b_1.0_c_0.2_N_40_M_2_K_1_P_2_beta_0.001_u_0.001_v_0.625_p_0.25_ϵ_1.0_gens_20000000_210221-084434.816
+      From worker 13:	replicate complete, ran 20000000 generations:
+      From worker 13:	
+      From worker 13:		num_imitating:			14997937
+      From worker 13:		num_not_imitating:		5002063
+      From worker 13:		num_strategies_changed:  	427458
+      From worker 13:			num_random_strategies: 	15092
+      From worker 13:		num_sets_changed: 		9433000
+      From worker 13:			num_random_opinions: 	937235
+      From worker 13:			num_biased_opinions: 	935517
+      From worker 13:		num_both_changed: 		309869
+      From worker 13:	
+      From worker 13:	data processed and exported
+      From worker 13:	
+      From worker 13:	starting b_1.0_c_0.2_N_40_M_2_K_1_P_2_beta_0.001_u_0.001_v_0.125_p_0.75_ϵ_1.0_gens_20000000_210221-084434.816
+      From worker 12:	replicate complete, ran 20000000 generations:
+      From worker 12:	
+      From worker 12:		num_imitating:			17499039
+      From worker 12:		num_not_imitating:		2500961
+      From worker 12:		num_strategies_changed:  	473110
+      From worker 12:			num_random_strategies: 	17321
+      From worker 12:		num_sets_changed: 		11098002
+      From worker 12:			num_random_opinions: 	1641076
+      From worker 12:			num_biased_opinions: 	547546
+      From worker 12:		num_both_changed: 		344544
+      From worker 12:	
+      From worker 12:	data processed and exported
+      From worker 12:	
+      From worker 12:	starting b_1.0_c_0.2_N_40_M_2_K_1_P_2_beta_0.001_u_0.001_v_0.125_p_0.5_ϵ_1.0_gens_20000000_210221-084434.816
+      From worker 8:	replicate complete, ran 20000000 generations:
+      From worker 8:	
+      From worker 8:		num_imitating:			12500204
+      From worker 8:		num_not_imitating:		7499796
+      From worker 8:		num_strategies_changed:  	357742
+      From worker 8:			num_random_strategies: 	12434
+      From worker 8:		num_sets_changed: 		2814653
+      From worker 8:			num_random_opinions: 	34897
+      From worker 8:			num_biased_opinions: 	104564
+      From worker 8:		num_both_changed: 		135530
+      From worker 8:	
+      From worker 8:	data processed and exported
+      From worker 8:	
+      From worker 8:	starting b_1.0_c_0.2_N_40_M_2_K_1_P_2_beta_0.001_u_0.001_v_0.011180339887498947_p_1.0_ϵ_1.0_gens_20000000_210221-084434.816
+      From worker 9:	replicate complete, ran 20000000 generations:
+      From worker 9:	
+      From worker 9:		num_imitating:			10000827
+      From worker 9:		num_not_imitating:		9999173
+      From worker 9:		num_strategies_changed:  	141952
+      From worker 9:			num_random_strategies: 	9963
+      From worker 9:		num_sets_changed: 		1672734
+      From worker 9:			num_random_opinions: 	0
+      From worker 9:			num_biased_opinions: 	249546
+      From worker 9:		num_both_changed: 		39494
+      From worker 9:	
+      From worker 9:	data processed and exported
+      From worker 9:	
+      From worker 9:	starting b_1.0_c_0.2_N_40_M_2_K_1_P_2_beta_0.001_u_0.001_v_0.025_p_0.0_ϵ_1.0_gens_20000000_210221-084434.816
+      From worker 7:	replicate complete, ran 20000000 generations:
+      From worker 7:	
+      From worker 7:		num_imitating:			15003644
+      From worker 7:		num_not_imitating:		4996356
+      From worker 7:		num_strategies_changed:  	426918
+      From worker 7:			num_random_strategies: 	14938
+      From worker 7:		num_sets_changed: 		3382946
+      From worker 7:			num_random_opinions: 	83675
+      From worker 7:			num_biased_opinions: 	83958
+      From worker 7:		num_both_changed: 		165915
+      From worker 7:	
+      From worker 7:	data processed and exported
+      From worker 7:	
+      From worker 7:	starting b_1.0_c_0.2_N_40_M_2_K_1_P_2_beta_0.001_u_0.001_v_0.011180339887498947_p_0.75_ϵ_1.0_gens_20000000_210221-084434.816
+      From worker 3:	replicate complete, ran 20000000 generations:
+      From worker 3:	
+      From worker 3:		num_imitating:			9997858
+      From worker 3:		num_not_imitating:		10002142
+      From worker 3:		num_strategies_changed:  	149596
+      From worker 3:			num_random_strategies: 	10094
+      From worker 3:		num_sets_changed: 		93917
+      From worker 3:			num_random_opinions: 	0
+      From worker 3:			num_biased_opinions: 	10109
+      From worker 3:		num_both_changed: 		2006
