@@ -232,7 +232,7 @@ figSXe <- plot_figSXcoop( simdata_coop_all, 1.0, "E")
 figSXf <- plot_figSXstrat( simdata_strat_all, 0.0, 1, 1, "F")
 figSXg <- plot_figSXstrat( simdata_strat_all, 0.25, 1, 1,  "G")
 figSXh <- plot_figSXstrat( simdata_strat_all, 0.5, 1, 1, "H")
-figSXi <- plot_figSXstrat( simdata_strat_all, 0.75, 1, 1, "I")
+figSXi <- plot_figSXstrat( simdata_strat_all, 0.75, 1, 1, "I ")
 figSXj <- plot_figSXstrat( simdata_strat_all, 1.0, 1, 1, "J")
 emp <- ggplot() + theme_void()
 
