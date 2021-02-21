@@ -20,14 +20,14 @@ u       <- 0.001 # fixed, for now
 beta    <- 0.001 # fixed, for now
 gens    <- 20000000
 saveplots <- 1
-threshold <- 0 # 0 = use all data, 1 = threshold data by min(COUNT)
+threshold <- 1 # 0 = use all data, 1 = threshold data by min(COUNT)
 # p       <- 0.
-vs      <- c(0.001, 0.005, 0.025) #, 0.1)
-Mmax    <- 3
+vs      <- c(0.001, 0.005, 0.025) 
+Mmax    <- 5
 
 # load data
 file_dir  <- sprintf( "data/gens_%s/", format(gens, scientific = FALSE) )
-pattern   <- sprintf( "run_multi" )
+pattern   <- sprintf( "run_multi" ) # select files sweeping across M and K
 file_list <- list.files(path = file_dir, pattern = pattern)
 simdata   <- data.frame() # initialize data frame
 
@@ -35,10 +35,11 @@ for (i in 1:length(file_list)){
   temp_data    <- read.csv( paste0(file_dir, file_list[i]), header = TRUE)
   temp_data$id <- paste0("run",i) # add id to identify data source
   
-  # TEMPORARY
-  # if == 0:  ignore data sets where there is at least one line with 0's (out_of_memory)
+  # TEMPORARY WHILE RUNNING SIMULATIONS
+  # if == 0:  ignore data sets where there is at least one line with 0's 
+  #           (ie consider only complete data sets at a given time)
   # if != -1: include all simulation results (later thresholded by min(COUNT))
-  if ( dim(temp_data[temp_data$N == 0,])[1] != -1 ){
+  if ( dim(temp_data[temp_data$N == 0,])[1] == 0 ){
     # select common columns
     if (i == 1){
       simdata    <- rbind(simdata, temp_data) #bind the new data to data
@@ -51,7 +52,7 @@ for (i in 1:length(file_list)){
 
 # select rows with specific M, v, beta values
 simdata <- simdata[(simdata$v %in% vs) & (simdata$β == beta),]
-# simdata <- simdata[(simdata$M != 0) & (simdata$M <= Mmax),]
+simdata <- simdata[(simdata$M != 0) & (simdata$M <= Mmax),]
 
 # because the number of simulations is uneven at the moment,
 # count the minimum number of simulations per case
@@ -60,8 +61,12 @@ casecount <- simdata %>%
   group_by(M, K, v, p1, β) %>% 
   summarize(COUNT = n())
 
-threshdata_all <- simdata %>% group_by(M, K, v, p1) 
-
+if(threshold == 0){
+  threshdata_all <- simdata %>% group_by(M, K, v, p1) 
+}else if(threshold == 1){
+  threshdata_all <- simdata %>% group_by(M, K, v, p1) %>% 
+    slice_head( n = min(casecount$COUNT) ) 
+}
 # plotting parameters
 ymax      <- 0.3    # max y for plotting
 ymin      <- 0.2
@@ -78,7 +83,7 @@ qinc   <- 0.25
 # PREP DATA
 ############################################################################################
 # prep sim data
-simdata <- relabel_cols(simdata)
+simdata        <- relabel_cols(simdata)
 threshdata_all <- relabel_cols(threshdata_all)
 
 # melt data
@@ -95,12 +100,18 @@ id_vars       <- c("M","K","u","v","p","beta","epsilon")
 measure_strat  <- c("CC","CD","DC","DD")
 measure_strat2 <- c("CC_final","CD_final","DC_final","DD_final")
 measure_coop   <- c("cooperation_all", "cooperation_in", "cooperation_out")
+# measure_pol    <- c("set_1_mean", "topinion_mean","topinion_var",
+#                     "opn_simpson_mean","sets_simpson_mean",
+#                     "cooperation_all", "cooperation_in", "cooperation_out")
+# measure_dist   <- c("cityblock_all", "cityblock_in", "cityblock_out",
+#                     "hamming_all",   "hamming_in",   "hamming_out"   )
 
 # select columns
 simdata_bymeasure_all <- threshdata_all[ select_cols ] %>% 
   gather("variable","value",-M,-K,-id,-p,-u,-v,-beta,-epsilon)
 simdata_bymeasure_all$value = as.numeric(simdata_bymeasure_all$value)
 
+# compute average value per strategy for all simulation data
 simdata_strat_all <-
   simdata_bymeasure_all[which(simdata_bymeasure_all$variable %in% measure_strat),] %>%
   rename( Fraction = value, Strategy = variable ) %>%

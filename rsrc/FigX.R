@@ -37,7 +37,7 @@ for (i in 1:length(file_list)){
   # TEMPORARY
   # if == 0:  ignore data sets where there is at least one line with 0's (out_of_memory)
   # if != -1: include all simulation results (later thresholded by min(COUNT))
-  if ( dim(temp_data[temp_data$N == 0,])[1] != -1 ){
+  if ( dim(temp_data[temp_data$N == 0,])[1] == 0 ){
     # select common columns
     if (i == 1){
       simdata    <- rbind(simdata, temp_data) #bind the new data to data
@@ -61,16 +61,9 @@ casecount <- simdata %>%
 
 if(threshold == 0){
   threshdata_all <- simdata %>% group_by(M, K, v, p1,β) 
-  threshdata_p0  <- threshdata_all
 }else if(threshold == 1){
   threshdata_all <- simdata %>% group_by(M, K, v, p1, β) %>% 
-    # slice_head( n = round( min(casecount$COUNT), digits = -2) )
     slice_head( n = min(casecount$COUNT) ) 
-  threshdata_p0  <- threshdata_all
-}else if(threshold == 2){
-  threshdata_all <- simdata %>% group_by(M, K, v, p1, β) %>% slice_head( n = min(casecount$COUNT) )
-  casecount2    <- simdata[simdata$p == p,] %>% group_by(M, K, v, p1, β) %>% summarize(COUNT = n())
-  threshdata_p0 <- simdata %>% group_by(M, K, v, p1, β) %>% slice_head( n = min(casecount2$COUNT) )
 }
 
 # plotting parameters
@@ -91,7 +84,6 @@ qinc   <- 0.25
 # prep sim data
 simdata <- relabel_cols(simdata)
 threshdata_all <- relabel_cols(threshdata_all)
-threshdata_p0  <- relabel_cols(threshdata_p0)
 
 # melt data
 select_cols <- c("id","M","K","u","v","p","beta","epsilon","CC","CD","DC","DD",
@@ -118,37 +110,11 @@ simdata_bymeasure_all <- threshdata_all[ select_cols ] %>%
   gather("variable","value",-M,-K,-id,-p,-u,-v,-beta,-epsilon)
 simdata_bymeasure_all$value = as.numeric(simdata_bymeasure_all$value)
 
-simdata_bymeasure_p0 <- threshdata_p0[ select_cols ] %>% 
-  gather("variable","value",-M,-K,-id,-p,-u,-v,-beta,-epsilon)
-simdata_bymeasure_p0$value = as.numeric(simdata_bymeasure_p0$value)
-
 # compute average value per strategy for all simulation data
-# simdata_strat <- 
-#   simdata_bymeasure[which(simdata_bymeasure$variable %in% measure_strat),] %>%
-#   rename( Fraction = value, Strategy = variable ) %>%
-#   group_by( M, K, u, v, p, beta, epsilon, Strategy ) %>%
-#   summarise(
-#     Mean = mean(Fraction),
-#     SD = sd(Fraction),
-#     SE = sd(Fraction) / sqrt(length(Fraction)),
-#     numCases = length(Fraction)
-#   )
-
-simdata_strat_p0 <-
-  simdata_bymeasure_p0[which(simdata_bymeasure_p0$variable %in% measure_strat),] %>%
+simdata_strat_all <-
+  simdata_bymeasure_all[which(simdata_bymeasure_all$variable %in% measure_strat),] %>%
   rename( Fraction = value, Strategy = variable ) %>%
   group_by( M, K, u, v, p, beta, epsilon, Strategy ) %>%
-  summarise(
-    Mean = mean(Fraction),
-    SD = sd(Fraction),
-    SE = sd(Fraction) / sqrt(length(Fraction)),
-    numCases = length(Fraction)
-  )
-
-simdata_coop_p0 <- 
-  simdata_bymeasure_p0[which(simdata_bymeasure_p0$variable %in% measure_coop),] %>%
-  rename( Fraction = value, Metric = variable ) %>%
-  group_by( M, K, u, v, p, beta, epsilon, Metric ) %>%
   summarise(
     Mean = mean(Fraction),
     SD = sd(Fraction),
@@ -167,28 +133,16 @@ simdata_coop_all <-
     numCases = length(Fraction)
   )
 
-# simdata_strat2 <- 
-#   simdata_bymeasure[which(simdata_bymeasure$variable %in% measure_strat2),] %>%
-#   rename( Fraction = value, Strategy = variable ) %>%
-#   group_by( M, K, u, v, p, beta, epsilon Strategy ) %>%
-#   summarise(
-#     Mean = mean(Fraction),
-#     SD = sd(Fraction),
-#     SE = sd(Fraction) / sqrt(length(Fraction)),
-#     numCases = length(Fraction)
-#   )
-
 ###########################################
 # Add extra labels #
 ###########################################
-simdata_coop_p0  <- simdata_coop_p0  %>% mutate( M2 = paste0( "M=", M ), K2 = paste0( "K=", K ) )
-simdata_coop_all <- simdata_coop_all %>% mutate( M2 = paste0( "M=", M ), K2 = paste0( "K=", K ) )
-simdata_strat_p0 <- simdata_strat_p0 %>% mutate( M2 = paste0( "M=", M ), K2 = paste0( "K=", K ) )
+simdata_coop_all  <- simdata_coop_all  %>% mutate( M2 = paste0( "M=", M ), K2 = paste0( "K=", K ) )
+simdata_strat_all <- simdata_strat_all %>% mutate( M2 = paste0( "M=", M ), K2 = paste0( "K=", K ) )
 
 ###########################################
 # Plotting functions
 ###########################################
-plot_figSXe <- function(simdata_coop, p, tag = "E", legend = TRUE){
+plot_figSXcoop <- function(simdata_coop, p, tag = "A", legend = TRUE){
   
   subdata <- simdata_coop[simdata_coop$Metric == "cooperation_all" & 
                           simdata_coop$p == p & 
@@ -196,17 +150,16 @@ plot_figSXe <- function(simdata_coop, p, tag = "E", legend = TRUE){
   
   subdata <- subdata %>% mutate( MK2 = paste0(M2, ", ", K2) )
   
-  figSXe <- ggplot(data = subdata,
+  figSXcoop<- ggplot(data = subdata,
                   aes(x = v, y = Mean, color = MK2, fill = MK2)) +
     theme_classic() +
-    theme(plot.title = element_text(hjust = 0.5)) +
-    theme(plot.title = element_text(hjust = 0.5, 
+    theme(plot.title = element_text(hjust = 0.5,
                                     size = 10, 
                                     margin = margin(0,0,0,0) ) ) +
     theme (legend.text = element_text (size = 7),
            legend.title = element_text(size = 8),
            legend.key.width = unit(0.02, "npc"),
-           legend.key.height = unit(0.04, "npc"),
+           legend.key.height = unit(0.4, "cm"),
            panel.spacing = unit(0, "lines"),
            legend.margin = margin(t = 0, unit="npc")
     ) +
@@ -222,44 +175,117 @@ plot_figSXe <- function(simdata_coop, p, tag = "E", legend = TRUE){
     scale_x_continuous(limits = c(0.001, 0.625),
                        breaks = c(0.001, 0.005, 0.025, 0.125, 0.625),
                        trans  = 'log10') +
-    # geom_errorbar(aes(ymin = Mean - SE, ymax = Mean + SE), width = 0) +
-    geom_ribbon(aes(ymin = Mean - 1.96*SE, ymax = Mean +1.96*SE), alpha = 0.1, color = NA) +
-    geom_line(size = 0.4, alpha = 1, lty = 1) +
-    geom_point(size = 1., alpha = 1, stroke = 0.5)
+    # geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0) +
+    geom_ribbon(aes(ymin = Mean - SD, ymax = Mean + SD), alpha = 0.1, color = NA) +
+    geom_line(size = 0.3, alpha = 1, lty = 1) +
+    geom_point(size = 1.3, alpha = 1, stroke = 0.5, shape = 1)
   
-  return(figSXe)
+  return(figSXcoop)
 }
+
+plot_figSXstrat <- function(simdata_strat, p, M = 1, K = 1, tag = "B", labeled = TRUE, wlegend = TRUE){
+  
+  subdata <- simdata_strat[simdata_strat$p == p & 
+                           simdata_strat$M == M &
+                           simdata_strat$K == K, ]
+  
+  figSXstrat <- ggplot(subdata,
+                  aes(x = v, y = Mean, color = Strategy)) +
+    theme_classic() +
+    theme(plot.title = element_text(hjust = 0.5,
+                                    size = 10, 
+                                    margin = margin(0,0,0,0) ) ) +
+    theme (legend.text = element_text (size = 7),
+           legend.title = element_text (size = 8),
+           # legend.key.size = unit(0.025, "npc"),
+           legend.key.width = unit(0.02, "npc"),
+           legend.key.height = unit(0.4, "cm"),           panel.spacing = unit(0.2,  "lines"),
+           legend.margin = margin(t = 0, unit="npc")
+    ) +
+    labs(x = "Opinion mutation rate (v)",
+         y = "Relative abundance",
+         tag = tag) +
+    ggtitle( paste0("M = ", M, ", K = ", K, ", p = ", p) ) +
+    scale_color_manual(values = c("#0571b0","#92c5de","#f4a582","#ca0020")) +
+    scale_y_continuous(limits = c(0.19, 0.31),
+                       breaks = seq(0.01, 0.53, 0.02)) +
+    scale_x_continuous(limits = c(0.001, 0.625),
+                       breaks = c(0.001, 0.005, 0.025, 0.125, 0.625),
+                       trans  = 'log10') +
+    geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0) +
+    geom_line(aes(group = Strategy), size = 0.4, alpha = 1, lty = 1) +
+    geom_point(size = 1.3, alpha = 1, stroke = 0.5, shape = 1)
+  
+  return(figSXstrat)
+}
+
 
 ###########################################
 # Figure X
 ###########################################
 # save multiplot
-figSXa <- plot_figSXe( simdata_coop_all, 0.0, "A")
-figSXb <- plot_figSXe( simdata_coop_all, 0.25, "B")
-figSXc <- plot_figSXe( simdata_coop_all, 0.5, "C")
-figSXd <- plot_figSXe( simdata_coop_all, 0.75, "D")
-figSXe <- plot_figSXe( simdata_coop_all, 1.0, "E")
+figSXa <- plot_figSXcoop( simdata_coop_all, 0.0, "A")
+figSXb <- plot_figSXcoop( simdata_coop_all, 0.25, "B")
+figSXc <- plot_figSXcoop( simdata_coop_all, 0.5, "C")
+figSXd <- plot_figSXcoop( simdata_coop_all, 0.75, "D")
+figSXe <- plot_figSXcoop( simdata_coop_all, 1.0, "E")
+figSXf <- plot_figSXstrat( simdata_strat_all, 0.0, 1, 1, "F")
+figSXg <- plot_figSXstrat( simdata_strat_all, 0.25, 1, 1,  "G")
+figSXh <- plot_figSXstrat( simdata_strat_all, 0.5, 1, 1, "H")
+figSXi <- plot_figSXstrat( simdata_strat_all, 0.75, 1, 1, "I")
+figSXj <- plot_figSXstrat( simdata_strat_all, 1.0, 1, 1, "J")
 emp <- ggplot() + theme_void()
 
 if(saveplots == 1){
   
-  threshcount <- 
-    if(threshold %in% c(0,1)){ 
-      # paste0("thresh_", threshold, "_", round( min(casecount$COUNT), digits = -2 ))
+  # SI Figure with all combos
+  threshcount <- if(threshold %in% c(0,1)){ 
       paste0("thresh_", threshold, "_", min(casecount$COUNT))
-    }else if(threshold == 2){ 
-      paste0("thresh_", threshold, "_", min(casecount$COUNT), "_", min(casecount2$COUNT)) 
     }
   
   plottype <- paste0("figSX_", threshcount)
   
   png(filename = paste0("plots/figs/", plottype, "_", 
-                        format(Sys.Date(), format="%y%m%d"), ".png"), 
-      width = figW*2.25, height = figW*ratio*1.5, units = "in", res = 600)
-  multiplot(figSXa, figSXb, figSXc, figSXd, figSXe, emp,
-            layout = matrix(c(1,2,3,4,5, 6), ncol = 3, byrow = TRUE))
+                        format(Sys.Date(), format="%y%m%d"), "_SD.png"), 
+      width = figW*1.5, height = figW*ratio*1.5/2*5, units = "in", res = 600)
+  # multiplot(figSXa, figSXb, figSXc, figSXd, figSXe, emp,
+  #           layout = matrix(c(1,2,3,4,5,6), ncol = 3, byrow = TRUE))
+  multiplot(figSXa, figSXb, figSXc, figSXd, figSXe, 
+            figSXf, figSXg, figSXh, figSXi, figSXj, 
+            layout = matrix(c(1,2,3,4,5,6,7,8,9,10), ncol = 2, byrow = FALSE))
   dev.off()
+
   
+}
+
+###########################################
+# Figure 4
+###########################################
+# MS Figure with p = 0, 0.5, 1.0
+fig4a <- plot_figSXcoop( simdata_coop_all, 0.0, "A")
+fig4b <- plot_figSXcoop( simdata_coop_all, 0.5, "B")
+fig4c <- plot_figSXcoop( simdata_coop_all, 1.0, "C")
+fig4d <- plot_figSXstrat( simdata_strat_all, 0.0, 1, 1, "D")
+fig4e <- plot_figSXstrat( simdata_strat_all, 0.5, 1, 1, "E")
+fig4f <- plot_figSXstrat( simdata_strat_all, 1.0, 1, 1, "F")
+emp <- ggplot() + theme_void()
+
+if(saveplots == 1){
+  
+  # MS Figure with p = 0, 0.5, 1.0
+  threshcount <- if(threshold %in% c(0,1)){ 
+    paste0("thresh_", threshold, "_", min(casecount$COUNT))
+  }
+  plottype <- paste0("fig4_", threshcount)
+  
+  png(filename = paste0("plots/figs/", plottype, "_", 
+                        format(Sys.Date(), format="%y%m%d"), "_SD.png"), 
+      width = figW*1.5, height = figW*ratio*1.5/2*3, units = "in", res = 600)
+  # multiplot(fig4a, fig4b, fig4c, emp,
+  #           layout = matrix(c(1,2,3,4), ncol = 2, byrow = TRUE))
+  multiplot(fig4a, fig4b, fig4c, fig4d, fig4e, fig4f,
+            layout = matrix(c(1,2,3,4,5,6), ncol = 2, byrow = FALSE))
+  dev.off()
 }
 
 
