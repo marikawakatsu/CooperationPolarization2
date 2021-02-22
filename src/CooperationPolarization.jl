@@ -2,7 +2,8 @@
 module CooperationPolarization
 
 # structs in setup.jl
-export Sets, Game, Simulation, Population, Tracker
+export Sets, Game, Simulation, Population
+export Tracker
 
 # functions in setup.jl
 export compute_total_memberships
@@ -45,10 +46,22 @@ export make_summary_table
 export make_col_list
 export make_ens_summary
 
+# functions in simulate_neutral.jl
+export evolve_neutral!
+export update_actions_neutral!
+export compute_actions_neutral!
+export update_strategies_and_opinions_neutral!
+
+# struct and functions in track_neutral.jl
+export NeutralTracker
+export track_neutral!
+
 # load 
 include("setup.jl")
 include("simulate.jl")
 include("track.jl")
 include("plot.jl")
+include("simulate_neutral.jl")
+include("track_neutral.jl")
 
 end

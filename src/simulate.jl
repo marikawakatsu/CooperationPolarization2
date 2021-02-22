@@ -228,3 +228,4 @@ function no_strategy_or_opinion_update!( pop::Population )
     pop.strategies_changed = false  # track changes
     pop.sets_changed       = false
 end
+

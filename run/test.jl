@@ -7,15 +7,15 @@ using Dates
 const b = 200. # benefit to cooperating
 const c = 0.2 # cost to cooperating
 
-const N = 10 # population size
-const M = 2 # number of sets
+const N = 40 # population size
+const M = 1 # number of sets
 const K = 1 # number of issues to care about
 const P = 2 # number of parties
 
 const β = 0.001    # selection strength
 const u = 0.001    # strategy mutation rate
 const v = 0.001    # set mutation rate
-const p = 0.       # party bias (0 = low, 1 = high)
+const p = 1.       # party bias (0 = low, 1 = high)
 const ϵ = 1.       # damping factor (0 = no bias in mutation, 1 = max bias (= p) in mutation)
 # note: α = 0 automatically
 
