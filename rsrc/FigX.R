@@ -175,10 +175,10 @@ plot_figSXcoop <- function(simdata_coop, p, tag = "A", legend = TRUE){
     scale_x_continuous(limits = c(0.001, 0.625),
                        breaks = c(0.001, 0.005, 0.025, 0.125, 0.625),
                        trans  = 'log10') +
-    # geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0) +
-    geom_ribbon(aes(ymin = Mean - SD, ymax = Mean + SD), alpha = 0.1, color = NA) +
+    # geom_errorbar(aes(ymin = Mean - 1.96*SE, ymax = Mean + 1.96*SE), width = 0) +
+    geom_ribbon(aes(ymin = Mean - 1.96*SE, ymax = Mean + 1.96*SE), alpha = 0.1, color = NA) +
     geom_line(size = 0.3, alpha = 1, lty = 1) +
-    geom_point(size = 1.3, alpha = 1, stroke = 0.5, shape = 1)
+    geom_point(size = 1.2, alpha = 1, stroke = 0.5, shape = 1)
   
   return(figSXcoop)
 }
@@ -212,9 +212,9 @@ plot_figSXstrat <- function(simdata_strat, p, M = 1, K = 1, tag = "B", labeled =
     scale_x_continuous(limits = c(0.001, 0.625),
                        breaks = c(0.001, 0.005, 0.025, 0.125, 0.625),
                        trans  = 'log10') +
-    geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0) +
+    geom_errorbar(aes(ymin = Mean - 1.96*SE, ymax = Mean + 1.96*SE), width = 0) +
     geom_line(aes(group = Strategy), size = 0.4, alpha = 1, lty = 1) +
-    geom_point(size = 1.3, alpha = 1, stroke = 0.5, shape = 1)
+    geom_point(size = 1.2, alpha = 1, stroke = 0.5, shape = 1)
   
   return(figSXstrat)
 }
@@ -279,7 +279,7 @@ if(saveplots == 1){
   plottype <- paste0("fig4_", threshcount)
   
   png(filename = paste0("plots/figs/", plottype, "_", 
-                        format(Sys.Date(), format="%y%m%d"), "_SD.png"), 
+                        format(Sys.Date(), format="%y%m%d"), "_CI.png"), 
       width = figW*1.5, height = figW*ratio*1.5/2*3, units = "in", res = 600)
   # multiplot(fig4a, fig4b, fig4c, emp,
   #           layout = matrix(c(1,2,3,4), ncol = 2, byrow = TRUE))
