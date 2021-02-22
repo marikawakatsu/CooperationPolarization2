@@ -51,7 +51,7 @@ const parameters = collect(Iterators.product(pvals,us,vs))
 # simulation parameters
 const verbose       = false
 const verbose_track = false
-const generations   = 100000000
+const generations   = 50000000
 const testtype      = "della"  # specify location
 
 # plotting and data processing parameters
