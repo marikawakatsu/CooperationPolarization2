@@ -178,6 +178,8 @@ function update_strategies!( pop::Population )
         # strategy mutation occurs
         pop.strategies[pop.sim.learner,:] = rand(collect(0:1), 1, 2) # conditional case
         pop.num_random_strategies += 1
+        pop.num_random_sa_flipped += (pop.sim.strategy_copy[1] != pop.strategies[pop.sim.learner,1])
+        pop.num_random_sd_flipped += (pop.sim.strategy_copy[2] != pop.strategies[pop.sim.learner,2])
         if pop.verbose println("\t\tmutating $(pop.sim.learner) to strategy $(pop.strategies[pop.sim.learner,:])") end
     else
         # learner imitates the strategy of role model
@@ -198,7 +200,9 @@ function update_opinions!( pop::Population )
             # with probability 1-p*ϵ, select opinions without bias
             # select a random arrangement of K opinions
             pop.sets.h[pop.sim.learner,:] = shuffle( vcat( zeros(Int64, pop.sets.M-pop.sets.K), rand([-1,1], pop.sets.K) ) )
+
             pop.num_random_opinions += 1
+            pop.num_random_opinions_flipped += (pop.sim.sets_copy != pop.sets.h[ pop.sim.learner,: ]) # new
             if pop.verbose println("\t\tmutating $(pop.sim.learner) to random opinions $(pop.sets.h[pop.sim.learner,:])") end
         else 
             # with probability p*ϵ, select opinions with bias
@@ -209,6 +213,7 @@ function update_opinions!( pop::Population )
                 pop.sets.h[pop.sim.learner,:] = shuffle( vcat( zeros(Int64, pop.sets.M-pop.sets.K), ones(Int64, pop.sets.K) ) )
             end
             pop.num_biased_opinions += 1
+            pop.num_biased_opinions_flipped += (pop.sim.sets_copy != pop.sets.h[ pop.sim.learner,: ]) # new
             if pop.verbose 
                 println("\t\t$(pop.sim.learner) is in party $(pop.sets.affils[ pop.sim.learner ]), mutating to biased opinions $(pop.sets.h[ pop.sim.learner,: ])") 
             end

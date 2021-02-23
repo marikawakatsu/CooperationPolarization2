@@ -176,8 +176,8 @@ plot_figSXcoop <- function(simdata_coop, p, tag = "A", legend = TRUE){
                        breaks = c(0.001, 0.005, 0.025, 0.125, 0.625),
                        trans  = 'log10') +
     # geom_errorbar(aes(ymin = Mean - 1.96*SE, ymax = Mean + 1.96*SE), width = 0) +
-    geom_ribbon(aes(ymin = Mean - 1.96*SE, ymax = Mean + 1.96*SE), alpha = 0.1, color = NA) +
-    geom_line(size = 0.3, alpha = 1, lty = 1) +
+    geom_ribbon(aes(ymin = Mean - 1.96*SE, ymax = Mean + 1.96*SE), alpha = 0.2, color = NA) +
+    geom_line(size = 0.2, alpha = 1, lty = 1) +
     geom_point(size = 1.2, alpha = 1, stroke = 0.5, shape = 1)
   
   return(figSXcoop)
@@ -190,7 +190,7 @@ plot_figSXstrat <- function(simdata_strat, p, M = 1, K = 1, tag = "B", labeled =
                            simdata_strat$K == K, ]
   
   figSXstrat <- ggplot(subdata,
-                  aes(x = v, y = Mean, color = Strategy)) +
+                  aes(x = v, y = Mean, color = Strategy, group = Strategy, fill = Strategy)) +
     theme_classic() +
     theme(plot.title = element_text(hjust = 0.5,
                                     size = 10, 
@@ -199,7 +199,8 @@ plot_figSXstrat <- function(simdata_strat, p, M = 1, K = 1, tag = "B", labeled =
            legend.title = element_text (size = 8),
            # legend.key.size = unit(0.025, "npc"),
            legend.key.width = unit(0.02, "npc"),
-           legend.key.height = unit(0.4, "cm"),           panel.spacing = unit(0.2,  "lines"),
+           legend.key.height = unit(0.4, "cm"),           
+           panel.spacing = unit(0.2,  "lines"),
            legend.margin = margin(t = 0, unit="npc")
     ) +
     labs(x = "Opinion mutation rate (v)",
@@ -207,13 +208,15 @@ plot_figSXstrat <- function(simdata_strat, p, M = 1, K = 1, tag = "B", labeled =
          tag = tag) +
     ggtitle( paste0("M = ", M, ", K = ", K, ", p = ", p) ) +
     scale_color_manual(values = c("#0571b0","#92c5de","#f4a582","#ca0020")) +
+    scale_fill_manual(values = c("#0571b0","#92c5de","#f4a582","#ca0020")) +
     scale_y_continuous(limits = c(0.19, 0.31),
                        breaks = seq(0.01, 0.53, 0.02)) +
     scale_x_continuous(limits = c(0.001, 0.625),
                        breaks = c(0.001, 0.005, 0.025, 0.125, 0.625),
                        trans  = 'log10') +
-    geom_errorbar(aes(ymin = Mean - 1.96*SE, ymax = Mean + 1.96*SE), width = 0) +
-    geom_line(aes(group = Strategy), size = 0.4, alpha = 1, lty = 1) +
+    # geom_errorbar(aes(ymin = Mean - 1.96*SE, ymax = Mean + 1.96*SE), width = 0) +
+    geom_ribbon(aes(ymin = Mean - 1.96*SE, ymax = Mean + 1.96*SE), alpha = 0.2, color = NA) +
+    geom_line(size = 0.4, alpha = 1, lty = 1) +
     geom_point(size = 1.2, alpha = 1, stroke = 0.5, shape = 1)
   
   return(figSXstrat)
@@ -246,7 +249,7 @@ if(saveplots == 1){
   plottype <- paste0("figSX_", threshcount)
   
   png(filename = paste0("plots/figs/", plottype, "_", 
-                        format(Sys.Date(), format="%y%m%d"), "_SD.png"), 
+                        format(Sys.Date(), format="%y%m%d"), "_CI.png"), 
       width = figW*1.5, height = figW*ratio*1.5/2*5, units = "in", res = 600)
   # multiplot(figSXa, figSXb, figSXc, figSXd, figSXe, emp,
   #           layout = matrix(c(1,2,3,4,5,6), ncol = 3, byrow = TRUE))

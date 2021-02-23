@@ -242,6 +242,10 @@ mutable struct Population
     num_random_opinions::Int64        # track number of times random opinions were adopted
     num_biased_opinions::Int64        # track number of times biased opinions were adopted
     num_random_strategies::Int64      # track number of times random strategies were adopted
+    num_random_opinions_flipped::Int64        # track number of times random opinions resulted in opinion change
+    num_biased_opinions_flipped::Int64        # track number of times biased opinions resulted in opinion change
+    num_random_sa_flipped::Int64      # track number of times random strategies resulted in strategy change (sa)
+    num_random_sd_flipped::Int64      # track number of times random strategies resulted in strategy change (sd)
 
     # constructor for the case where initial strategy distribution is specified
     function Population( sets::Sets, game::Game, initial_strategies::Array{Int64, 2}, verbose::Bool=false, sets_changed::Bool=true,    strategies_changed::Bool=true )
@@ -266,6 +270,8 @@ mutable struct Population
         num_imitating, num_not_imitating                                = 0, 0
         num_strategies_changed, num_sets_changed, num_both_changed      = 0, 0, 0
         num_random_opinions, num_biased_opinions, num_random_strategies = 0, 0, 0
+        num_random_opinions_flipped, num_biased_opinions_flipped        = 0, 0
+        num_random_sa_flipped, num_random_sd_flipped                    = 0, 0
 
         # initialize sim::Simulation
         sim = Simulation(sets)
@@ -275,7 +281,9 @@ mutable struct Population
             prev_actions, prev_learner, payoffs_mat, 
             all_opinions, all_memberships, strategies_base10, prev_interactions,
             num_imitating, num_not_imitating, num_strategies_changed, num_sets_changed, 
-            num_both_changed, num_random_opinions, num_biased_opinions, num_random_strategies)
+            num_both_changed, num_random_opinions, num_biased_opinions, num_random_strategies,
+            num_random_opinions_flipped, num_biased_opinions_flipped, 
+            num_random_sa_flipped, num_random_sd_flipped)
     end
 
     # same constructor as above, but allows randomized initial strategies
@@ -301,7 +309,8 @@ mutable struct Population
         num_imitating, num_not_imitating                                = 0, 0
         num_strategies_changed, num_sets_changed, num_both_changed      = 0, 0, 0
         num_random_opinions, num_biased_opinions, num_random_strategies = 0, 0, 0
-
+        num_random_opinions_flipped, num_biased_opinions_flipped        = 0, 0
+        num_random_sa_flipped, num_random_sd_flipped                    = 0, 0
 
         # initialize sim::Simulation
         sim = Simulation(sets)
@@ -311,6 +320,8 @@ mutable struct Population
             prev_actions, prev_learner, payoffs_mat, 
             all_opinions, all_memberships, strategies_base10, prev_interactions,
             num_imitating, num_not_imitating, num_strategies_changed, num_sets_changed, 
-            num_both_changed, num_random_opinions, num_biased_opinions, num_random_strategies)
+            num_both_changed, num_random_opinions, num_biased_opinions, num_random_strategies,
+            num_random_opinions_flipped, num_biased_opinions_flipped, 
+            num_random_sa_flipped, num_random_sd_flipped)
     end
 end

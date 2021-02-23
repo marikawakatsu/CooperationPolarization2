@@ -16,7 +16,7 @@ const P = 2 # number of parties
 const β = 0.000    # selection strength
 const u = 0.001    # strategy mutation rate
 const v = 0.001    # set mutation rate
-const p = 1.     # party bias (0 = low, 1 = high)
+const p = 0.75     # party bias (0 = low, 1 = high)
 const ϵ = 1.       # damping factor (0 = no bias in mutation, 1 = max bias (= p) in mutation)
 # note: α = 0 automatically
 
@@ -62,9 +62,13 @@ println("Initial:\t strategies_changed = $(pop.strategies_changed), sets_changed
         println("\tnum_not_imitating:\t\t$(n_tracker.pop.num_not_imitating)")
         println("\tnum_strategies_changed:  \t$(n_tracker.pop.num_strategies_changed)")
         println("\t\tnum_random_strategies: \t$(n_tracker.pop.num_random_strategies)")
+        println("\t\t\tsa_flipped: \t$(n_tracker.pop.num_random_sa_flipped)")
+        println("\t\t\tsd_flipped: \t$(n_tracker.pop.num_random_sd_flipped)")
         println("\tnum_sets_changed: \t\t$(n_tracker.pop.num_sets_changed)")
         println("\t\tnum_random_opinions: \t$(n_tracker.pop.num_random_opinions)")
+        println("\t\t\tnum_flipped: \t$(n_tracker.pop.num_random_opinions_flipped)")
         println("\t\tnum_biased_opinions: \t$(n_tracker.pop.num_biased_opinions)")
+        println("\t\t\tnum_flipped: \t$(n_tracker.pop.num_biased_opinions_flipped)")
         println("\tnum_both_changed: \t\t$(n_tracker.pop.num_both_changed)\n")
     end
 end

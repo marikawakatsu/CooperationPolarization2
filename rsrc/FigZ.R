@@ -19,7 +19,7 @@ epsilon <- 1
 u       <- 0.001 # fixed, for now
 gens    <- 20000000
 saveplots <- 1
-threshold <- 1 # 0 = use all data, 1 = threshold data by min(COUNT)
+threshold <- 0 # 0 = use all data, 1 = threshold data by min(COUNT)
 vs      <- c(0.001, 0.005, 0.025) 
 
 # load data
@@ -36,7 +36,7 @@ for (i in 1:length(file_list)){
   # if == 0:  ignore data sets where there is at least one line with 0's 
   #           (ie consider only complete data sets at a given time)
   # if != -1: include all simulation results (later thresholded by min(COUNT))
-  if ( dim(temp_data[temp_data$N == 0,])[1] == 0 ){
+  if ( dim(temp_data[temp_data$N == 0,])[1] != -1 ){
     # select common columns
     if (i == 1){
       simdata    <- rbind(simdata, temp_data) #bind the new data to data
@@ -139,9 +139,9 @@ plot_figZa <- function(simdata_plot_all, Metric, tag = "", wtitle = FALSE, Title
     ggtitle( paste0("Metric: ", if(wtitle){Title}else{Metric} ) ) +
     scale_color_manual(values = rev(viridis(5)[1:4]) ) + # magma(6)[2:5]) +
     scale_y_continuous(limits = c(-0.1, 1)) +
-    # scale_x_continuous(limits = c(qmin, qmax), 
-    #                    breaks = seq(qmin, qmax, qinc)) +
-    geom_errorbar(aes(ymin = Mean - 1.96*SE, ymax = Mean + 1.96*SE), width = 0) +
+    scale_x_continuous(limits = c(0, 1),
+                       breaks = seq(0, 1, 0.2)) +
+    geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0., size = 0.4) +
     # geom_line(aes(group = v), size = 0.4, alpha = 1, lty = 1) +
     geom_point(size = 1.3, alpha = 1, stroke = 0.5, shape = 1)
   
@@ -170,9 +170,9 @@ if(saveplots == 1){
   
   png(filename = paste0("plots/figs/", plottype, "_", 
                         format(Sys.Date(), format="%y%m%d"), ".png"), 
-      width = figW*1.75*1.65, height = figW*ratio*1.8, units = "in", res = 300)
+      width = figW*1.5, height = figW*ratio*2.7, units = "in", res = 300)
   multiplot(figZa, figZb, figZc, figZd, figZe, figZf,
-            layout = matrix(c(1,2,3,4,5,6), ncol = 3, byrow = TRUE))
+            layout = matrix(c(1,2,3,4,5,6), ncol = 2, byrow = TRUE))
   dev.off()
   
 }
