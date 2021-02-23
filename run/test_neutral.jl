@@ -3,11 +3,12 @@ using BenchmarkTools
 using Profile
 using PyPlot: plt, savefig
 using Dates
+using Random
 
 const b = 1.0 # benefit to cooperating
 const c = 0.2 # cost to cooperating
 
-const N = 40 # population size
+const N = 20 # population size
 const M = 1 # number of sets
 const K = 1 # number of issues to care about
 const P = 2 # number of parties
@@ -15,7 +16,7 @@ const P = 2 # number of parties
 const β = 0.000    # selection strength
 const u = 0.001    # strategy mutation rate
 const v = 0.001    # set mutation rate
-const p = 0.0     # party bias (0 = low, 1 = high)
+const p = 1.     # party bias (0 = low, 1 = high)
 const ϵ = 1.       # damping factor (0 = no bias in mutation, 1 = max bias (= p) in mutation)
 # note: α = 0 automatically
 
@@ -38,6 +39,9 @@ sets      = random_sets(N, M, K, P)
 game      = Game(b, c, β, u, v, p, ϵ)
 pop       = Population(sets, game, verbose)
 n_tracker = NeutralTracker(pop, generations, verbose_track)
+
+# test
+for i in 1:N pop.sets.h[i,:] = shuffle( vcat( zeros(Int64,M-K), rand([-1,1],K) ) ) end
 
 println("Payoff matrix: \t $(game.A)")
 println("Payoffs:\t $(pop.payoffs)")

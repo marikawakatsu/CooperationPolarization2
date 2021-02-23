@@ -1,7 +1,7 @@
 ################################################################################
 #
-# Figure Z
-# Last updated: 18 Feb 2021
+# Figure Z: checking calculations against simulations
+# Last updated: 22 Feb 2021
 #
 ################################################################################
 
@@ -17,17 +17,14 @@ setwd("~/.julia/dev/CooperationPolarization2/") # to be updated later
 # parameters
 epsilon <- 1
 u       <- 0.001 # fixed, for now
-beta    <- 0.001 # fixed, for now
 gens    <- 20000000
 saveplots <- 1
 threshold <- 1 # 0 = use all data, 1 = threshold data by min(COUNT)
-# p       <- 0.
 vs      <- c(0.001, 0.005, 0.025) 
-Mmax    <- 5
 
 # load data
 file_dir  <- sprintf( "data/gens_%s/", format(gens, scientific = FALSE) )
-pattern   <- sprintf( "run_multi" ) # select files sweeping across M and K
+pattern   <- sprintf( "neutral" ) # select files sweeping across M and K
 file_list <- list.files(path = file_dir, pattern = pattern)
 simdata   <- data.frame() # initialize data frame
 
@@ -51,8 +48,7 @@ for (i in 1:length(file_list)){
 }
 
 # select rows with specific M, v, beta values
-simdata <- simdata[(simdata$v %in% vs) & (simdata$β == beta),]
-simdata <- simdata[(simdata$M != 0) & (simdata$M <= Mmax),]
+simdata <- simdata[simdata$v %in% vs,]
 
 # because the number of simulations is uneven at the moment,
 # count the minimum number of simulations per case
@@ -67,6 +63,7 @@ if(threshold == 0){
   threshdata_all <- simdata %>% group_by(M, K, v, p1) %>% 
     slice_head( n = min(casecount$COUNT) ) 
 }
+
 # plotting parameters
 ymax      <- 0.3    # max y for plotting
 ymin      <- 0.2
@@ -87,24 +84,15 @@ simdata        <- relabel_cols(simdata)
 threshdata_all <- relabel_cols(threshdata_all)
 
 # melt data
-select_cols <- c("id","M","K","u","v","p","beta","epsilon","CC","CD","DC","DD",
-                 "CC_final","CD_final","DC_final","DD_final","topinion_mean","topinion_var",
-                 "cooperation_all", "cooperation_in", "cooperation_out"#, # cooperation
-                 # "opn_simpson_mean","sets_simpson_mean", # simpsons indices
-                 # "cityblock_all", "cityblock_in", "cityblock_out", # city block distances
-                 # "hamming_all",   "hamming_in",   "hamming_out"    # hamming distances
-)
+select_cols   <- c("id","M","K","u","v","p","beta","epsilon",
+                   "CC_final","CD_final","DC_final","DD_final",
+                   "y","z","g","h","sia_sid","sia_sjd"
+                   )
 id_vars       <- c("M","K","u","v","p","beta","epsilon")
 
 # different sets of measurements to plot
-measure_strat  <- c("CC","CD","DC","DD")
-measure_strat2 <- c("CC_final","CD_final","DC_final","DD_final")
-measure_coop   <- c("cooperation_all", "cooperation_in", "cooperation_out")
-# measure_pol    <- c("set_1_mean", "topinion_mean","topinion_var",
-#                     "opn_simpson_mean","sets_simpson_mean",
-#                     "cooperation_all", "cooperation_in", "cooperation_out")
-# measure_dist   <- c("cityblock_all", "cityblock_in", "cityblock_out",
-#                     "hamming_all",   "hamming_in",   "hamming_out"   )
+measure_vals  <- c("CC_final","CD_final","DC_final","DD_final",
+                   "y","z","g","h","sia_sid","sia_sjd")
 
 # select columns
 simdata_bymeasure_all <- threshdata_all[ select_cols ] %>% 
@@ -112,19 +100,8 @@ simdata_bymeasure_all <- threshdata_all[ select_cols ] %>%
 simdata_bymeasure_all$value = as.numeric(simdata_bymeasure_all$value)
 
 # compute average value per strategy for all simulation data
-simdata_strat_all <-
-  simdata_bymeasure_all[which(simdata_bymeasure_all$variable %in% measure_strat),] %>%
-  rename( Fraction = value, Strategy = variable ) %>%
-  group_by( M, K, u, v, p, beta, epsilon, Strategy ) %>%
-  summarise(
-    Mean = mean(Fraction),
-    SD = sd(Fraction),
-    SE = sd(Fraction) / sqrt(length(Fraction)),
-    numCases = length(Fraction)
-  )
-
-simdata_coop_all <- 
-  simdata_bymeasure_all[which(simdata_bymeasure_all$variable %in% measure_coop),] %>%
+simdata_plot_all <- 
+  simdata_bymeasure_all[which(simdata_bymeasure_all$variable %in% measure_vals),] %>%
   rename( Fraction = value, Metric = variable ) %>%
   group_by( M, K, u, v, p, beta, epsilon, Metric ) %>%
   summarise(
@@ -135,34 +112,17 @@ simdata_coop_all <-
   )
 
 ###########################################
-# Add extra labels #
-###########################################
-simdata_coop_all <- simdata_coop_all %>% 
-  mutate( M2 = paste0( "M=", M ), 
-          K2 = paste0( "K=", K ),
-          M3 = paste0( M ),
-          K3 = paste0( K )
-  )
-simdata_strat_all <- simdata_strat_all %>% 
-  mutate( M2 = paste0( "M=", M ), 
-          K2 = paste0( "K=", K ),
-          M3 = paste0( M ),
-          K3 = paste0( K )
-  )
-
-###########################################
 # Plotting functions
 ###########################################
-plot_fig2b <- function(simdata_strat, v, tag = "B", labeled = TRUE, wlegend = TRUE){
+plot_figZa <- function(simdata_plot_all, Metric, tag = "", wtitle = FALSE, Title = ""){
   
-  subdata <- simdata_strat[simdata_strat$v == v &
-                           simdata_strat$M <= Mmax, ]
+  subdata   <- simdata_plot_all[simdata_plot_all$Metric == Metric, ] # select metric to plot
+  subdata$v <- factor(subdata$v)
   
-  fig2b <- ggplot(subdata,
-                  aes(x = p, y = Mean - 0.25, label = K2, color = Strategy)) +
+  figZb <- ggplot(subdata,
+                  aes(x = p, y = Mean, color = v, group = v)) +
     theme_classic() +
-    theme(plot.title = element_text(hjust = 0.5)) +
-    theme(plot.title = element_text(hjust = 0.5, 
+    theme(plot.title = element_text(hjust = 0.5,
                                     size = 10, 
                                     margin = margin(0,0,0,0) ) ) +
     theme (legend.text = element_text (size = 7),
@@ -174,50 +134,45 @@ plot_fig2b <- function(simdata_strat, v, tag = "B", labeled = TRUE, wlegend = TR
            legend.margin = margin(t = 0, unit="npc")
     ) +
     labs(x = "Party bias (p)",
-         y = "Relative abundance",
+         y = "Value",
          tag = tag) +
-    ggtitle( paste0("v = ", v) ) +
-    # scale_color_manual(values = rev(viridis(5)[1:4]), # magma(6)[2:5]) +
-    scale_color_manual(values = c("#0571b0","#92c5de","#f4a582","#ca0020"),
-    ) +
-    # scale_y_continuous(limits = c(0.16, 0.34),
-    #                    breaks = seq(0.16, 0.34, 0.02)) +
+    ggtitle( paste0("Metric: ", if(wtitle){Title}else{Metric} ) ) +
+    scale_color_manual(values = rev(viridis(5)[1:4]) ) + # magma(6)[2:5]) +
+    scale_y_continuous(limits = c(-0.1, 1)) +
     # scale_x_continuous(limits = c(qmin, qmax), 
     #                    breaks = seq(qmin, qmax, qinc)) +
-    geom_errorbar(aes(ymin = Mean - 0.25 - 1.96*SE, ymax = Mean - 0.25 + 1.96*SE), width = 0) +
-    geom_line(aes(group = Strategy), size = 0.4, alpha = 1, lty = 1) +
-    geom_point(stat="identity", size = 1.3, alpha = 1, stroke = 0.5, shape = 1)
+    geom_errorbar(aes(ymin = Mean - 1.96*SE, ymax = Mean + 1.96*SE), width = 0) +
+    # geom_line(aes(group = v), size = 0.4, alpha = 1, lty = 1) +
+    geom_point(size = 1.3, alpha = 1, stroke = 0.5, shape = 1)
   
-  return(fig2b)
+  return(figZb)
 }
 
 ###########################################
-# Figure 2
+# Figure Z
 ###########################################
 # save multiplot
-p  <- 0.
-v1 <- 0.001
-v2 <- 0.005 # 0.025
-fig2c <- plot_fig2b(simdata_strat_all, v2, "C", TRUE, TRUE)
+figZa <- plot_figZa(simdata_plot_all, "y", "A")
+figZb <- plot_figZa(simdata_plot_all, "z", "B")
+figZc <- plot_figZa(simdata_plot_all, "g", "C")
+figZd <- plot_figZa(simdata_plot_all, "h", "D")
+figZe <- plot_figZa(simdata_plot_all, "sia_sid", "E", TRUE, "<s_ia s_id>")
+figZf <- plot_figZa(simdata_plot_all, "sia_sjd", "F", TRUE, "<s_ia s_jd>")
 
 if(saveplots == 1){
   
   threshcount <- 
     if(threshold %in% c(0,1)){ 
-      # paste0("thresh_", threshold, "_", round( min(casecount$COUNT), digits = -2 ))
       paste0("thresh_", threshold, "_", min(casecount$COUNT))
-    }else if(threshold == 2){ 
-      paste0("thresh_", threshold, "_", min(casecount$COUNT), "_", min(casecount2$COUNT)) 
     }
   
-  plottype <- paste0("fig2_p_", p, "_", threshcount)
+  plottype <- paste0("figZ_", threshcount)
   
   png(filename = paste0("plots/figs/", plottype, "_", 
-                        format(Sys.Date(), format="%y%m%d"), "_alt.png"), 
+                        format(Sys.Date(), format="%y%m%d"), ".png"), 
       width = figW*1.75*1.65, height = figW*ratio*1.8, units = "in", res = 300)
-  multiplot(fig2a, fig2b, fig2c, fig2d, fig2e, fig2f,
-            layout = matrix(c(1,1,1,3,3,3,5,5,2,2,2,4,4,4,6,6), ncol = 8, byrow = TRUE))
-  # layout = matrix(c(1,2,3,4,5,6), ncol = 3, byrow = FALSE))
+  multiplot(figZa, figZb, figZc, figZd, figZe, figZf,
+            layout = matrix(c(1,2,3,4,5,6), ncol = 3, byrow = TRUE))
   dev.off()
   
 }

@@ -122,12 +122,12 @@ total_summary = SharedArray{Float64, 2}(length(pvals)*length(us)*length(vs),23) 
     ens_summary = hcat( generations, sets.N, sets.M, sets.K, sets.P,                            # population parameters
                         game.b, game.c, game.β, game.u, game.v, game.ps[1], game.ps[2], game.ϵ, # game parameters
                         n_tracker.ens_strat_running[generations,:]', # strategy distribution
-                        n_tracker.ens_y[generations],
-                        n_tracker.ens_z[generations],
-                        n_tracker.ens_g[generations],
-                        n_tracker.ens_h[generations],
-                        n_tracker.ens_sia_sid[generations],
-                        n_tracker.ens_sia_sjd[generations]
+                        n_tracker.ens_y_running[generations],
+                        n_tracker.ens_z_running[generations],
+                        n_tracker.ens_g_running[generations],
+                        n_tracker.ens_h_running[generations],
+                        n_tracker.ens_sia_sid_running[generations],
+                        n_tracker.ens_sia_sjd_running[generations]
                         )
     col_list = hcat("generations", "N", "M", "K", "P",        # population parameters
                     "b", "c", "β", "u", "v", "p1", "p2", "ϵ", # game parameters
