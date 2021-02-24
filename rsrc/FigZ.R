@@ -142,7 +142,8 @@ plot_figZa <- function(simdata_plot, Metric, tag = "", wtitle = FALSE, Title = "
            legend.key.height = unit(0.03, "npc"),
            panel.spacing = unit(0.2,  "lines"),
            legend.margin = margin(t = 0, unit="npc"),
-           axis.text = element_text (size = 7),
+           axis.text = element_text (size = 8),
+           axis.title = element_text (size = 10),
     ) +
     labs(x = "Party bias (p)",
          y = "Value",
@@ -180,13 +181,14 @@ plot_figZb <- function(simdata_plot, calcdata_plot, Metric, tag = "", wtitle = F
            legend.key.height = unit(0.03, "npc"),
            panel.spacing = unit(0.2,  "lines"),
            legend.margin = margin(t = 0, unit="npc"),
-           axis.text = element_text (size = 7),
+           axis.text = element_text (size = 8),
+           axis.title = element_text (size = 10),
     ) +
     labs(x = "Opinion mutation rate (v)",
          y = "Value",
          tag = tag) +
     ggtitle( paste0("quantity: ", if(wtitle){Title}else{Metric} ) ) +
-    scale_color_manual(values = viridis(5) ) + # magma(6)[2:5]) +
+    scale_color_manual(values = rev(viridis(5)) ) + # magma(6)[2:5]) +
     scale_y_continuous(limits = c(-0.05, 1)) +
     scale_x_continuous(limits = c(0.001, 0.625),
                        breaks = c(0.001, 0.005, 0.025, 0.125, 0.625),
@@ -197,6 +199,43 @@ plot_figZb <- function(simdata_plot, calcdata_plot, Metric, tag = "", wtitle = F
               alpha = 0.9, size = 0.4, color = "orange") +
     scale_linetype(labels = c("theoretical\nprediction")) +
     guides(linetype = guide_legend("")) +
+    # plot simulation data
+    geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0., size = 0.3) +
+    # geom_line(aes(group = v), size = 0.4, alpha = 1, lty = 1) +
+    geom_point(size = 1.2, alpha = 0.9, stroke = 0.4, shape = 1)
+  
+  return(figZb)
+}
+
+plot_figZc <- function(simdata_plot, Metric, tag = "", wtitle = FALSE, Title = ""){
+  
+  simsubdata    <- simdata_plot[simdata_plot$Metric == Metric, ] # select metric to plot
+  simsubdata$p  <- factor(simsubdata$p)
+  
+  figZb <- ggplot(simsubdata,
+                  aes(x = v, y = Mean, color = p, group = p)) +  
+    theme_classic() +
+    theme(plot.title = element_text(hjust = 0.5,
+                                    size = 10, 
+                                    margin = margin(0,0,0,0) ) ) +
+    theme (legend.text = element_text (size = 7),
+           legend.title = element_text (size = 8),
+           legend.key.width = unit(0.015, "npc"),
+           legend.key.height = unit(0.03, "npc"),
+           panel.spacing = unit(0.2,  "lines"),
+           legend.margin = margin(t = 0, unit="npc"),
+           axis.text = element_text (size = 8),
+           axis.title = element_text (size = 10),
+    ) +
+    labs(x = "Opinion mutation rate (v)",
+         y = "Value",
+         tag = tag) +
+    ggtitle( paste0("quantity: ", if(wtitle){Title}else{Metric} ) ) +
+    scale_color_manual(values = viridis(5) ) + # magma(6)[2:5]) +
+    scale_y_continuous(limits = c(-0.05, 1)) +
+    scale_x_continuous(limits = c(0.001, 0.625),
+                       breaks = c(0.001, 0.005, 0.025, 0.125, 0.625),
+                       trans = 'log10') +
     # plot simulation data
     geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0., size = 0.3) +
     # geom_line(aes(group = v), size = 0.4, alpha = 1, lty = 1) +
@@ -243,8 +282,8 @@ figZa <- plot_figZb(simdata_plot, calcdata_plot, "y", "A")
 figZb <- plot_figZb(simdata_plot, calcdata_plot,"z", "B")
 figZc <- plot_figZb(simdata_plot, calcdata_plot,"g", "C")
 figZd <- plot_figZb(simdata_plot, calcdata_plot,"h", "D")
-# figZe <- plot_figZb(simdata_plot, "sia_sid", "E", TRUE, "<s_ia s_id>")
-# figZf <- plot_figZb(simdata_plot, "sia_sjd", "F", TRUE, "<s_ia s_jd>")
+figZe <- plot_figZc(simdata_plot, "sia_sid", "E", TRUE, "<s_ia s_id>")
+figZf <- plot_figZc(simdata_plot, "sia_sjd", "F", TRUE, "<s_ia s_jd>")
 
 if(saveplots == 1){
   
@@ -257,9 +296,9 @@ if(saveplots == 1){
   
   png(filename = paste0("plots/figs/", plottype, "_", 
                         format(Sys.Date(), format="%y%m%d"), "_v2.png"), 
-      width = figW*1.5, height = figW*ratio*1.8, units = "in", res = 600)
-  multiplot(figZa, figZb, figZc, figZd, # figZe, figZf,
-            layout = matrix(c(1,2,3,4), ncol = 2, byrow = TRUE))
+      width = figW*1.5, height = figW*ratio*2.7, units = "in", res = 600)
+  multiplot(figZa, figZb, figZc, figZd, figZe, figZf,
+            layout = matrix(c(1,2,3,4,5,6), ncol = 2, byrow = TRUE))
   dev.off()
   
 }
