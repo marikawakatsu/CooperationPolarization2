@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=neutral1      # create a short name for your job
+#SBATCH --job-name=neutral2      # create a short name for your job
 #SBATCH --nodes=1                # node count
 #SBATCH --ntasks=1               # total number of tasks across all nodes
 #SBATCH --cpus-per-task=16       # cpu-cores per task (>1 if multi-threaded tasks)
@@ -12,4 +12,4 @@ module purge
 module load julia/1.5.0
 
 cd /tigress/mk28/CooperationPolarization2/
-julia --project run/della_neutral_M1K1_shorter.jl
+julia --project run/della_neutral_M1K1_shorter2.jl
