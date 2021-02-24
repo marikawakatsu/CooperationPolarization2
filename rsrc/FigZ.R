@@ -20,7 +20,7 @@ u       <- 0.001 # fixed, for now
 gens    <- 20000000
 saveplots <- 1
 threshold <- 0 # 0 = use all data, 1 = threshold data by min(COUNT)
-vs      <- c(0.001, 0.005, 0.025) 
+# vs      <- c(0.001, 0.005, 0.025) 
 
 # load data
 file_dir  <- sprintf( "data/gens_%s/", format(gens, scientific = FALSE) )
@@ -48,7 +48,7 @@ for (i in 1:length(file_list)){
 }
 
 # select rows with specific M, v, beta values
-simdata <- simdata[simdata$v %in% vs,]
+# simdata <- simdata[simdata$v %in% vs,]
 
 # because the number of simulations is uneven at the moment,
 # count the minimum number of simulations per case
