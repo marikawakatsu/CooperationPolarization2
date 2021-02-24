@@ -48,7 +48,7 @@ for (i in 1:length(file_list)){
 }
 
 # select rows with specific M, v, beta values
-# simdata <- simdata[simdata$v %in% vs,]
+# simdata <- simdata[simdata$v %in% vs,] # removed
 
 # because the number of simulations is uneven at the moment,
 # count the minimum number of simulations per case
