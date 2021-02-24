@@ -8,19 +8,31 @@
 rm(list = ls())
 source("rsrc/utils/functions.R")
 
-#######################
-# LOAD DATA
-#######################
-
-setwd("~/.julia/dev/CooperationPolarization2/") # to be updated later
-
-# parameters
+# data parameters
 epsilon <- 1
 u       <- 0.001 # fixed, for now
 gens    <- 20000000
 saveplots <- 1
 threshold <- 0 # 0 = use all data, 1 = threshold data by min(COUNT)
 # vs      <- c(0.001, 0.005, 0.025) 
+
+# plotting parameters
+ymax      <- 0.3    # max y for plotting
+ymin      <- 0.2
+yinc      <- 0.02   # y-axis increments
+figW      <- 4     # figure width for printing
+ratio     <- 2/3   # ratio of fig height to width
+
+# axis ticks etc
+qmax   <- 1
+qmin   <- 0
+qinc   <- 0.25
+
+########################
+# LOAD SIMULATION DATA 
+########################
+
+setwd("~/.julia/dev/CooperationPolarization2/") # to be updated later
 
 # load data
 file_dir  <- sprintf( "data/gens_%s/", format(gens, scientific = FALSE) )
@@ -47,8 +59,16 @@ for (i in 1:length(file_list)){
   }
 }
 
+#########################
+# LOAD CALCULATION DATA 
+#########################
+calcdata <- read.csv( "data/calc_data/calc_data.csv", header = TRUE)
+
+#########################
+# PREP DATA
+#########################
 # select rows with specific M, v, beta values
-# simdata <- simdata[simdata$v %in% vs,] # removed
+simdata <- simdata[simdata$v != 0,] # ignore sims that have not been run
 
 # because the number of simulations is uneven at the moment,
 # count the minimum number of simulations per case
@@ -64,21 +84,6 @@ if(threshold == 0){
     slice_head( n = min(casecount$COUNT) ) 
 }
 
-# plotting parameters
-ymax      <- 0.3    # max y for plotting
-ymin      <- 0.2
-yinc      <- 0.02   # y-axis increments
-figW      <- 4     # figure width for printing
-ratio     <- 2/3   # ratio of fig height to width
-
-# axis ticks etc
-qmax   <- 1
-qmin   <- 0
-qinc   <- 0.25
-
-############################################################################################
-# PREP DATA
-############################################################################################
 # prep sim data
 simdata        <- relabel_cols(simdata)
 threshdata_all <- relabel_cols(threshdata_all)
@@ -86,8 +91,7 @@ threshdata_all <- relabel_cols(threshdata_all)
 # melt data
 select_cols   <- c("id","M","K","u","v","p","beta","epsilon",
                    "CC_final","CD_final","DC_final","DD_final",
-                   "y","z","g","h","sia_sid","sia_sjd"
-                   )
+                   "y","z","g","h","sia_sid","sia_sjd")
 id_vars       <- c("M","K","u","v","p","beta","epsilon")
 
 # different sets of measurements to plot
@@ -100,7 +104,7 @@ simdata_bymeasure_all <- threshdata_all[ select_cols ] %>%
 simdata_bymeasure_all$value = as.numeric(simdata_bymeasure_all$value)
 
 # compute average value per strategy for all simulation data
-simdata_plot_all <- 
+simdata_plot <- 
   simdata_bymeasure_all[which(simdata_bymeasure_all$variable %in% measure_vals),] %>%
   rename( Fraction = value, Metric = variable ) %>%
   group_by( M, K, u, v, p, beta, epsilon, Metric ) %>%
@@ -111,15 +115,22 @@ simdata_plot_all <-
     numCases = length(Fraction)
   )
 
+# group calcdata
+calcdata <- as.data.frame(calcdata)
+calcdata_plot <- calcdata %>% 
+  gather("variable","value",-u,-v) %>%
+  rename( Value = value, Metric = variable ) %>%
+  group_by(v)
+
 ###########################################
 # Plotting functions
 ###########################################
-plot_figZa <- function(simdata_plot_all, Metric, tag = "", wtitle = FALSE, Title = ""){
+plot_figZa <- function(simdata_plot, Metric, tag = "", wtitle = FALSE, Title = ""){
   
-  subdata   <- simdata_plot_all[simdata_plot_all$Metric == Metric, ] # select metric to plot
-  subdata$v <- factor(subdata$v)
+  simsubdata   <- simdata_plot[simdata_plot$Metric == Metric, ] # select metric to plot
+  simsubdata$v <- factor(simsubdata$v)
   
-  figZb <- ggplot(subdata,
+  figZa <- ggplot(simsubdata,
                   aes(x = p, y = Mean, color = v, group = v)) +
     theme_classic() +
     theme(plot.title = element_text(hjust = 0.5,
@@ -136,28 +147,75 @@ plot_figZa <- function(simdata_plot_all, Metric, tag = "", wtitle = FALSE, Title
     labs(x = "Party bias (p)",
          y = "Value",
          tag = tag) +
-    ggtitle( paste0("Metric: ", if(wtitle){Title}else{Metric} ) ) +
-    scale_color_manual(values = rev(viridis(5)[1:4]) ) + # magma(6)[2:5]) +
+    ggtitle( paste0("quantity: ", if(wtitle){Title}else{Metric} ) ) +
+    scale_color_manual(values = rev(viridis(7)) ) + # magma(6)[2:5]) +
     scale_y_continuous(limits = c(-0.1, 1)) +
     scale_x_continuous(limits = c(0, 1),
                        breaks = seq(0, 1, 0.2)) +
-    geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0., size = 0.4) +
+    geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0., size = 0.3) +
     # geom_line(aes(group = v), size = 0.4, alpha = 1, lty = 1) +
-    geom_point(size = 1.3, alpha = 1, stroke = 0.5, shape = 1)
+    geom_point(size = 1.2, alpha = 0.8, stroke = 0.3, shape = 1)
+  
+  return(figZa)
+}
+
+# v on x-axis
+plot_figZb <- function(simdata_plot, calcdata_plot, Metric, tag = "", wtitle = FALSE, Title = ""){
+  
+  simsubdata    <- simdata_plot[simdata_plot$Metric == Metric, ] # select metric to plot
+  simsubdata$p  <- factor(simsubdata$p)
+  
+  calcsubdata   <- calcdata_plot[calcdata_plot$Metric == Metric, ]
+  calcsubdata$u <- factor(calcsubdata$u) # dummy variable
+
+  figZb <- ggplot(simsubdata,
+                  aes(x = v, y = Mean, color = p, group = p)) +  
+    theme_classic() +
+    theme(plot.title = element_text(hjust = 0.5,
+                                    size = 10, 
+                                    margin = margin(0,0,0,0) ) ) +
+    theme (legend.text = element_text (size = 7),
+           legend.title = element_text (size = 8),
+           # legend.key.size = unit(0.025, "npc"),
+           legend.key.width = unit(0.015, "npc"),
+           legend.key.height = unit(0.03, "npc"),
+           panel.spacing = unit(0.2,  "lines"),
+           legend.margin = margin(t = 0, unit="npc")
+    ) +
+    labs(x = "Opinion mutation rate (v)",
+         y = "Value",
+         tag = tag) +
+    ggtitle( paste0("quantity: ", if(wtitle){Title}else{Metric} ) ) +
+    scale_color_manual(values = rev(viridis(7)) ) + # magma(6)[2:5]) +
+    scale_y_continuous(limits = c(-0.1, 1)) +
+    scale_x_continuous(limits = c(0.001, 0.625),
+                       breaks = c(0.001, 0.005, 0.025, 0.125, 0.625),
+                       trans = 'log10') +
+    # plot calculation data
+    geom_line(data = calcsubdata, 
+              aes(x = v, y = Value, group = u, linetype = u),
+              alpha = 0.8, size = 0.4, color = "orange") +
+    scale_linetype(labels = c("theoretical\nprediction")) +
+    guides(linetype = guide_legend("")) +
+    # plot simulation data
+    geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0., size = 0.3) +
+    # geom_line(aes(group = v), size = 0.4, alpha = 1, lty = 1) +
+    geom_point(size = 1.2, alpha = 0.8, stroke = 0.3, shape = 1)
   
   return(figZb)
 }
+
 
 ###########################################
 # Figure Z
 ###########################################
 # save multiplot
-figZa <- plot_figZa(simdata_plot_all, "y", "A")
-figZb <- plot_figZa(simdata_plot_all, "z", "B")
-figZc <- plot_figZa(simdata_plot_all, "g", "C")
-figZd <- plot_figZa(simdata_plot_all, "h", "D")
-figZe <- plot_figZa(simdata_plot_all, "sia_sid", "E", TRUE, "<s_ia s_id>")
-figZf <- plot_figZa(simdata_plot_all, "sia_sjd", "F", TRUE, "<s_ia s_jd>")
+figZa <- plot_figZa(simdata_plot, "y", "A")
+figZb <- plot_figZa(simdata_plot, "z", "B")
+figZc <- plot_figZa(simdata_plot, "g", "C")
+figZd <- plot_figZa(simdata_plot, "h", "D")
+figZe <- plot_figZa(simdata_plot, "sia_sid", "E", TRUE, "<s_ia s_id>")
+figZf <- plot_figZa(simdata_plot, "sia_sjd", "F", TRUE, "<s_ia s_jd>")
 
 if(saveplots == 1){
   
@@ -170,10 +228,40 @@ if(saveplots == 1){
   
   png(filename = paste0("plots/figs/", plottype, "_", 
                         format(Sys.Date(), format="%y%m%d"), ".png"), 
-      width = figW*1.5, height = figW*ratio*2.7, units = "in", res = 300)
+      width = figW*1.5, height = figW*ratio*2.7, units = "in", res = 600)
   multiplot(figZa, figZb, figZc, figZd, figZe, figZf,
             layout = matrix(c(1,2,3,4,5,6), ncol = 2, byrow = TRUE))
   dev.off()
   
 }
+
+###########################################
+# Figure Z, v2 with data
+###########################################
+# save multiplot
+figZa <- plot_figZb(simdata_plot, calcdata_plot, "y", "A")
+figZb <- plot_figZb(simdata_plot, calcdata_plot,"z", "B")
+figZc <- plot_figZb(simdata_plot, calcdata_plot,"g", "C")
+figZd <- plot_figZb(simdata_plot, calcdata_plot,"h", "D")
+# figZe <- plot_figZb(simdata_plot, "sia_sid", "E", TRUE, "<s_ia s_id>")
+# figZf <- plot_figZb(simdata_plot, "sia_sjd", "F", TRUE, "<s_ia s_jd>")
+
+if(saveplots == 1){
+  
+  threshcount <- 
+    if(threshold %in% c(0,1)){ 
+      paste0("thresh_", threshold, "_", min(casecount$COUNT))
+    }
+  
+  plottype <- paste0("figZ_", threshcount)
+  
+  png(filename = paste0("plots/figs/", plottype, "_", 
+                        format(Sys.Date(), format="%y%m%d"), "_v2.png"), 
+      width = figW*1.5, height = figW*ratio*1.8, units = "in", res = 600)
+  multiplot(figZa, figZb, figZc, figZd, # figZe, figZf,
+            layout = matrix(c(1,2,3,4), ncol = 2, byrow = TRUE))
+  dev.off()
+  
+}
+
 
