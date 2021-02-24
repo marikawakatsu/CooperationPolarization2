@@ -138,23 +138,23 @@ plot_figZa <- function(simdata_plot, Metric, tag = "", wtitle = FALSE, Title = "
                                     margin = margin(0,0,0,0) ) ) +
     theme (legend.text = element_text (size = 7),
            legend.title = element_text (size = 8),
-           # legend.key.size = unit(0.025, "npc"),
            legend.key.width = unit(0.015, "npc"),
            legend.key.height = unit(0.03, "npc"),
            panel.spacing = unit(0.2,  "lines"),
-           legend.margin = margin(t = 0, unit="npc")
+           legend.margin = margin(t = 0, unit="npc"),
+           axis.text = element_text (size = 7),
     ) +
     labs(x = "Party bias (p)",
          y = "Value",
          tag = tag) +
     ggtitle( paste0("quantity: ", if(wtitle){Title}else{Metric} ) ) +
-    scale_color_manual(values = rev(viridis(7)) ) + # magma(6)[2:5]) +
-    scale_y_continuous(limits = c(-0.1, 1)) +
+    scale_color_manual(values = rev(viridis(9)) ) + # magma(6)[2:5]) +
+    scale_y_continuous(limits = c(-0.05, 1)) +
     scale_x_continuous(limits = c(0, 1),
                        breaks = seq(0, 1, 0.2)) +
     geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0., size = 0.3) +
     # geom_line(aes(group = v), size = 0.4, alpha = 1, lty = 1) +
-    geom_point(size = 1.2, alpha = 0.8, stroke = 0.3, shape = 1)
+    geom_point(size = 1.2, alpha = 0.9, stroke = 0.4, shape = 1)
   
   return(figZa)
 }
@@ -176,31 +176,31 @@ plot_figZb <- function(simdata_plot, calcdata_plot, Metric, tag = "", wtitle = F
                                     margin = margin(0,0,0,0) ) ) +
     theme (legend.text = element_text (size = 7),
            legend.title = element_text (size = 8),
-           # legend.key.size = unit(0.025, "npc"),
            legend.key.width = unit(0.015, "npc"),
            legend.key.height = unit(0.03, "npc"),
            panel.spacing = unit(0.2,  "lines"),
-           legend.margin = margin(t = 0, unit="npc")
+           legend.margin = margin(t = 0, unit="npc"),
+           axis.text = element_text (size = 7),
     ) +
     labs(x = "Opinion mutation rate (v)",
          y = "Value",
          tag = tag) +
     ggtitle( paste0("quantity: ", if(wtitle){Title}else{Metric} ) ) +
-    scale_color_manual(values = rev(viridis(7)) ) + # magma(6)[2:5]) +
-    scale_y_continuous(limits = c(-0.1, 1)) +
+    scale_color_manual(values = viridis(5) ) + # magma(6)[2:5]) +
+    scale_y_continuous(limits = c(-0.05, 1)) +
     scale_x_continuous(limits = c(0.001, 0.625),
                        breaks = c(0.001, 0.005, 0.025, 0.125, 0.625),
                        trans = 'log10') +
     # plot calculation data
     geom_line(data = calcsubdata, 
               aes(x = v, y = Value, group = u, linetype = u),
-              alpha = 0.8, size = 0.4, color = "orange") +
+              alpha = 0.9, size = 0.4, color = "orange") +
     scale_linetype(labels = c("theoretical\nprediction")) +
     guides(linetype = guide_legend("")) +
     # plot simulation data
     geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0., size = 0.3) +
     # geom_line(aes(group = v), size = 0.4, alpha = 1, lty = 1) +
-    geom_point(size = 1.2, alpha = 0.8, stroke = 0.3, shape = 1)
+    geom_point(size = 1.2, alpha = 0.9, stroke = 0.4, shape = 1)
   
   return(figZb)
 }
