@@ -13,7 +13,7 @@ epsilon <- 1
 u       <- 0.001 # fixed, for now
 gens    <- 20000000
 saveplots <- 1
-threshold <- 0 # 0 = use all data, 1 = threshold data by min(COUNT)
+threshold <- 1 # 0 = use all data, 1 = threshold data by min(COUNT)
 # vs      <- c(0.001, 0.005, 0.025) 
 
 # plotting parameters
@@ -62,7 +62,8 @@ for (i in 1:length(file_list)){
 #########################
 # LOAD CALCULATION DATA 
 #########################
-calcdata <- read.csv( "data/calc_data/calc_data.csv", header = TRUE)
+# calcdata <- read.csv( "data/calc_data/calc_data.csv", header = TRUE)
+calcdata <- read.csv( "data/calc_data/calc_data_finiteN_p_0.5.csv", header = TRUE)
 
 #########################
 # PREP DATA
@@ -247,36 +248,36 @@ plot_figZc <- function(simdata_plot, Metric, tag = "", wtitle = FALSE, Title = "
 
 
 ###########################################
-# Figure Z
+# Figure SZ
 ###########################################
-# save multiplot
-figZa <- plot_figZa(simdata_plot, "y", "A")
-figZb <- plot_figZa(simdata_plot, "z", "B")
-figZc <- plot_figZa(simdata_plot, "g", "C")
-figZd <- plot_figZa(simdata_plot, "h", "D")
-figZe <- plot_figZa(simdata_plot, "sia_sid", "E", TRUE, "<s_ia s_id>")
-figZf <- plot_figZa(simdata_plot, "sia_sjd", "F", TRUE, "<s_ia s_jd>")
-
-if(saveplots == 1){
-  
-  threshcount <- 
-    if(threshold %in% c(0,1)){ 
-      paste0("thresh_", threshold, "_", min(casecount$COUNT))
-    }
-  
-  plottype <- paste0("figZ_", threshcount)
-  
-  png(filename = paste0("plots/figs/", plottype, "_", 
-                        format(Sys.Date(), format="%y%m%d"), ".png"), 
-      width = figW*1.5, height = figW*ratio*2.7, units = "in", res = 600)
-  multiplot(figZa, figZb, figZc, figZd, figZe, figZf,
-            layout = matrix(c(1,2,3,4,5,6), ncol = 2, byrow = TRUE))
-  dev.off()
-  
-}
+# # save multiplot
+# figZa <- plot_figZa(simdata_plot, "y", "A")
+# figZb <- plot_figZa(simdata_plot, "z", "B")
+# figZc <- plot_figZa(simdata_plot, "g", "C")
+# figZd <- plot_figZa(simdata_plot, "h", "D")
+# figZe <- plot_figZa(simdata_plot, "sia_sid", "E", TRUE, "<s_ia s_id>")
+# figZf <- plot_figZa(simdata_plot, "sia_sjd", "F", TRUE, "<s_ia s_jd>")
+# 
+# if(saveplots == 1){
+#   
+#   threshcount <- 
+#     if(threshold %in% c(0,1)){ 
+#       paste0("thresh_", threshold, "_", min(casecount$COUNT))
+#     }
+#   
+#   plottype <- paste0("figSZ_", threshcount)
+#   
+#   png(filename = paste0("plots/figs/", plottype, "_", 
+#                         format(Sys.Date(), format="%y%m%d"), "_old.png"), 
+#       width = figW*1.5, height = figW*ratio*2.7, units = "in", res = 600)
+#   multiplot(figZa, figZb, figZc, figZd, figZe, figZf,
+#             layout = matrix(c(1,2,3,4,5,6), ncol = 2, byrow = TRUE))
+#   dev.off()
+#   
+# }
 
 ###########################################
-# Figure Z, v2 with data
+# Figure SZ, v2 with data
 ###########################################
 # save multiplot
 figZa <- plot_figZb(simdata_plot, calcdata_plot, "y", "A")
@@ -293,15 +294,35 @@ if(saveplots == 1){
       paste0("thresh_", threshold, "_", min(casecount$COUNT))
     }
   
-  plottype <- paste0("figZ_", threshcount)
+  plottype <- paste0("figSZ_", threshcount)
   
   png(filename = paste0("plots/figs/", plottype, "_", 
-                        format(Sys.Date(), format="%y%m%d"), "_v2.png"), 
+                        format(Sys.Date(), format="%y%m%d"), "finiteN_p_0.5.png"), 
       width = figW*1.5, height = figW*ratio*2.7, units = "in", res = 600)
   multiplot(figZa, figZb, figZc, figZd, figZe, figZf,
             layout = matrix(c(1,2,3,4,5,6), ncol = 2, byrow = TRUE))
   dev.off()
   
 }
+
+# version without E/F
+if(saveplots == 1){
+  
+  threshcount <- 
+    if(threshold %in% c(0,1)){ 
+      paste0("thresh_", threshold, "_", min(casecount$COUNT))
+    }
+  
+  plottype <- paste0("figSZ_", threshcount)
+  
+  png(filename = paste0("plots/figs/", plottype, "_", 
+                        format(Sys.Date(), format="%y%m%d"), "_v2.png"), 
+      width = figW*1.5, height = figW*ratio*1.8, units = "in", res = 600)
+  multiplot(figZa, figZb, figZc, figZd, # figZe, figZf,
+            layout = matrix(c(1,2,3,4), ncol = 2, byrow = TRUE))
+  dev.off()
+  
+}
+
 
 
