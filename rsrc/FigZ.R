@@ -185,7 +185,7 @@ plot_figZb <- function(simdata_plot, calcdata_plot, Metric, tag = "", wtitle = F
            axis.text = element_text (size = 8),
            axis.title = element_text (size = 10),
     ) +
-    labs(x = "Opinion mutation rate (v)",
+    labs(x = "Issue / opinion exploration (v)",
          y = "Value",
          tag = tag) +
     ggtitle( paste0("quantity: ", if(wtitle){Title}else{Metric} ) ) +
@@ -229,7 +229,7 @@ plot_figZc <- function(simdata_plot, Metric, tag = "", wtitle = FALSE, Title = "
            axis.text = element_text (size = 8),
            axis.title = element_text (size = 10),
     ) +
-    labs(x = "Opinion mutation rate (v)",
+    labs(x = "Issue / opinion exploration (v)",
          y = "Value",
          tag = tag) +
     ggtitle( paste0("quantity: ", if(wtitle){Title}else{Metric} ) ) +
@@ -297,7 +297,7 @@ if(saveplots == 1){
   plottype <- paste0("figSZ_", threshcount)
   
   png(filename = paste0("plots/figs/", plottype, "_", 
-                        format(Sys.Date(), format="%y%m%d"), "finiteN_p_0.5.png"), 
+                        format(Sys.Date(), format="%y%m%d"), ".png"), 
       width = figW*1.5, height = figW*ratio*2.7, units = "in", res = 600)
   multiplot(figZa, figZb, figZc, figZd, figZe, figZf,
             layout = matrix(c(1,2,3,4,5,6), ncol = 2, byrow = TRUE))

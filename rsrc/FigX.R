@@ -166,12 +166,12 @@ plot_figSXcoop <- function(simdata_coop, p, tag = "A", legend = TRUE){
     ggtitle( paste0("p = ", p) ) +
     scale_color_manual( values = viridis(7)[1:6], name = "") +
     scale_fill_manual( values = viridis(7)[1:6], name = "") +
-    labs(x = "Set mutation rate (v)",
+    labs(x = "Issue / opinion exploration (v)",
          y = "Effective cooperation",
          tag = tag) + 
     # geom_hline(yintercept = 0.5, color = "gray80") + 
-    scale_y_continuous(limits = c(0.2, 0.6), # c(0.47, 0.51),
-                       breaks = seq(0.2, 0.6, 0.1)) +
+    scale_y_continuous(limits = c(0.25, 0.55), # c(0.47, 0.51),
+                       breaks = seq(0.25, 0.65, 0.1)) +
     scale_x_continuous(limits = c(0.001, 0.625),
                        breaks = c(0.001, 0.005, 0.025, 0.125, 0.625),
                        trans  = 'log10') +
@@ -203,13 +203,13 @@ plot_figSXstrat <- function(simdata_strat, p, M = 1, K = 1, tag = "B", labeled =
            panel.spacing = unit(0.2,  "lines"),
            legend.margin = margin(t = 0, unit="npc")
     ) +
-    labs(x = "Opinion mutation rate (v)",
+    labs(x = "Issue / opinion exploration (v)",
          y = "Relative abundance",
          tag = tag) +
     ggtitle( paste0("M = ", M, ", K = ", K, ", p = ", p) ) +
     scale_color_manual(values = c("#0571b0","#92c5de","#f4a582","#ca0020")) +
     scale_fill_manual(values = c("#0571b0","#92c5de","#f4a582","#ca0020")) +
-    scale_y_continuous(limits = c(0.17, 0.33),
+    scale_y_continuous(limits = c(0.163, 0.337),
                        breaks = seq(0.01, 0.53, 0.04)) +
     scale_x_continuous(limits = c(0.001, 0.625),
                        breaks = c(0.001, 0.005, 0.025, 0.125, 0.625),
