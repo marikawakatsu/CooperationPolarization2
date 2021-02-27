@@ -1241,3 +1241,55 @@ parameters defined
       From worker 15:			num_biased_opinions: 	5856501
       From worker 15:		num_both_changed: 		158699
       From worker 15:	
+ Activating environment at `/tigress/mk28/CooperationPolarization2/Project.toml`
+ Activating environment at `/tigress/mk28/CooperationPolarization2/Project.toml`
+      From worker 15:	data processed and exported
+      From worker 12:	replicate complete, ran 20000000 generations:
+      From worker 12:	
+      From worker 12:		num_imitating:			20000000
+      From worker 12:		num_not_imitating:		0
+      From worker 12:		num_strategies_changed:  	560896
+      From worker 12:			num_random_strategies: 	19866
+      From worker 12:		num_sets_changed: 		12774016
+      From worker 12:			num_random_opinions: 	2499570
+      From worker 12:			num_biased_opinions: 	0
+      From worker 12:		num_both_changed: 		407411
+      From worker 12:	
+      From worker 12:	data processed and exported
+      From worker 16:	replicate complete, ran 20000000 generations:
+      From worker 16:	
+      From worker 16:		num_imitating:			10003240
+      From worker 16:		num_not_imitating:		9996760
+      From worker 16:		num_strategies_changed:  	152609
+      From worker 16:			num_random_strategies: 	10069
+      From worker 16:		num_sets_changed: 		0
+      From worker 16:			num_random_opinions: 	0
+      From worker 16:			num_biased_opinions: 	6251145
+      From worker 16:		num_both_changed: 		0
+      From worker 16:	
+      From worker 16:	data processed and exported
+      From worker 14:	replicate complete, ran 20000000 generations:
+      From worker 14:	
+      From worker 14:		num_imitating:			15000308
+      From worker 14:		num_not_imitating:		4999692
+      From worker 14:		num_strategies_changed:  	443388
+      From worker 14:			num_random_strategies: 	14998
+      From worker 14:		num_sets_changed: 		9377917
+      From worker 14:			num_random_opinions: 	2096774
+      From worker 14:			num_biased_opinions: 	2096018
+      From worker 14:		num_both_changed: 		296051
+      From worker 14:	
+      From worker 14:	data processed and exported
+      From worker 13:	replicate complete, ran 20000000 generations:
+      From worker 13:	
+      From worker 13:		num_imitating:			17502540
+      From worker 13:		num_not_imitating:		2497460
+      From worker 13:		num_strategies_changed:  	479283
+      From worker 13:			num_random_strategies: 	17560
+      From worker 13:		num_sets_changed: 		11992645
+      From worker 13:			num_random_opinions: 	3669396
+      From worker 13:			num_biased_opinions: 	1224150
+      From worker 13:		num_both_changed: 		348660
+      From worker 13:	
+      From worker 13:	data processed and exported
+11186.513815 seconds (2.73 M allocations: 121.588 MiB, 0.00% gc time)
