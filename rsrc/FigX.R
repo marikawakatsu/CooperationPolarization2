@@ -176,7 +176,7 @@ plot_figSXcoop <- function(simdata_coop, p, tag = "A", legend = TRUE){
                        breaks = c(0.001, 0.005, 0.025, 0.125, 0.625),
                        trans  = 'log10') +
     # geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0) +
-    geom_ribbon(aes(ymin = Mean - SD, ymax = Mean + SD), alpha = 0.07, color = NA) +
+    geom_ribbon(aes(ymin = Mean - SD, ymax = Mean + SD), alpha = 0.15, color = NA) +
     geom_line(size = 0.4, alpha = 0.7, lty = 1) +
     geom_point(size = 1.6, alpha = 0.9, stroke = 0.0) #, shape = 1)
   
@@ -215,7 +215,7 @@ plot_figSXstrat <- function(simdata_strat, p, M = 1, K = 1, tag = "B", labeled =
                        breaks = c(0.001, 0.005, 0.025, 0.125, 0.625),
                        trans  = 'log10') +
     # geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0, size = 0.4) +
-    geom_ribbon(aes(ymin = Mean - SD, ymax = Mean + SD), alpha = 0.07, color = NA) +
+    geom_ribbon(aes(ymin = Mean - SD, ymax = Mean + SD), alpha = 0.15, color = NA) +
     geom_line(size = 0.4, alpha = 1, lty = 1) +
     geom_point(size = 1.6, alpha = 1, stroke = 0.0) #, shape = 1)
   

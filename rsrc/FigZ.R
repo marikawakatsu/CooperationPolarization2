@@ -62,8 +62,8 @@ for (i in 1:length(file_list)){
 #########################
 # LOAD CALCULATION DATA 
 #########################
-# calcdata <- read.csv( "data/calc_data/calc_data.csv", header = TRUE)
-calcdata <- read.csv( "data/calc_data/calc_data_finiteN_p_0.5.csv", header = TRUE)
+calcdata <- read.csv( "data/calc_data/calc_data.csv", header = TRUE)
+# calcdata <- read.csv( "data/calc_data/calc_data_finiteN_p_0.5.csv", header = TRUE)
 
 #########################
 # PREP DATA
