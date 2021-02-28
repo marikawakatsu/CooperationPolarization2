@@ -181,14 +181,14 @@ plot_fig2a <- function(simdata_coop, p, tag){
          tag = tag) +
     ggtitle( paste0("p = ", p, ", grouped by M") ) +
     scale_color_manual(values = rev(viridis(5)[1:4]), # magma(6)[2:5],
-                       name = "Opinion\nmutation\nrate (v)") +
+                       name = "Issue/opinion\nexploration (v)") +
     scale_y_continuous(limits = c(0.1, 0.6), 
                        breaks = seq(0.1, 0.6, 0.1)) +
     # geom_hline(yintercept = 0.5, color = "gray80") +
     geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0, size = 0.3) +
     # geom_ribbon(aes(ymin = Mean - SD, ymax = Mean + SD), alpha = 1, color = NA) +
     geom_line(aes(group = v), size = 0.4, alpha = 1, lty = 1) +
-    geom_point(stat="identity", size = 1.2, alpha = 1, stroke = 0.5, shape = 1) +
+    geom_point(stat="identity", size = 1.1, alpha = 1, stroke = 0.5) + #, shape = 21, fill = "white") +
     facet_grid( ~ M2, space="free_x",
                 switch = "x", scales="free_x") +
     theme(strip.placement = "outside") +
@@ -227,14 +227,14 @@ plot_fig2a_v2 <- function(simdata_coop, p, tag){
          tag = tag) +
     ggtitle( paste0("p = ", p, ", grouped by K") ) +
     scale_color_manual(values = rev(viridis(5)[1:4]), # magma(6)[2:5],
-                       name = "Opinion\nmutation\nrate (v)") +
+                       name = "Issue/opinion\nexploration (v)") +
     scale_y_continuous(limits = c(0.1, 0.6),  
                        breaks = seq(0.1, 0.6, 0.1)) +
     # geom_hline(yintercept = 0.5, color = "gray80") +
     geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0, size = 0.3) +
     # geom_ribbon(aes(ymin = Mean - SD, ymax = Mean + SD), alpha = 1) +
     geom_line(aes(group = v), size = 0.4, alpha = 1, lty = 1) +
-    geom_point(stat="identity", size = 1.2, alpha = 1, stroke = 0.5, shape = 1) +
+    geom_point(stat="identity", size = 1.1, alpha = 1, stroke = 0.5) + #, shape = 21, fill = "white") +
     facet_grid( ~ K2, space="free_x",
                 switch = "x", scales="free_x") +
     theme(strip.placement = "outside") +
@@ -279,7 +279,7 @@ plot_fig2b <- function(simdata_strat, p, v, tag = "B", labeled = TRUE, wlegend =
     #                    breaks = seq(qmin, qmax, qinc)) +
     geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0, size = 0.3) +
     geom_line(aes(group = Strategy), size = 0.4, alpha = 1, lty = 1) +
-    geom_point(stat="identity", size = 1.2, alpha = 1, stroke = 0.5, shape = 1) + 
+    geom_point(stat="identity", size = 1.1, alpha = 1, stroke = 0.5) + #, shape = 21, fill = "white") + 
     facet_grid( ~ M2, space="free_x",
                 switch = "x", scales="free_x") +
     theme(strip.placement = "outside") +
@@ -317,7 +317,7 @@ plot_fig2e <- function(simdata_coop, v, tag = "E", legend = TRUE){
                          limit = c(0.2,0.55),
                          space = "Lab",
                          name = "Effective\ncooperation") +
-    labs(x = "Party bias (p)",
+    labs(x = "Partisan bias (p)",
          y = "",
          tag = tag) +
     geom_tile( show.legend = legend ) + 
@@ -364,7 +364,7 @@ plot_fig2e_v3 <- function(simdata_coop, v, tag = "E", legend = TRUE){
     scale_fill_viridis(limit = c(0.2, 0.55),
                        direction = -1,
                        name = "Effective\ncooperation") + # option 3
-    labs(x = "Party bias (p)",
+    labs(x = "Partisan bias (p)",
          y = "",
          tag = tag) +
     geom_tile( show.legend = legend ) + 
@@ -404,7 +404,7 @@ plot_fig2e_v2 <- function(simdata_coop, v, tag = "E", legend = TRUE){
     ggtitle( paste0("v = ", v) ) +
     scale_color_manual( values = rev(viridis(6)), name = "") +
     scale_fill_manual( values = rev(viridis(6)), name = "") +
-    labs(x = "Party bias (p)",
+    labs(x = "Partisan bias (p)",
          y = "Effective cooperation",
          tag = tag) +
     # geom_hline(yintercept = 0.5, color = "gray80") + 
@@ -445,6 +445,35 @@ if(saveplots == 1){
   multiplot(fig2a, fig2b, fig2c, fig2d, fig2e, fig2f,
             layout = matrix(c(1,1,1,3,3,3,5,5,2,2,2,4,4,4,6,6), ncol = 8, byrow = TRUE))
             # layout = matrix(c(1,2,3,4,5,6), ncol = 3, byrow = FALSE))
+  dev.off()
+  
+}
+
+###########################################
+# Figure S? with p = 1
+###########################################
+# save multiplot
+p  <- 1.
+v1 <- 0.001
+v2 <- 0.025
+fig2b <- plot_fig2a(   simdata_coop_all,  p, "B")
+fig2a <- plot_fig2a_v2(simdata_coop_all,  p, "A")
+fig2c <- plot_fig2b(simdata_strat_all, p, v1, "C", TRUE, TRUE)
+fig2d <- plot_fig2b(simdata_strat_all, p, v2, "D", TRUE, TRUE)
+
+if(saveplots == 1){
+  
+  threshcount <- if(threshold %in% c(0,1)){ 
+    paste0("thresh_", threshold, "_", min(casecount$COUNT))
+  }
+  plottype <- paste0("figSA_p_", p, "_", threshcount)
+  
+  png(filename = paste0("plots/figs/", plottype, "_", 
+                        format(Sys.Date(), format="%y%m%d"), "_SD.png"), # !!! change !!!
+      width = figW*1.75*1.25, height = figW*ratio*1.8, units = "in", res = 300)
+  multiplot(fig2a, fig2b, fig2c, fig2d,
+            layout = matrix(c(1,3,2,4), ncol = 2, byrow = TRUE))
+  # layout = matrix(c(1,2,3,4,5,6), ncol = 3, byrow = FALSE))
   dev.off()
   
 }

@@ -65,11 +65,11 @@ qinc   <- 0.25
 
 # color palettes
 if(length(vs) == 3){
-  cityblock_colors <- rev(heat.colors(7)[c(1,3,5)])
+  cityblock_colors <- rev(heat.colors(7)[c(1,4,5)])
 }else if(0.025 %in% vs){
-  cityblock_colors <- rev(heat.colors(7)[c(3,5)])
+  cityblock_colors <- rev(heat.colors(7)[c(4,6)])
 }else if(0.1 %in% vs){
-  cityblock_colors <- rev(heat.colors(7)[c(1,5)])
+  cityblock_colors <- rev(heat.colors(7)[c(1,4)])
 }
 
 if(length(vs) == 3){
@@ -201,24 +201,24 @@ plot_fig3b <- function(simdata_dist, tag = "B", colors = cityblock_colors){
           # axis.text.y = element_text(size=12)
           title = element_text(size = 18)
     ) +
-    labs(x = "Party bias (p)",
+    labs(x = "Partisan bias (p)",
          y = "Average opinion distance",
          tag = tag) +
     scale_linetype_manual(values = c("solid","dotted","dashed"), 
                           labels = labels,
                           name   = "Distance type") + 
     scale_color_manual(values = colors,
-                       name   = "Rate of opinion\nmutation (v)") +
+                       name   = "Issue/opinion\nexploration (v)") +
     scale_fill_manual(values = colors, 
-                      name   = "Rate of opinion\nmutation (v)")  +
+                      name   = "Issue/opinion\nexploration (v)")  +
     scale_y_continuous(limits = c(0, 10),
                        breaks = seq(0, 10, 2)) +
     scale_x_continuous(limits = c(qmin, qmax), 
                        breaks = seq(qmin, qmax, qinc)) +
     # geom_ribbon(aes(ymin = Mean - SD, ymax = Mean + SD), alpha = 0.3, color = NA) +
     geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0) +
-    geom_line(aes(y = Mean), size = 0.2, alpha = 0.7) +
-    geom_point(aes(y = Mean), size = 1.0, alpha = 1, stroke = 0.4, shape = 1) + 
+    geom_line(aes(y = Mean), size = 0.4, alpha = 1.0) +
+    geom_point(aes(y = Mean), size = 1.2, alpha = 1, stroke = 0.4) + #, shape = 1) + ) + 
     facet_rep_grid( M2 ~ K2, repeat.tick.labels = TRUE,
                     # switch = "both", 
                     drop = TRUE) +
@@ -265,24 +265,24 @@ plot_fig4a <- function(simdata_dist, tag = "A", colors = hamming_colors){
           # axis.text.y = element_text(size=12)
           title = element_text(size = 18)
     ) +
-    labs(x = "Party bias (p)",
+    labs(x = "Partisan bias (p)",
          y = "Average issue distance",
          tag = tag) + 
     scale_linetype_manual(values = c("solid","dotted","dashed"), 
                           labels = labels,
                           name   = "Distance type") + 
     scale_color_manual(values = colors,
-                       name   = "Rate of opinion\nmutation (v)" ) +
+                       name   = "Issue/opinion\nexploration (v)" ) +
     scale_fill_manual(values = colors,
-                      name   = "Rate of opinion\nmutation (v)" )  +
+                      name   = "Issue/opinion\nexploration (v)" )  +
     scale_y_continuous(limits = c(0, 2.4),
                        breaks = seq(0, 2.4, 0.4)) +
     scale_x_continuous(limits = c(qmin, qmax), 
                        breaks = seq(qmin, qmax, qinc)) +
     # geom_ribbon(aes(ymin = Mean - SD, ymax = Mean + SD), alpha = 0.3, color = NA) +
     geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0) +
-    geom_line(aes(y = Mean), size = 0.2, alpha = 0.7) +
-    geom_point(aes(y = Mean), size = 1.0, alpha = 1, stroke = 0.4, shape = 1) + 
+    geom_line(aes(y = Mean), size = 0.4, alpha = 1.0) +
+    geom_point(aes(y = Mean), size = 1.2, alpha = 1, stroke = 0.4) + #, shape = 1) + ) + 
     facet_rep_grid( M2 ~ K2, repeat.tick.labels = TRUE,
                     # switch = "both", 
                     drop = TRUE) +
@@ -335,24 +335,24 @@ plot_fig3b_normed <- function(simdata_dist, tag = "B", colors = cityblock_colors
           # axis.text.y = element_text(size=12)
           title = element_text(size = 18)
     ) +
-    labs(x = "Party bias (p)",
+    labs(x = "Partisan bias (p)",
          y = "Average opinion distance",
          tag = tag) +
     scale_linetype_manual(values = c("solid","dotted","dashed"), 
                           labels = labels,
                           name   = "Distance type") + 
     scale_color_manual(values = colors,
-                       name   = "Rate of opinion\nmutation (v)") +
+                       name   = "Issue/opinion\nexploration (v)") +
     scale_fill_manual(values = colors, 
-                      name   = "Rate of opinion\nmutation (v)")  +
+                      name   = "Issue/opinion\nexploration (v)")  +
     scale_y_continuous(limits = c(0, 1),
                        breaks = seq(0, 1, 0.2)) +
     scale_x_continuous(limits = c(qmin, qmax), 
                        breaks = seq(qmin, qmax, qinc)) +
     # geom_ribbon(aes(ymin = Mean - SD, ymax = Mean + SD), alpha = 0.3, color = NA) +
     geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0) +
-    geom_line(aes(y = Mean), size = 0.2, alpha = 0.7) +
-    geom_point(aes(y = Mean), size = 1.0, alpha = 1, stroke = 0.4, shape = 1) + 
+    geom_line(aes(y = Mean), size = 0.4, alpha = 1.0) +
+    geom_point(aes(y = Mean), size = 1.2, alpha = 1, stroke = 0.4) + #, shape = 1) + ) + 
     facet_rep_grid( M2 ~ K2, repeat.tick.labels = TRUE,
                     # switch = "both", 
                     drop = TRUE) +
@@ -399,24 +399,24 @@ plot_fig4a_normed <- function(simdata_dist, tag = "A", colors = hamming_colors){
           # axis.text.y = element_text(size=12)
           title = element_text(size = 18)
     ) +
-    labs(x = "Party bias (p)",
+    labs(x = "Partisan bias (p)",
          y = "Average issue distance",
          tag = tag) + 
     scale_linetype_manual(values = c("solid","dotted","dashed"), 
                           labels = labels,
                           name   = "Distance type") + 
     scale_color_manual(values = colors,
-                       name   = "Rate of opinion\nmutation (v)" ) +
+                       name   = "Issue/opinion\nexploration (v)" ) +
     scale_fill_manual(values = colors,
-                      name   = "Rate of opinion\nmutation (v)" )  +
+                      name   = "Issue/opinion\nexploration (v)" )  +
     scale_y_continuous(limits = c(0, 0.8),
                        breaks = seq(0, 0.8, 0.2)) +
     scale_x_continuous(limits = c(qmin, qmax), 
                        breaks = seq(qmin, qmax, qinc)) +
     # geom_ribbon(aes(ymin = Mean - SD, ymax = Mean + SD), alpha = 0.3, color = NA) +
     geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0) +
-    geom_line(aes(y = Mean), size = 0.2, alpha = 0.7) +
-    geom_point(aes(y = Mean), size = 1.0, alpha = 1, stroke = 0.4, shape = 1) + 
+    geom_line(aes(y = Mean), size = 0.4, alpha = 1.0) +
+    geom_point(aes(y = Mean), size = 1.2, alpha = 1, stroke = 0.4) + #, shape = 1) + ) + 
     facet_rep_grid( M2 ~ K2, repeat.tick.labels = TRUE,
                     # switch = "both", 
                     drop = TRUE) +
@@ -444,6 +444,7 @@ plot_fig4a_normed <- function(simdata_dist, tag = "A", colors = hamming_colors){
 # Figure 3 without normalization, without opinion dispersion
 ###########################################
 # change plot size
+figW      <- 4     # figure width for printing
 if(Mmax > 3){figW <- figW*1.5}
 
 # save multiplot

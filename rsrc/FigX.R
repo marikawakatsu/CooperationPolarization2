@@ -164,8 +164,8 @@ plot_figSXcoop <- function(simdata_coop, p, tag = "A", legend = TRUE){
            legend.margin = margin(t = 0, unit="npc")
     ) +
     ggtitle( paste0("p = ", p) ) +
-    scale_color_manual( values = viridis(7)[1:6], name = "") +
-    scale_fill_manual( values = viridis(7)[1:6], name = "") +
+    scale_color_manual( values = rev(viridis(7)[1:6]), name = "") +
+    scale_fill_manual( values = rev(viridis(7)[1:6]), name = "") +
     labs(x = "Issue / opinion exploration (v)",
          y = "Effective cooperation",
          tag = tag) + 
@@ -176,9 +176,9 @@ plot_figSXcoop <- function(simdata_coop, p, tag = "A", legend = TRUE){
                        breaks = c(0.001, 0.005, 0.025, 0.125, 0.625),
                        trans  = 'log10') +
     # geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0) +
-    geom_ribbon(aes(ymin = Mean - SD, ymax = Mean + SD), alpha = 0.15, color = NA) +
+    geom_ribbon(aes(ymin = Mean - SD, ymax = Mean + SD), alpha = 0.1, color = NA) +
     geom_line(size = 0.4, alpha = 0.7, lty = 1) +
-    geom_point(size = 1.6, alpha = 0.9, stroke = 0.0) #, shape = 1)
+    geom_point(size = 1.6, alpha = 1.0, stroke = 0.0) #, shape = 1)
   
   return(figSXcoop)
 }
@@ -215,7 +215,7 @@ plot_figSXstrat <- function(simdata_strat, p, M = 1, K = 1, tag = "B", labeled =
                        breaks = c(0.001, 0.005, 0.025, 0.125, 0.625),
                        trans  = 'log10') +
     # geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0, size = 0.4) +
-    geom_ribbon(aes(ymin = Mean - SD, ymax = Mean + SD), alpha = 0.15, color = NA) +
+    geom_ribbon(aes(ymin = Mean - SD, ymax = Mean + SD), alpha = 0.1, color = NA) +
     geom_line(size = 0.4, alpha = 1, lty = 1) +
     geom_point(size = 1.6, alpha = 1, stroke = 0.0) #, shape = 1)
   
