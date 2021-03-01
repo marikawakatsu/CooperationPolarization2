@@ -48,7 +48,7 @@ for (i in 1:length(file_list)){
   # if == 0:  ignore data sets where there is at least one line with 0's 
   #           (ie consider only complete data sets at a given time)
   # if != -1: include all simulation results (later thresholded by min(COUNT))
-  if ( dim(temp_data[temp_data$N == 0,])[1] != -1 ){
+  if ( dim(temp_data[temp_data$N == 0,])[1] == 0 ){
     # select common columns
     if (i == 1){
       simdata    <- rbind(simdata, temp_data) #bind the new data to data

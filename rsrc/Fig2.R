@@ -441,7 +441,7 @@ if(saveplots == 1){
   
   png(filename = paste0("plots/figs/", plottype, "_", 
                         format(Sys.Date(), format="%y%m%d"), "_SD.png"), # !!! change !!!
-      width = figW*1.75*1.65, height = figW*ratio*1.8, units = "in", res = 300)
+      width = figW*1.75*1.65, height = figW*ratio*1.8, units = "in", res = 600)
   multiplot(fig2a, fig2b, fig2c, fig2d, fig2e, fig2f,
             layout = matrix(c(1,1,1,3,3,3,5,5,2,2,2,4,4,4,6,6), ncol = 8, byrow = TRUE))
             # layout = matrix(c(1,2,3,4,5,6), ncol = 3, byrow = FALSE))
@@ -470,7 +470,7 @@ if(saveplots == 1){
   
   png(filename = paste0("plots/figs/", plottype, "_", 
                         format(Sys.Date(), format="%y%m%d"), "_SD.png"), # !!! change !!!
-      width = figW*1.75*1.25, height = figW*ratio*1.8, units = "in", res = 300)
+      width = figW*1.75*1.25, height = figW*ratio*1.8, units = "in", res = 600)
   multiplot(fig2a, fig2b, fig2c, fig2d,
             layout = matrix(c(1,3,2,4), ncol = 2, byrow = TRUE))
   # layout = matrix(c(1,2,3,4,5,6), ncol = 3, byrow = FALSE))
