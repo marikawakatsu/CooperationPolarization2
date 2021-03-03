@@ -58,12 +58,12 @@ for (i in 1:length(file_list)){
     }
   }
 }
+simdata <- simdata[simdata$p1 < 1,]
 
 #########################
 # LOAD CALCULATION DATA 
 #########################
 calcdata <- read.csv( "analytics/calc_data_yzgh.csv", header = TRUE)
-# calcdata <- read.csv( "data/calc_data/calc_data_finiteN_p_0.5.csv", header = TRUE)
 
 #########################
 # PREP DATA

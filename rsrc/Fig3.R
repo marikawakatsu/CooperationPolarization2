@@ -143,6 +143,7 @@ simdata_strat_all <- simdata_strat_all %>% mutate( M2 = paste0( "M=", M ), K2 = 
 # LOAD CALC DATA
 ###########################################
 calcdata <- read.csv( "analytics/calc_data_strat.csv", header = TRUE)
+# calcdatap1 <- read.csv( "analytics/calc_data_strat_p1.csv", header = TRUE)
 
 # group calcdata
 calcdata <- as.data.frame(calcdata)
@@ -150,6 +151,12 @@ calcdata_plot <- calcdata %>%
   gather("variable","value",-u,-v) %>%
   rename( Value = value, Strategy = variable ) %>%
   group_by(v)
+
+# calcdatap1 <- as.data.frame(calcdatap1)
+# calcdatap1_plot <- calcdatap1 %>% 
+#   gather("variable","value",-u,-v) %>%
+#   rename( Value = value, Strategy = variable ) %>%
+#   group_by(v)
 
 ###########################################
 # Plotting functions
@@ -235,13 +242,13 @@ plot_figSXstrat <- function(simdata_strat, p, M = 1, K = 1, tag = "B", labeled =
 }
 
 # plot with theoretical predictions
-plot_figSWstrat <- function(simdata_plot, calcldata_plot, p, tag = "B", labeled = TRUE, wlegend = TRUE){
+plot_figSWstrat <- function(simdata_plot, calcdata_plot_in, p, tag = "B", labeled = TRUE, wlegend = TRUE){
   
   subdata <- simdata_plot[simdata_plot$p == p & 
                             simdata_plot$M == 1,, ]
   
-  calcsubdata   <- calcdata_plot
-  calcsubdata$u <- factor(calcdata_plot$u) # dummy variable
+  calcsubdata   <- calcdata_plot_in
+  calcsubdata$u <- factor(calcdata_plot_in$u) # dummy variable
   
   figSWstrat <- ggplot(subdata,
                        aes(x = v, y = Mean, color = Strategy, group = Strategy, fill = Strategy)) +
