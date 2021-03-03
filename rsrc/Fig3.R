@@ -1,7 +1,7 @@
 ################################################################################
 #
 # Figure X: sweep through v
-# Last updated: 11 Feb 2021
+# Last updated: 1 Mar 2021
 #
 ################################################################################
 
@@ -140,6 +140,18 @@ simdata_coop_all  <- simdata_coop_all  %>% mutate( M2 = paste0( "M=", M ), K2 = 
 simdata_strat_all <- simdata_strat_all %>% mutate( M2 = paste0( "M=", M ), K2 = paste0( "K=", K ) )
 
 ###########################################
+# LOAD CALC DATA
+###########################################
+calcdata <- read.csv( "analytics/calc_data_strat.csv", header = TRUE)
+
+# group calcdata
+calcdata <- as.data.frame(calcdata)
+calcdata_plot <- calcdata %>% 
+  gather("variable","value",-u,-v) %>%
+  rename( Value = value, Strategy = variable ) %>%
+  group_by(v)
+
+###########################################
 # Plotting functions
 ###########################################
 plot_figSXcoop <- function(simdata_coop, p, tag = "A", legend = TRUE){
@@ -177,7 +189,7 @@ plot_figSXcoop <- function(simdata_coop, p, tag = "A", legend = TRUE){
                        trans  = 'log10') +
     # geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0) +
     geom_ribbon(aes(ymin = Mean - SD, ymax = Mean + SD), alpha = 0.1, color = NA) +
-    geom_line(size = 0.4, alpha = 0.7, lty = 1) +
+    geom_line(size = 0.4, alpha = 0.7, linetype = "dotted") +
     geom_point(size = 1.6, alpha = 1.0, stroke = 0.0) #, shape = 1)
   
   return(figSXcoop)
@@ -216,10 +228,59 @@ plot_figSXstrat <- function(simdata_strat, p, M = 1, K = 1, tag = "B", labeled =
                        trans  = 'log10') +
     # geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0, size = 0.4) +
     geom_ribbon(aes(ymin = Mean - SD, ymax = Mean + SD), alpha = 0.1, color = NA) +
-    geom_line(size = 0.4, alpha = 1, lty = 1) +
+    geom_line(size = 0.4, alpha = 1, lty = "dotted") +
     geom_point(size = 1.6, alpha = 1, stroke = 0.0) #, shape = 1)
   
   return(figSXstrat)
+}
+
+# plot with theoretical predictions
+plot_figSWstrat <- function(simdata_plot, calcldata_plot, p, tag = "B", labeled = TRUE, wlegend = TRUE){
+  
+  subdata <- simdata_plot[simdata_plot$p == p & 
+                            simdata_plot$M == 1,, ]
+  
+  calcsubdata   <- calcdata_plot
+  calcsubdata$u <- factor(calcdata_plot$u) # dummy variable
+  
+  figSWstrat <- ggplot(subdata,
+                       aes(x = v, y = Mean, color = Strategy, group = Strategy, fill = Strategy)) +
+    theme_classic() +
+    theme(plot.title = element_text(hjust = 0.5,
+                                    size = 10, 
+                                    margin = margin(0,0,0,0) ) ) +
+    theme (legend.text = element_text (size = 7),
+           legend.title = element_text (size = 8),
+           # legend.key.size = unit(0.025, "npc"),
+           legend.key.width = unit(0.02, "npc"),
+           legend.key.height = unit(0.4, "cm"),           
+           panel.spacing = unit(0.2,  "lines"),
+           legend.margin = margin(t = 0, unit="npc")
+    ) +
+    labs(x = "Issue / opinion exploration (v)",
+         y = "Relative abundance",
+         tag = tag) +
+    ggtitle( paste0("p = ", p) ) +
+    scale_color_manual(values = c("#0571b0","#92c5de","#f4a582","#ca0020")) +
+    scale_fill_manual(values = c("#0571b0","#92c5de","#f4a582","#ca0020")) +
+    scale_y_continuous(limits = c(0.163, 0.337),
+                       breaks = seq(0.01, 0.53, 0.04)) +
+    scale_x_continuous(limits = c(0.001, 0.625),
+                       breaks = c(0.001, 0.005, 0.025, 0.125, 0.625),
+                       trans  = 'log10') +
+    # plot calculation data
+    geom_line(data = calcsubdata, aes(x = v, y = Value, linetype = u),
+              alpha = 0.9, size = 0.4) +
+    scale_linetype_manual(labels = c("theoretical\nprediction"), 
+                          values = c("solid")) +
+    guides(linetype = guide_legend("")) +
+    # plot simulation data
+    # geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0., size = 0.3) +
+    geom_ribbon(aes(ymin = Mean - SD, ymax = Mean + SD), alpha = 0.1, color = NA) +
+    # geom_line(aes(group = v), size = 0.4, alpha = 1, lty = 1) +
+    geom_point(size = 1.6, alpha = 0.9, stroke = 0.0)
+  
+  return(figSWstrat)
 }
 
 
@@ -237,6 +298,11 @@ figSXg <- plot_figSXstrat( simdata_strat_all, 0.25, 1, 1,  "G")
 figSXh <- plot_figSXstrat( simdata_strat_all, 0.5, 1, 1, "H")
 figSXi <- plot_figSXstrat( simdata_strat_all, 0.75, 1, 1, "I ")
 figSXj <- plot_figSXstrat( simdata_strat_all, 1.0, 1, 1, "J")
+figSWf <- plot_figSWstrat( simdata_strat_all, calcdata_plot, 0.0,  "F")
+figSWg <- plot_figSWstrat( simdata_strat_all, calcdata_plot, 0.25, "G")
+figSWh <- plot_figSWstrat( simdata_strat_all, calcdata_plot, 0.5,  "H")
+figSWi <- plot_figSWstrat( simdata_strat_all, calcdata_plot, 0.75, "I ")
+figSWj <- plot_figSWstrat( simdata_strat_all, calcdata_plot, 1.0,  "J")
 emp <- ggplot() + theme_void()
 
 if(saveplots == 1){
@@ -248,6 +314,7 @@ if(saveplots == 1){
   
   plottype <- paste0("figSX_", threshcount)
   
+  # without theoretical predictions
   png(filename = paste0("plots/figs/", plottype, "_", 
                         format(Sys.Date(), format="%y%m%d"), "_SD.png"), 
       width = figW*1.5, height = figW*ratio*1.5/2*5, units = "in", res = 600)
@@ -255,6 +322,15 @@ if(saveplots == 1){
   #           layout = matrix(c(1,2,3,4,5,6), ncol = 3, byrow = TRUE))
   multiplot(figSXa, figSXb, figSXc, figSXd, figSXe, 
             figSXf, figSXg, figSXh, figSXi, figSXj, 
+            layout = matrix(c(1,2,3,4,5,6,7,8,9,10), ncol = 2, byrow = FALSE))
+  dev.off()
+  
+  # with theoretical predictions
+  png(filename = paste0("plots/figs/", plottype, "_", 
+                        format(Sys.Date(), format="%y%m%d"), "_SD+calc.png"), 
+      width = figW*1.5, height = figW*ratio*1.5/2*5, units = "in", res = 600)
+  multiplot(figSXa, figSXb, figSXc, figSXd, figSXe, 
+            figSWf, figSWg, figSWh, figSWi, figSXj, 
             layout = matrix(c(1,2,3,4,5,6,7,8,9,10), ncol = 2, byrow = FALSE))
   dev.off()
 
@@ -271,6 +347,9 @@ fig4c <- plot_figSXcoop( simdata_coop_all, 1.0, "C")
 fig4d <- plot_figSXstrat( simdata_strat_all, 0.0, 1, 1, "D")
 fig4e <- plot_figSXstrat( simdata_strat_all, 0.5, 1, 1, "E")
 fig4f <- plot_figSXstrat( simdata_strat_all, 1.0, 1, 1, "F")
+fig4Wd <- plot_figSWstrat( simdata_strat_all, calcdata_plot, 0.0, "D")
+fig4We <- plot_figSWstrat( simdata_strat_all, calcdata_plot, 0.5, "E")
+fig4Wf <- plot_figSWstrat( simdata_strat_all, calcdata_plot, 1.0, "F")
 emp <- ggplot() + theme_void()
 
 if(saveplots == 1){
@@ -281,6 +360,7 @@ if(saveplots == 1){
   }
   plottype <- paste0("fig4_", threshcount)
   
+  # without theoretical predictions
   png(filename = paste0("plots/figs/", plottype, "_", 
                         format(Sys.Date(), format="%y%m%d"), "_SD.png"), 
       width = figW*1.5, height = figW*ratio*1.5/2*3, units = "in", res = 600)
@@ -289,6 +369,17 @@ if(saveplots == 1){
   multiplot(fig4a, fig4b, fig4c, fig4d, fig4e, fig4f,
             layout = matrix(c(1,2,3,4,5,6), ncol = 2, byrow = FALSE))
   dev.off()
+  
+  # with theoretical predictions
+  png(filename = paste0("plots/figs/", plottype, "_", 
+                        format(Sys.Date(), format="%y%m%d"), "_SD+calc.png"), 
+      width = figW*1.5, height = figW*ratio*1.5/2*3, units = "in", res = 600)
+  # multiplot(fig4a, fig4b, fig4c, emp,
+  #           layout = matrix(c(1,2,3,4), ncol = 2, byrow = TRUE))
+  multiplot(fig4a, fig4b, fig4c, fig4Wd, fig4We, fig4f,
+            layout = matrix(c(1,2,3,4,5,6), ncol = 2, byrow = FALSE))
+  dev.off()
+  
 }
 
 
