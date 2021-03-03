@@ -162,7 +162,7 @@ plot_fig2a <- function(simdata_coop, p, tag){
                           simdata_coop$M <= Mmax, ]
   
   fig2a <- ggplot(subdata,
-                  aes(x = K3, y = Mean, label = K2, color = v)) +
+                  aes(x = K2, y = Mean, label = K2, color = v)) +
     theme_classic() +
     theme(plot.title = element_text(hjust = 0.5)) +
     theme (legend.text = element_text (size = 7),
@@ -171,7 +171,8 @@ plot_fig2a <- function(simdata_coop, p, tag){
            legend.key.width = unit(0.015, "npc"),
            legend.key.height = unit(0.03, "npc"),
            panel.spacing = unit(0.2,  "lines"),
-           legend.margin = margin(t = 0, unit="npc")
+           legend.margin = margin(t = 0, unit="npc"),
+           axis.text.x = element_text(angle = 45, vjust = 0.5, color = "gray50")
     ) +
     theme(plot.title = element_text(hjust = 0.5, 
                                     size = 10, 
@@ -208,7 +209,7 @@ plot_fig2a_v2 <- function(simdata_coop, p, tag){
                             simdata_coop$M <= Mmax, ]
   
   fig2a <- ggplot(subdata,
-                  aes(x = M3, y = Mean, label = M2, color = v)) +
+                  aes(x = M2, y = Mean, label = M2, color = v)) +
     theme_classic() +
     theme(plot.title = element_text(hjust = 0.5)) +
     theme (legend.text = element_text (size = 7),
@@ -217,7 +218,8 @@ plot_fig2a_v2 <- function(simdata_coop, p, tag){
            legend.key.width = unit(0.015, "npc"),
            legend.key.height = unit(0.03, "npc"),
            panel.spacing = unit(0.2,  "lines"),
-           legend.margin = margin(t = 0, unit="npc")
+           legend.margin = margin(t = 0, unit="npc"),
+           axis.text.x = element_text(angle = 45, vjust = 0.5, color = "gray50")
     ) +
     theme(plot.title = element_text(hjust = 0.5, 
                                     size = 10, 
@@ -254,7 +256,7 @@ plot_fig2b <- function(simdata_strat, p, v, tag = "B", labeled = TRUE, wlegend =
   ylabel <- if(labeled){"Relative abundance"}else{""}
   
   fig2b <- ggplot(subdata,
-                  aes(x = K3, y = Mean, label = K2, color = Strategy)) +
+                  aes(x = K2, y = Mean, label = K2, color = Strategy)) +
     theme_classic() +
     theme(plot.title = element_text(hjust = 0.5)) +
     theme(plot.title = element_text(hjust = 0.5, 
@@ -266,7 +268,8 @@ plot_fig2b <- function(simdata_strat, p, v, tag = "B", labeled = TRUE, wlegend =
            legend.key.width = unit(0.015, "npc"),
            legend.key.height = unit(0.03, "npc"),
            panel.spacing = unit(0.2,  "lines"),
-           legend.margin = margin(t = 0, unit="npc")
+           legend.margin = margin(t = 0, unit="npc"),
+           axis.text.x = element_text(angle = 45, vjust = 0.5, color = "gray50")
     ) +
     labs(x = "",
          y = ylabel,

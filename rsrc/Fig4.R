@@ -85,9 +85,8 @@ qinc   <- 0.25
 # }else if(0.1 %in% vs){
 #   hamming_colors <- rev(plasma(7)[c(3,5)])
 # }
-cityblock_colors <- c("#4eb3d3","#2b8cbe","#0868ac") # c("#FFFF2A", "#FFBF00", "#FF6000", "#FF0000", "#992600")
-hamming_colors   <- c("#8c6bb1","#88419d","#810f7c") # rev(plasma(length(vs)))
-
+cityblock_colors <- c("#7bccc4","#2b8cbe","#084081") # c("#FFFF2A", "#FFBF00", "#FF6000", "#FF0000", "#992600")
+hamming_colors   <- c("#8c96c6","#88419d","#4d004b") # rev(plasma(length(vs)))
 
 ############################################################################################
 # PREP DATA
@@ -551,8 +550,8 @@ qmin   <- 0
 qinc   <- 0.25
 
 # color palettes
-cityblock_colors <- c("#7bccc4","#4eb3d3","#2b8cbe","#0868ac","#084081") # c("#FFFF2A", "#FFBF00", "#FF6000", "#FF0000", "#992600")
-hamming_colors   <- c("#8c96c6","#8c6bb1","#88419d","#810f7c","#4d004b") # rev(plasma(length(vs)))
+cityblock_colors <- c("#7bccc4","#4eb3d3","#2b8cbe","#0868ac","#084081") 
+hamming_colors   <- c("#8c96c6","#8c6bb1","#88419d","#810f7c","#4d004b") 
 
 ############################################################################################
 # PREP DATA

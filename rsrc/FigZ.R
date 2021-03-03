@@ -189,7 +189,7 @@ plot_figZb <- function(simdata_plot, calcdata_plot, Metric, tag = "", wtitle = F
          y = "Value",
          tag = tag) +
     ggtitle( paste0("quantity: ", if(wtitle){Title}else{Metric} ) ) +
-    scale_color_manual(values = rev(viridis(5)) ) + # magma(6)[2:5]) +
+    scale_color_manual(values = rev(viridis(7)[2:6]) ) + # magma(6)[2:5]) +
     scale_y_continuous(limits = c(-0.05, 1)) +
     scale_x_continuous(limits = c(0.001, 0.625),
                        breaks = c(0.001, 0.005, 0.025, 0.125, 0.625),
