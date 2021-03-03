@@ -18,6 +18,8 @@ data/calc_data/
 data/gens_10000/
 data/gens_50000000/
 plots/figs/
+slurm/della/with_self_imitation/
+slurm/della/ensemble2/*.out
 # plots/gens_*
 .DS_Store
 src/.DS_Store
