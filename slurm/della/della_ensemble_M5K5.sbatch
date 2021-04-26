@@ -12,5 +12,5 @@
 module purge
 module load julia/1.5.0
 
-cd /tigress/mk28/CooperationPolarization2/
+cd /scratch/gpfs/mk28/CooperationPolarization2/
 julia --project run/della_ensemble_M5K5.jl
