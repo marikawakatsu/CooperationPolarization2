@@ -1,7 +1,7 @@
 ################################################################################
 #
-# Figure 4
-# Last updated: 1 May 2021
+# Figure 4, supplementary versions
+# Last updated: 14 Feb 2020
 #
 ################################################################################
 
@@ -14,22 +14,20 @@ source("rsrc/utils/functions.R")
 
 setwd("~/.julia/dev/CooperationPolarization2/") # to be updated later
 
-######################################################
-# MS version, showing behavior across values of v
-######################################################
-
-# parameters # not changed
+# parameters
 beta  <- 0.001
 u     <- 0.001 # fixed, for now
 gens  <- 20000000
 saveplots <- 1
 Mmax      <- 5
 
-vs     <- c(0.001, 0.005, 0.025, 0.125, 0.625) # for plotting vsweep data
+vs     <- c(0.001, 0.005, 0.025) # for plotting run_multi data
+# vs     <- c(0.001, 0.005, 0.025, 0.125, 0.625) # for plotting vsweep data
+vlabel <- if(length(vs) < 3){ paste0("v_",vs[1],"+",vs[2]) }else{ "all" }
 
 # load data
 file_dir  <- sprintf( "data/gens_%s/", format(gens, scientific = FALSE) )
-pattern   <- sprintf( "vsweep" ) # specify data type
+pattern   <- sprintf( "run_multi" ) # specify data type
 file_list <- list.files(path = file_dir, pattern = pattern)
 simdata   <- data.frame() # initialize data frame
 
@@ -50,11 +48,12 @@ for (i in 1:length(file_list)){
   }
 }
 
-# select vs
-simdata   <- simdata[(simdata$v %in% vs) & (simdata$β == beta),]
-casecount <- simdata %>% group_by(M, K, v, p1, β) %>% summarize(COUNT = n())
+# for fixed gamma, consider only the rows with gamma == gamma
+simdata <- simdata[(simdata$v %in% vs) & (simdata$β == beta),]
+# not needed because all "run_multi" files have the same vs
 
 # plotting parameters
+
 ymax      <- 0.3    # max y for plotting
 ymin      <- 0.2
 yinc      <- 0.02   # y-axis increments
@@ -66,9 +65,28 @@ qmax   <- 1
 qmin   <- 0
 qinc   <- 0.25
 
-# color palettes
-cityblock_colors <- c("#7bccc4","#4eb3d3","#2b8cbe","#0868ac","#084081") 
-hamming_colors   <- c("#8c96c6","#8c6bb1","#88419d","#810f7c","#4d004b") 
+# # color palettes
+# if(length(vs) == 3){
+#   cityblock_colors <- rev(heat.colors(7)[c(1,4,5)])
+# }else if(length(vs) > 3){
+#   cityblock_colors <- rev(c("#992600","#FF0000","#FF6000","#FF9F00","#FFDF00"))# rev(heat.colors(2*length(vs)+2)[2+2*c(1:length(vs))])
+# }else if(0.025 %in% vs){
+#   cityblock_colors <- rev(heat.colors(7)[c(4,6)])
+# }else if(0.1 %in% vs){
+#   cityblock_colors <- rev(heat.colors(7)[c(1,4)])
+# }
+# 
+# if(length(vs) == 3){
+#   hamming_colors <- rev(plasma(7)[3:5])
+# }else if(length(vs) > 3){
+#   hamming_colors <- rev(plasma(length(vs)))
+# }else if(0.025 %in% vs){
+#   hamming_colors <- rev(plasma(7)[4:5])
+# }else if(0.1 %in% vs){
+#   hamming_colors <- rev(plasma(7)[c(3,5)])
+# }
+cityblock_colors <- c("#7bccc4","#2b8cbe","#084081") # c("#FFFF2A", "#FFBF00", "#FF6000", "#FF0000", "#992600")
+hamming_colors   <- c("#8c96c6","#88419d","#4d004b") # rev(plasma(length(vs)))
 
 ############################################################################################
 # PREP DATA
@@ -142,179 +160,40 @@ simdata_dist <-
 
 
 #####################################
-# Add extra labels 
+# Figure 3A: Total opinion dispersion  #
 #####################################
 simdata_pol <- simdata_pol %>%
   mutate( M2 = paste0( "M=", M),
           K2 = paste0( "K=",K ) ) %>%
   mutate( MK2 = paste0( M2,", ", K2) )
 
-
+###########################################
+# Figure 3B: 
+###########################################
 simdata_dist <- simdata_dist %>%
   mutate( M2 = paste0( "M=", M),
           K2 = paste0( "K=", K ) ) %>%
   mutate( MK2 = paste0( M2,", ", K2) )
 
+###########################################
+# LOAD CALC DATA
+###########################################
+calcdata <- read.csv( "analytics/calc_data_strat.csv", header = TRUE)
 
-#####################################
+# group calcdata
+calcdata <- as.data.frame(calcdata)
+calcdata_plot <- calcdata %>% 
+  gather("variable","value",-u,-v) %>%
+  rename( Value = value, Metric = variable ) %>%
+  group_by(v)
+
+###########################################
 # Plotting functions
-#####################################
-plotA_normed <- function(simdata_dist, tag = "A", option = "all", colors = cityblock_colors){
+###########################################
+plotSA_unnormed <- function(simdata_dist, tag = "B", option = "all", colors = cityblock_colors){
   
   simdata_dist$v <- factor(simdata_dist$v)
   
-  if(option == "one"){
-    subdata   <- simdata_dist[simdata_dist$Metric %in% c("cityblock_all_normed") & 
-                                simdata_dist$M <= Mmax, ]
-    labels    <- c("population-level")
-    linetypes <- c("solid")
-  }else if(option == "two"){
-    subdata   <- simdata_dist[simdata_dist$Metric %in% c("cityblock_in_normed", "cityblock_out_normed") & 
-                                simdata_dist$M <= Mmax, ]
-    labels    <- c("within-party","between-party")
-    linetypes <- c("solid", "dotted","dashed")
-  }else if(option == "all"){
-    subdata   <- simdata_dist[simdata_dist$Metric %in% c("cityblock_all_normed", "cityblock_in_normed", "cityblock_out_normed") & 
-                                simdata_dist$M <= Mmax, ]
-    labels    <- c("population-level","within-party","between-party")
-    linetypes <- c("solid","dotted","dashed")
-  }
-  subdata <- subdata %>% arrange(desc(K))
-  subdata$Metric <- factor(subdata$Metric)
-  
-  figSa <- ggplot(data = subdata, 
-                  # aes(x = q, colour = v, fill = v, lty = Metric)) +
-                  aes(x = p, colour = v, fill = v, lty = Metric)) +
-    theme_classic() +
-    theme(legend.text  = element_text (size = 7),
-          legend.title = element_text (size = 8),
-          panel.spacing = unit(0.2/3*Mmax,  "lines"),
-          # legend.margin = margin(t = 0, unit="npc"),
-          # axis.text.y = element_text(size=12)
-          title = element_text(size = 18)
-    ) +
-    labs(x = "Partisan bias (p)",
-         y = "Average opinion distance",
-         tag = tag) +
-    scale_linetype_manual(values = linetypes, 
-                          labels = labels,
-                          name   = "Distance type") + 
-    scale_color_manual(values = colors,
-                       name   = "Issue/opinion\nexploration (v)") +
-    scale_fill_manual(values = colors, 
-                      name   = "Issue/opinion\nexploration (v)")  +
-    scale_y_continuous(limits = c(0, 1),
-                       breaks = seq(0, 1, 0.2)) +
-    scale_x_continuous(limits = c(qmin, qmax), 
-                       breaks = seq(qmin, qmax, qinc)) +
-    # geom_ribbon(aes(ymin = Mean - SD, ymax = Mean + SD), alpha = 0.3, color = NA) +
-    geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0) +
-    geom_line(aes(y = Mean), size = 0.4, alpha = 1.0) +
-    geom_point(aes(y = Mean), size = 1.0, alpha = 1, stroke = 0.4) + #, shape = 1) + ) + 
-    facet_rep_grid( M2 ~ K2, repeat.tick.labels = TRUE,
-                    # switch = "both", 
-                    drop = TRUE) +
-    theme(strip.placement = "outside",
-          strip.text = element_text(size = 11),
-          axis.line = element_line() ) +
-    theme(axis.title = element_text(size = 18), 
-          axis.text = element_text(size = 8), 
-          # strip.background = element_blank(),
-          legend.key.size = unit(0.03, "npc"),
-          legend.position = c(0.70, 0.97), 
-          legend.justification = c(0,1))
-  
-  figSa_grob <- ggplotGrob(figSa)
-  figSa_grob <- gtable_filter(
-    figSa_grob,
-    "axis-b-2-1|axis-b-3-[12]|axis-b-4-[123]|axis-b-5-[1234]|axis-l-4-5|axis-l-3-[45]|axis-l-2-[345]|axis-l-1-[2345]", 
-    trim = FALSE, invert = TRUE)
-  
-  figSa <- as_ggplot(figSa_grob)
-  
-  return(figSa)
-}
-
-plotB_normed <- function(simdata_dist, tag = "B", option = "all", colors = hamming_colors){
-  
-  simdata_dist$v <- factor(simdata_dist$v)
-  
-  if(option == "one"){
-    subdata   <- simdata_dist[simdata_dist$Metric %in% c("hamming_all_normed") & 
-                                simdata_dist$M <= Mmax, ]
-    labels    <- c("population-level")
-    linetypes <- c("solid")
-  }else if(option == "two"){
-    subdata   <- simdata_dist[simdata_dist$Metric %in% c("hamming_in_normed", "hamming_out_normed") & 
-                                simdata_dist$M <= Mmax, ]
-    labels    <- c("within-party","between-party")
-    linetypes <- c("solid", "dotted","dashed")
-  }else if(option == "all"){
-    subdata   <- simdata_dist[simdata_dist$Metric %in% c("hamming_all_normed", "hamming_in_normed", "hamming_out_normed") & 
-                                simdata_dist$M <= Mmax, ]
-    labels    <- c("population-level","within-party","between-party")
-    linetypes <- c("solid","dotted","dashed")
-  }
-  subdata <- subdata %>% arrange(desc(K))
-  subdata$Metric <- factor(subdata$Metric)
-  
-  figSb <- ggplot(data = subdata, 
-                  aes(x = p, colour = v, fill = v, lty = Metric)) +
-    theme_classic() +
-    theme(legend.text = element_text (size = 7),
-          legend.title = element_text (size = 8),
-          # legend.key.size = unit(0.03, "npc"),
-          panel.spacing = unit(0.2/3*Mmax,  "lines"),
-          # legend.margin = margin(t = 0, unit="npc"),
-          # axis.text.y = element_text(size=12)
-          title = element_text(size = 18)
-    ) +
-    labs(x = "Partisan bias (p)",
-         y = "Average issue distance",
-         tag = tag) + 
-    scale_linetype_manual(values = linetypes, 
-                          labels = labels,
-                          name   = "Distance type") + 
-    scale_color_manual(values = colors,
-                       name   = "Issue/opinion\nexploration (v)" ) +
-    scale_fill_manual(values = colors,
-                      name   = "Issue/opinion\nexploration (v)" )  +
-    scale_y_continuous(limits = c(0, 0.8),
-                       breaks = seq(0, 0.8, 0.2)) +
-    scale_x_continuous(limits = c(qmin, qmax), 
-                       breaks = seq(qmin, qmax, qinc)) +
-    # geom_ribbon(aes(ymin = Mean - SD, ymax = Mean + SD), alpha = 0.3, color = NA) +
-    geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0) +
-    geom_line(aes(y = Mean), size = 0.4, alpha = 1.0) +
-    geom_point(aes(y = Mean), size = 1.0, alpha = 1, stroke = 0.4) + #, shape = 1) + ) + 
-    facet_rep_grid( M2 ~ K2, repeat.tick.labels = TRUE,
-                    # switch = "both", 
-                    drop = TRUE) +
-    theme(strip.placement = "outside",
-          strip.text = element_text(size = 11),
-          axis.line = element_line() ) +
-    theme(axis.title = element_text(size = 18), 
-          axis.text = element_text(size = 8), 
-          # strip.background = element_blank(),
-          legend.key.size = unit(0.03, "npc"),
-          legend.position = c(0.70, 0.97), 
-          legend.justification = c(0,1))
-  
-  figSb_grob <- ggplotGrob(figSb)
-  figSb_grob <- gtable_filter(
-    figSb_grob,
-    "axis-b-2-1|axis-b-3-[12]|axis-b-4-[123]|axis-b-5-[1234]|axis-l-4-5|axis-l-3-[45]|axis-l-2-[345]|axis-l-1-[2345]", 
-    trim = FALSE, invert = TRUE)
-  
-  figSb <- as_ggplot(figSb_grob)
-  
-  return(figSb)
-}
-
-# without normalization
-plotA_unnormed <- function(simdata_dist, tag = "A", option = "all", colors = cityblock_colors){
-  
-  simdata_dist$v <- factor(simdata_dist$v)
   if(option == "one"){
     subdata   <- simdata_dist[simdata_dist$Metric %in% c("cityblock_all") & 
                                 simdata_dist$M <= Mmax, ]
@@ -335,12 +214,14 @@ plotA_unnormed <- function(simdata_dist, tag = "A", option = "all", colors = cit
   subdata <- subdata %>% arrange(desc(K))
   subdata$Metric <- factor(subdata$Metric)
   
+  labels <- c("population-level","within-party","between-party")
+  
   fig3b <- ggplot(data = subdata, 
                   # aes(x = q, colour = v, fill = v, lty = Metric)) +
                   aes(x = p, colour = v, fill = v, lty = Metric)) +
     theme_classic() +
-    theme(legend.text = element_text (size = 7),
-          legend.title = element_text (size = 8),
+    theme(legend.text = element_text (size = 8/3*Mmax),
+          legend.title = element_text (size = 9/3*Mmax),
           # legend.key.size = unit(0.03, "npc"),
           panel.spacing = unit(0.2/3*Mmax,  "lines"),
           # legend.margin = margin(t = 0, unit="npc"),
@@ -357,14 +238,14 @@ plotA_unnormed <- function(simdata_dist, tag = "A", option = "all", colors = cit
                        name   = "Issue/opinion\nexploration (v)") +
     scale_fill_manual(values = colors, 
                       name   = "Issue/opinion\nexploration (v)")  +
-    scale_y_continuous(limits = c(0, 6),
-                       breaks = seq(0, 10, 1)) +
+    scale_y_continuous(limits = c(0, 10),
+                       breaks = seq(0, 10, 2)) +
     scale_x_continuous(limits = c(qmin, qmax), 
                        breaks = seq(qmin, qmax, qinc)) +
     # geom_ribbon(aes(ymin = Mean - SD, ymax = Mean + SD), alpha = 0.3, color = NA) +
     geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0) +
     geom_line(aes(y = Mean), size = 0.4, alpha = 1.0) +
-    geom_point(aes(y = Mean), size = 1.0, alpha = 1, stroke = 0.4) + #, shape = 1) + ) + 
+    geom_point(aes(y = Mean), size = 1.2, alpha = 1, stroke = 0.4) + #, shape = 1) + ) + 
     facet_rep_grid( M2 ~ K2, repeat.tick.labels = TRUE,
                     # switch = "both", 
                     drop = TRUE) +
@@ -374,8 +255,7 @@ plotA_unnormed <- function(simdata_dist, tag = "A", option = "all", colors = cit
     theme(axis.title = element_text(size = 18), 
           axis.text = element_text(size = 8), 
           # strip.background = element_blank(),
-          legend.key.size = unit(0.03, "npc"),
-          legend.position = c(0.70, 0.97), 
+          legend.position = c(0.68, 0.97), 
           legend.justification = c(0,1))
   
   fig3b_grob <- ggplotGrob(fig3b)
@@ -389,7 +269,7 @@ plotA_unnormed <- function(simdata_dist, tag = "A", option = "all", colors = cit
   return(fig3b)
 }
 
-plotB_unnormed <- function(simdata_dist, tag = "B", option = "all", colors = hamming_colors){
+plotSB_unnormed <- function(simdata_dist, tag = "A", option = "all", colors = hamming_colors){
   
   simdata_dist$v <- factor(simdata_dist$v)
   
@@ -417,8 +297,8 @@ plotB_unnormed <- function(simdata_dist, tag = "B", option = "all", colors = ham
                   # aes(x = q, colour = v, fill = v, lty = Metric)) +
                   aes(x = p, colour = v, fill = v, lty = Metric)) +
     theme_classic() +
-    theme(legend.text = element_text (size = 7),
-          legend.title = element_text (size = 8),
+    theme(legend.text = element_text (size = 8/3*Mmax),
+          legend.title = element_text (size = 9/3*Mmax),
           # legend.key.size = unit(0.03, "npc"),
           panel.spacing = unit(0.2/3*Mmax,  "lines"),
           # legend.margin = margin(t = 0, unit="npc"),
@@ -442,7 +322,7 @@ plotB_unnormed <- function(simdata_dist, tag = "B", option = "all", colors = ham
     # geom_ribbon(aes(ymin = Mean - SD, ymax = Mean + SD), alpha = 0.3, color = NA) +
     geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0) +
     geom_line(aes(y = Mean), size = 0.4, alpha = 1.0) +
-    geom_point(aes(y = Mean), size = 1.0, alpha = 1, stroke = 0.4) + #, shape = 1) + ) + 
+    geom_point(aes(y = Mean), size = 1.2, alpha = 1, stroke = 0.4) + #, shape = 1) + ) + 
     facet_rep_grid( M2 ~ K2, repeat.tick.labels = TRUE,
                     # switch = "both", 
                     drop = TRUE) +
@@ -452,8 +332,7 @@ plotB_unnormed <- function(simdata_dist, tag = "B", option = "all", colors = ham
     theme(axis.title = element_text(size = 18), 
           axis.text = element_text(size = 8), 
           # strip.background = element_blank(),
-          legend.key.size = unit(0.03, "npc"),
-          legend.position = c(0.70, 0.97), 
+          legend.position = c(0.68, 0.97), 
           legend.justification = c(0,1))
   
   fig4a_grob <- ggplotGrob(fig4a)
@@ -469,54 +348,204 @@ plotB_unnormed <- function(simdata_dist, tag = "B", option = "all", colors = ham
 
 
 ###########################################
-# MS Figure with vsweep
+# Plotting functions with normalization
 ###########################################
-figSa <- plotA_normed(simdata_dist, "A", "two")
-figSb <- plotB_normed(simdata_dist, "B", "two")
+plotSA_normed <- function(simdata_dist, tag = "B", option = "all", colors = cityblock_colors){
+  
+  simdata_dist$v <- factor(simdata_dist$v)
+  
+  if(option == "one"){
+    subdata   <- simdata_dist[simdata_dist$Metric %in% c("cityblock_all_normed") & 
+                                simdata_dist$M <= Mmax, ]
+    labels    <- c("population-level")
+    linetypes <- c("solid")
+  }else if(option == "two"){
+    subdata   <- simdata_dist[simdata_dist$Metric %in% c("cityblock_in_normed", "cityblock_out_normed") & 
+                                simdata_dist$M <= Mmax, ]
+    labels    <- c("within-party","between-party")
+    linetypes <- c("solid", "dotted","dashed")
+  }else if(option == "all"){
+    subdata   <- simdata_dist[simdata_dist$Metric %in% c("cityblock_all_normed", "cityblock_in_normed", "cityblock_out_normed") & 
+                                simdata_dist$M <= Mmax, ]
+    labels    <- c("population-level","within-party","between-party")
+    linetypes <- c("solid","dotted","dashed")
+  }
+  
+  subdata <- subdata %>% arrange(desc(K))
+  subdata$Metric <- factor(subdata$Metric)
+  
+  fig3b <- ggplot(data = subdata, 
+                  # aes(x = q, colour = v, fill = v, lty = Metric)) +
+                  aes(x = p, colour = v, fill = v, lty = Metric)) +
+    theme_classic() +
+    theme(legend.text = element_text (size = 8/3*Mmax),
+          legend.title = element_text (size = 9/3*Mmax),
+          # legend.key.size = unit(0.03, "npc"),
+          panel.spacing = unit(0.2/3*Mmax,  "lines"),
+          # legend.margin = margin(t = 0, unit="npc"),
+          # axis.text.y = element_text(size=12)
+          title = element_text(size = 18)
+    ) +
+    labs(x = "Partisan bias (p)",
+         y = "Average opinion distance",
+         tag = tag) +
+    scale_linetype_manual(values = linetypes, 
+                          labels = labels,
+                          name   = "Distance type") + 
+    scale_color_manual(values = colors,
+                       name   = "Issue/opinion\nexploration (v)") +
+    scale_fill_manual(values = colors, 
+                      name   = "Issue/opinion\nexploration (v)")  +
+    scale_y_continuous(limits = c(0, 1),
+                       breaks = seq(0, 1, 0.2)) +
+    scale_x_continuous(limits = c(qmin, qmax), 
+                       breaks = seq(qmin, qmax, qinc)) +
+    # geom_ribbon(aes(ymin = Mean - SD, ymax = Mean + SD), alpha = 0.3, color = NA) +
+    geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0) +
+    geom_line(aes(y = Mean), size = 0.4, alpha = 1.0) +
+    geom_point(aes(y = Mean), size = 1.2, alpha = 1, stroke = 0.4) + #, shape = 1) + ) + 
+    facet_rep_grid( M2 ~ K2, repeat.tick.labels = TRUE,
+                    # switch = "both", 
+                    drop = TRUE) +
+    theme(strip.placement = "outside",
+          strip.text = element_text(size = 11),
+          axis.line = element_line() ) +
+    theme(axis.title = element_text(size = 18), 
+          axis.text = element_text(size = 8), 
+          # strip.background = element_blank(),
+          legend.position = c(0.68, 0.97), 
+          legend.justification = c(0,1))
+  
+  fig3b_grob <- ggplotGrob(fig3b)
+  fig3b_grob <- gtable_filter(
+    fig3b_grob,
+    "axis-b-2-1|axis-b-3-[12]|axis-b-4-[123]|axis-b-5-[1234]|axis-l-4-5|axis-l-3-[45]|axis-l-2-[345]|axis-l-1-[2345]", 
+    trim = FALSE, invert = TRUE)
+  
+  fig3b <- as_ggplot(fig3b_grob)
+  
+  return(fig3b)
+}
 
-if(saveplots == 1){
+plotSB_normed <- function(simdata_dist, tag = "A", option = "all", colors = hamming_colors){
   
-  plottype <- paste0("fig4_normed")
-  png(filename = paste0("plots/figs/", plottype, "_vsweep_",
-                        format(Sys.Date(), format="%y%m%d"), "_SD.png"), # !!! change !!! 
-      width = figW*1.9/1.5, height = figW*ratio*1.75*2, units = "in", res = 600)
-  multiplot(figSa, figSb, cols = 1)
-  dev.off()
+  simdata_dist$v <- factor(simdata_dist$v)
   
+  if(option == "one"){
+    subdata   <- simdata_dist[simdata_dist$Metric %in% c("hamming_all_normed") & 
+                                simdata_dist$M <= Mmax, ]
+    labels    <- c("population-level")
+    linetypes <- c("solid")
+  }else if(option == "two"){
+    subdata   <- simdata_dist[simdata_dist$Metric %in% c("hamming_in_normed", "hamming_out_normed") & 
+                                simdata_dist$M <= Mmax, ]
+    labels    <- c("within-party","between-party")
+    linetypes <- c("solid", "dotted","dashed")
+  }else if(option == "all"){
+    subdata   <- simdata_dist[simdata_dist$Metric %in% c("hamming_all_normed", "hamming_in_normed", "hamming_out_normed") & 
+                                simdata_dist$M <= Mmax, ]
+    labels    <- c("population-level","within-party","between-party")
+    linetypes <- c("solid","dotted","dashed")
+  }
+  
+  subdata <- subdata %>% arrange(desc(K))
+  subdata$Metric <- factor(subdata$Metric)
+  
+  fig4a <- ggplot(data = subdata, 
+                  aes(x = p, colour = v, fill = v, lty = Metric)) +
+    theme_classic() +
+    theme(legend.text = element_text (size = 8/3*Mmax),
+          legend.title = element_text (size = 9/3*Mmax),
+          # legend.key.size = unit(0.03, "npc"),
+          panel.spacing = unit(0.2/3*Mmax,  "lines"),
+          # legend.margin = margin(t = 0, unit="npc"),
+          # axis.text.y = element_text(size=12)
+          title = element_text(size = 18)
+    ) +
+    labs(x = "Partisan bias (p)",
+         y = "Average issue distance",
+         tag = tag) + 
+    scale_linetype_manual(values = linetypes, 
+                          labels = labels,
+                          name   = "Distance type") + 
+    scale_color_manual(values = colors,
+                       name   = "Issue/opinion\nexploration (v)" ) +
+    scale_fill_manual(values = colors,
+                      name   = "Issue/opinion\nexploration (v)" )  +
+    scale_y_continuous(limits = c(0, 0.8),
+                       breaks = seq(0, 0.8, 0.2)) +
+    scale_x_continuous(limits = c(qmin, qmax), 
+                       breaks = seq(qmin, qmax, qinc)) +
+    # geom_ribbon(aes(ymin = Mean - SD, ymax = Mean + SD), alpha = 0.3, color = NA) +
+    geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0) +
+    geom_line(aes(y = Mean), size = 0.4, alpha = 1.0) +
+    geom_point(aes(y = Mean), size = 1.2, alpha = 1, stroke = 0.4) + #, shape = 1) + ) + 
+    facet_rep_grid( M2 ~ K2, repeat.tick.labels = TRUE,
+                    # switch = "both", 
+                    drop = TRUE) +
+    theme(strip.placement = "outside",
+          strip.text = element_text(size = 11),
+          axis.line = element_line() ) +
+    theme(axis.title = element_text(size = 18), 
+          axis.text = element_text(size = 8), 
+          # strip.background = element_blank(),
+          legend.position = c(0.68, 0.97), 
+          legend.justification = c(0,1))
+  
+  fig4a_grob <- ggplotGrob(fig4a)
+  fig4a_grob <- gtable_filter(
+    fig4a_grob,
+    "axis-b-2-1|axis-b-3-[12]|axis-b-4-[123]|axis-b-5-[1234]|axis-l-4-5|axis-l-3-[45]|axis-l-2-[345]|axis-l-1-[2345]", 
+    trim = FALSE, invert = TRUE)
+  
+  fig4a <- as_ggplot(fig4a_grob)
+  
+  return(fig4a)
 }
 
 ###########################################
-# SI Figure with vsweep, unnormalized
+# Figure 4 without normalization, without opinion dispersion
 ###########################################
-figSa_unnormed <- plotA_unnormed(simdata_dist, "A", "two")
-figSb_unnormed <- plotB_unnormed(simdata_dist, "B", "two")
+# change plot size
+figW      <- 4     # figure width for printing
+if(Mmax > 3){figW <- figW*1.5}
+
+# save multiplot
+figSA <- plotSA_unnormed(simdata_dist, "A", "all")
+figSB <- plotSB_unnormed(simdata_dist, "B", "all")
+
+# if(saveplots == 1){
+#   
+#   plottype <- paste0("figSB_unnormed")
+#   png(filename = paste0("plots/figs/", plottype, "_", vlabel, "_",
+#                         format(Sys.Date(), format="%y%m%d"), "_SD.png"),
+#       width = figW*1.9/1.5, height = figW*ratio*1.75*2, units = "in", res = 600)
+#   multiplot(figSA, figSB, cols = 1)
+#   dev.off()
+#   
+# }
+
+###########################################
+# Figure 4 with normalization, without opinion dispersion
+###########################################
+# save multiplot
+figSA_normed <- plotSA_normed(simdata_dist, "A", "all")
+figSB_normed <- plotSB_normed(simdata_dist, "B", "all")
 
 if(saveplots == 1){
   
-  plottype <- paste0("figSC_unnormed")
-  png(filename = paste0("plots/figs/", plottype, "_vsweep_",
+  plottype <- paste0("figSB_normed_horizontal")
+  png(filename = paste0("plots/figs/", plottype, "_", vlabel, "_",
                         format(Sys.Date(), format="%y%m%d"), "_SD.png"), # !!! change !!! 
-      width = figW*1.9/1.5, height = figW*ratio*1.75*2, units = "in", res = 600)
-  multiplot(figSa_unnormed, figSb_unnormed, cols = 1)
+      width = figW*3.8/1.5, height = figW*ratio*1.75, units = "in", res = 600)
+  multiplot(figSA_normed, figSB_normed, cols = 2)
   dev.off()
   
-}
-
-###########################################
-# SI Figure with vsweep, population-level only
-###########################################
-figSa_normed <- plotA_normed(simdata_dist, "A", "one")
-figSb_normed <- plotB_normed(simdata_dist, "B", "one")
-figSa_unnormed <- plotA_unnormed(simdata_dist, "C", "one")
-figSb_unnormed <- plotB_unnormed(simdata_dist, "D", "one")
-
-if(saveplots == 1){
-  
-  plottype <- paste0("figSC_poplevel")
-  png(filename = paste0("plots/figs/", plottype, "_vsweep_",
+  plottype <- paste0("figSB_normed")
+  png(filename = paste0("plots/figs/", plottype, "_", vlabel, "_",
                         format(Sys.Date(), format="%y%m%d"), "_SD.png"), # !!! change !!! 
-      width = figW*1.9/0.75, height = figW*ratio*1.75*2, units = "in", res = 600)
-  multiplot(figSa_normed, figSb_normed, figSa_unnormed, figSb_unnormed, cols = 2)
+      width = figW*1.9/1.5, height = figW*ratio*1.75*2, units = "in", res = 600)
+  multiplot(figSA_normed, figSB_normed, cols = 1)
   dev.off()
   
 }

@@ -15,14 +15,15 @@ source("rsrc/utils/functions.R")
 setwd("~/.julia/dev/CooperationPolarization2/") # to be updated later
 
 # parameters
-beta    <- 0.001 # fixed, for now
-gens    <- 20000000
+beta      <- 0.001 # fixed, for now
+gens      <- 20000000
 saveplots <- 1
-threshold <- 1 # 0 = use all data, 1 = threshold data by min(COUNT)
-# 2 = use separate threshold for A-D and E/F
-# p       <- 0.
+threshold <- 1 
 # vs      <- c(0.001, 0.005, 0.01, 0.025, 0.05, 0.1, 0.5)
-Mmax    <- 5
+Mmax      <- 5
+b         <- 1
+c         <- 0.2
+N         <- 40
 
 # load data
 file_dir  <- sprintf( "data/gens_%s/", format(gens, scientific = FALSE) )
@@ -88,11 +89,8 @@ threshdata_all <- relabel_cols(threshdata_all)
 # melt data
 select_cols <- c("id","M","K","u","v","p","beta","epsilon","CC","CD","DC","DD",
                  "CC_final","CD_final","DC_final","DD_final","topinion_mean","topinion_var",
-                 "cooperation_all", "cooperation_in", "cooperation_out"#, # cooperation
-                 # "opn_simpson_mean","sets_simpson_mean", # simpsons indices
-                 # "cityblock_all", "cityblock_in", "cityblock_out", # city block distances
-                 # "hamming_all",   "hamming_in",   "hamming_out"    # hamming distances
-)
+                 "cooperation_all", "cooperation_in", "cooperation_out"
+                 )
 id_vars       <- c("M","K","u","v","p","beta","epsilon")
 
 # different sets of measurements to plot
@@ -267,7 +265,7 @@ plot_figSWstrat <- function(simdata_plot, calcdata_plot_in, p, tag = "B", labele
     labs(x = "Issue / opinion exploration (v)",
          y = "Relative abundance",
          tag = tag) +
-    ggtitle( paste0("p = ", p) ) +
+    ggtitle( paste0("M = 1, K = 1, p = ", p) ) +
     scale_color_manual(values = c("#0571b0","#92c5de","#f4a582","#ca0020")) +
     scale_fill_manual(values = c("#0571b0","#92c5de","#f4a582","#ca0020")) +
     scale_y_continuous(limits = c(0.163, 0.337),
@@ -285,7 +283,11 @@ plot_figSWstrat <- function(simdata_plot, calcdata_plot_in, p, tag = "B", labele
     # geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0., size = 0.3) +
     geom_ribbon(aes(ymin = Mean - SD, ymax = Mean + SD), alpha = 0.1, color = NA) +
     # geom_line(aes(group = v), size = 0.4, alpha = 1, lty = 1) +
-    geom_point(size = 1.6, alpha = 0.9, stroke = 0.0)
+    geom_point(size = 1.6, alpha = 0.9, stroke = 0.0) +
+    geom_vline( 
+      xintercept = ( -2*(b/c) + 3 + sqrt(4*(b/c)^2 - 3) ) / ( 2*(b/c - 1) ) / N,
+      linetype = "dashed", colour = "gray"
+      )
   
   return(figSWstrat)
 }
@@ -365,17 +367,17 @@ if(saveplots == 1){
   threshcount <- if(threshold %in% c(0,1)){ 
     paste0("thresh_", threshold, "_", min(casecount$COUNT))
   }
-  plottype <- paste0("fig4_", threshcount)
+  plottype <- paste0("fig3_", threshcount)
   
-  # without theoretical predictions
-  png(filename = paste0("plots/figs/", plottype, "_", 
-                        format(Sys.Date(), format="%y%m%d"), "_SD.png"), 
-      width = figW*1.5, height = figW*ratio*1.5/2*3, units = "in", res = 600)
-  # multiplot(fig4a, fig4b, fig4c, emp,
-  #           layout = matrix(c(1,2,3,4), ncol = 2, byrow = TRUE))
-  multiplot(fig4a, fig4b, fig4c, fig4d, fig4e, fig4f,
-            layout = matrix(c(1,2,3,4,5,6), ncol = 2, byrow = FALSE))
-  dev.off()
+  # # without theoretical predictions
+  # png(filename = paste0("plots/figs/", plottype, "_", 
+  #                       format(Sys.Date(), format="%y%m%d"), "_SD.png"), 
+  #     width = figW*1.5, height = figW*ratio*1.5/2*3, units = "in", res = 600)
+  # # multiplot(fig4a, fig4b, fig4c, emp,
+  # #           layout = matrix(c(1,2,3,4), ncol = 2, byrow = TRUE))
+  # multiplot(fig4a, fig4b, fig4c, fig4d, fig4e, fig4f,
+  #           layout = matrix(c(1,2,3,4,5,6), ncol = 2, byrow = FALSE))
+  # dev.off()
   
   # with theoretical predictions
   png(filename = paste0("plots/figs/", plottype, "_", 
