@@ -22,6 +22,7 @@ require(gtable)
 require(gridExtra)
 require(lemon)
 require(ggpubr)
+require(ggrepel)
 
 #########################
 # Multiple plot function

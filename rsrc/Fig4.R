@@ -210,7 +210,7 @@ plotA_normed <- function(simdata_dist, tag = "A", option = "all", colors = cityb
     # geom_ribbon(aes(ymin = Mean - SD, ymax = Mean + SD), alpha = 0.3, color = NA) +
     geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0) +
     geom_line(aes(y = Mean), size = 0.4, alpha = 1.0) +
-    geom_point(aes(y = Mean), size = 1.0, alpha = 1, stroke = 0.4) + #, shape = 1) + ) + 
+    geom_point(aes(y = Mean), size = 0.8, alpha = 1, stroke = 0.4) + #, shape = 1) + ) +
     facet_rep_grid( M2 ~ K2, repeat.tick.labels = TRUE,
                     # switch = "both", 
                     drop = TRUE) +
@@ -286,7 +286,7 @@ plotB_normed <- function(simdata_dist, tag = "B", option = "all", colors = hammi
     # geom_ribbon(aes(ymin = Mean - SD, ymax = Mean + SD), alpha = 0.3, color = NA) +
     geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0) +
     geom_line(aes(y = Mean), size = 0.4, alpha = 1.0) +
-    geom_point(aes(y = Mean), size = 1.0, alpha = 1, stroke = 0.4) + #, shape = 1) + ) + 
+    geom_point(aes(y = Mean), size = 0.8, alpha = 1, stroke = 0.4) + #, shape = 1) + ) + 
     facet_rep_grid( M2 ~ K2, repeat.tick.labels = TRUE,
                     # switch = "both", 
                     drop = TRUE) +
@@ -364,7 +364,7 @@ plotA_unnormed <- function(simdata_dist, tag = "A", option = "all", colors = cit
     # geom_ribbon(aes(ymin = Mean - SD, ymax = Mean + SD), alpha = 0.3, color = NA) +
     geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0) +
     geom_line(aes(y = Mean), size = 0.4, alpha = 1.0) +
-    geom_point(aes(y = Mean), size = 1.0, alpha = 1, stroke = 0.4) + #, shape = 1) + ) + 
+    geom_point(aes(y = Mean), size = 0.8, alpha = 1, stroke = 0.4) + #, shape = 1) + ) + 
     facet_rep_grid( M2 ~ K2, repeat.tick.labels = TRUE,
                     # switch = "both", 
                     drop = TRUE) +
@@ -442,7 +442,7 @@ plotB_unnormed <- function(simdata_dist, tag = "B", option = "all", colors = ham
     # geom_ribbon(aes(ymin = Mean - SD, ymax = Mean + SD), alpha = 0.3, color = NA) +
     geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0) +
     geom_line(aes(y = Mean), size = 0.4, alpha = 1.0) +
-    geom_point(aes(y = Mean), size = 1.0, alpha = 1, stroke = 0.4) + #, shape = 1) + ) + 
+    geom_point(aes(y = Mean), size = 0.8, alpha = 1, stroke = 0.4) + #, shape = 1) + ) + 
     facet_rep_grid( M2 ~ K2, repeat.tick.labels = TRUE,
                     # switch = "both", 
                     drop = TRUE) +
