@@ -507,16 +507,18 @@ if(saveplots == 1){
 ###########################################
 figSa_normed <- plotA_normed(simdata_dist, "A", "one")
 figSb_normed <- plotB_normed(simdata_dist, "B", "one")
-figSa_unnormed <- plotA_unnormed(simdata_dist, "C", "one")
-figSb_unnormed <- plotB_unnormed(simdata_dist, "D", "one")
+# figSa_unnormed <- plotA_unnormed(simdata_dist, "C", "one")
+# figSb_unnormed <- plotB_unnormed(simdata_dist, "D", "one")
 
 if(saveplots == 1){
   
   plottype <- paste0("figSC_poplevel")
   png(filename = paste0("plots/figs/", plottype, "_vsweep_",
                         format(Sys.Date(), format="%y%m%d"), "_SD.png"), # !!! change !!! 
-      width = figW*1.9/0.75, height = figW*ratio*1.75*2, units = "in", res = 600)
-  multiplot(figSa_normed, figSb_normed, figSa_unnormed, figSb_unnormed, cols = 2)
+      width = figW*1.9/0.75/2, height = figW*ratio*1.75*2, units = "in", res = 600)
+  multiplot(figSa_normed, figSb_normed, 
+            # figSa_unnormed, figSb_unnormed, cols = 2)
+            cols = 1)
   dev.off()
   
 }

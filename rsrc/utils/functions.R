@@ -23,6 +23,7 @@ require(gridExtra)
 require(lemon)
 require(ggpubr)
 require(ggrepel)
+require(stargazer)
 
 #########################
 # Multiple plot function

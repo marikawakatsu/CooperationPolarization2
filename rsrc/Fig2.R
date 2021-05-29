@@ -163,19 +163,6 @@ plot_fig2a <- function(simdata_coop, p, tag){
                           simdata_coop$p == p &
                           simdata_coop$M <= Mmax, ]
   
-  effectdata <- subdata %>%
-    group_by(M, u, v, p, beta, epsilon) %>%
-    summarise(
-      effect  = (Mean[K == max(K)] - Mean[K == min(K)]) / Mean[K == min(K)],
-      K       = max(K),
-      Mean    = min(Mean)
-    ) %>%
-    mutate( M2 = paste0( "M=", M ), 
-            K2 = paste0( "K=", K ),
-            M3 = paste0( M ),
-            K3 = paste0( K )
-    )
-  
   fig2a <- ggplot(subdata,
                   aes(x = K2, y = Mean, label = K2, color = v)) +
     theme_classic() +
@@ -210,26 +197,39 @@ plot_fig2a <- function(simdata_coop, p, tag){
     theme(strip.placement = "outside") +
     theme(axis.title.x = element_blank(), 
           strip.background = element_blank(),
-          strip.text.x.bottom = element_text(angle = 60)) +
-    geom_blank(aes(x = ifelse(M>1,M+1.5,0.6) ))
+          strip.text.x.bottom = element_text(angle = 60)) #+
+    # geom_blank(aes(x = ifelse(M>1,M+1.5,0.6) ))
   
-  if(p < 1){
-    fig2a <- fig2a + geom_text(
-      effectdata,
-      mapping = aes(x = K, y = Mean,
-          label = ifelse(M==K & K > 1,paste0( 100*signif(effect, 3),"%" ),"")),
-      size = 1.6, nudge_y = 0., nudge_x = 0.85,
-    )
-  }else{
-    fig2a <- fig2a + geom_text(
-      effectdata,
-      mapping = aes(x = K, y = Mean, 
-                    label = ifelse(M==K & K > 1,paste0( 100*signif(effect, 3),"%" ),"")),
-      size = 1.25, nudge_y = c(-0.05,0,0.05), nudge_x = 0.85,
-      # force_pull = 0, direction = "both", segment.size = 0, point.padding = 0.25, box.padding = 0.2,
-    )
-  }
-  
+  #########
+  # effectdata <- subdata %>%
+  #   group_by(M, u, v, p, beta, epsilon) %>%
+  #   summarise(
+  #     effect  = (Mean[K == max(K)] - Mean[K == min(K)]) / Mean[K == min(K)],
+  #     K       = max(K),
+  #     Mean    = min(Mean)
+  #   ) %>%
+  #   mutate( M2 = paste0( "M=", M ), 
+  #           K2 = paste0( "K=", K ),
+  #           M3 = paste0( M ),
+  #           K3 = paste0( K )
+  #   )
+  # if(p < 1){
+  #   fig2a <- fig2a + geom_text(
+  #     effectdata,
+  #     mapping = aes(x = K, y = Mean,
+  #         label = ifelse(M==K & K > 1,paste0( 100*signif(effect, 3),"%" ),"")),
+  #     size = 1.6, nudge_y = 0., nudge_x = 0.85,
+  #   )
+  # }else{
+  #   fig2a <- fig2a + geom_text(
+  #     effectdata,
+  #     mapping = aes(x = K, y = Mean, 
+  #                   label = ifelse(M==K & K > 1,paste0( 100*signif(effect, 3),"%" ),"")),
+  #     size = 1.25, nudge_y = c(-0.05,0,0.05), nudge_x = 0.85,
+  #     # force_pull = 0, direction = "both", segment.size = 0, point.padding = 0.25, box.padding = 0.2,
+  #   )
+  # }
+  #########
   return(fig2a)
 }
 
@@ -240,19 +240,6 @@ plot_fig2a_v2 <- function(simdata_coop, p, tag){
   subdata <- simdata_coop[simdata_coop$Metric == "cooperation_all" & 
                             simdata_coop$p == p &
                             simdata_coop$M <= Mmax, ]
-  
-  effectdata <- subdata %>%
-    group_by(K, u, v, p, beta, epsilon) %>%
-    summarise(
-      effect  = (Mean[M == max(M)] - Mean[M == min(M)]) / Mean[M == min(M)],
-      M       = min(M),
-      Mean    = max(Mean)
-    ) %>%
-    mutate( M2 = paste0( "M=", M ), 
-            K2 = paste0( "K=", K ),
-            M3 = paste0( M ),
-            K3 = paste0( K )
-    )
   
   fig2a <- ggplot(subdata,
                   aes(x = M2, y = Mean, label = M2, color = v)) +
@@ -288,26 +275,40 @@ plot_fig2a_v2 <- function(simdata_coop, p, tag){
     theme(strip.placement = "outside") +
     theme(axis.title.x = element_blank(), 
           strip.background = element_blank(),
-          strip.text.x.bottom = element_text(angle = 60)) +
-    geom_blank(aes(x = ifelse(M<5,(5-M+1)+1.5,0.6) )) 
+          strip.text.x.bottom = element_text(angle = 60)) #+
+    # geom_blank(aes(x = ifelse(M<5,(5-M+1)+1.5,0.6) )) 
   
-  if(p < 1){
-    fig2a <- fig2a + geom_text(
-      effectdata,
-      mapping = aes(x = 6-M, y = Mean,
-                    label = ifelse(M < 5,paste0( 100*signif(effect, 3),"%" ),"")),
-      size = 1.6, nudge_y = 0., nudge_x = 0.85,
-    )
-  }else{
-    fig2a <- fig2a + geom_text(
-      effectdata,
-      mapping = aes(x = 6-M, y = Mean,
-                    label = ifelse(M < 5,paste0( 100*signif(effect, 3),"%" ),"")),
-      size = 1.25, nudge_y = c(-0.05,0,0.05), nudge_x = 0.85,
-      force_pull = 0, direction = "both", segment.size = 0, point.padding = 0.25, box.padding = 0.2,
-    )
-  }
-  
+  ##########
+  # Uncomment to add effect sizes to text
+  # effectdata <- subdata %>%
+  #   group_by(K, u, v, p, beta, epsilon) %>%
+  #   summarise(
+  #     effect  = (Mean[M == max(M)] - Mean[M == min(M)]) / Mean[M == min(M)],
+  #     M       = min(M),
+  #     Mean    = max(Mean)
+  #   ) %>%
+  #   mutate( M2 = paste0( "M=", M ), 
+  #           K2 = paste0( "K=", K ),
+  #           M3 = paste0( M ),
+  #           K3 = paste0( K )
+  #   )
+  # if(p < 1){
+  #   fig2a <- fig2a + geom_text(
+  #     effectdata,
+  #     mapping = aes(x = 6-M, y = Mean,
+  #                   label = ifelse(M < 5,paste0( 100*signif(effect, 3),"%" ),"")),
+  #     size = 1.6, nudge_y = 0., nudge_x = 0.85,
+  #   )
+  # }else{
+  #   fig2a <- fig2a + geom_text(
+  #     effectdata,
+  #     mapping = aes(x = 6-M, y = Mean,
+  #                   label = ifelse(M < 5,paste0( 100*signif(effect, 3),"%" ),"")),
+  #     size = 1.25, nudge_y = c(-0.05,0,0.05), nudge_x = 0.85,
+  #     force_pull = 0, direction = "both", segment.size = 0, point.padding = 0.25, box.padding = 0.2,
+  #   )
+  # }
+  ##########
   return(fig2a)
 }
 
@@ -421,14 +422,6 @@ plot_fig2e_v3 <- function(simdata_coop, v, tag = "E", legend = TRUE){
            axis.text.x = element_text(size = 7)
     ) +
     ggtitle( paste0("v = ", v) ) +
-    # scale_fill_gradient(low = "gray90", high = "#00428B", 
-    #                     limit = c(0.25, 0.55), 
-    #                     space = "Lab",
-    #                     name = "Effective\ncooperation") + # option 3
-    # scale_fill_distiller(limit = c(0.2, 0.55),
-    #                      direction = 1,
-    #                      palette = "Greens",
-    #                      name = "Effective\ncooperation") + # option 2
     scale_fill_viridis(limit = c(0.2, 0.55),
                        direction = -1,
                        name = "Effective\ncooperation") + # option 3
@@ -486,6 +479,52 @@ plot_fig2e_v2 <- function(simdata_coop, v, tag = "E", legend = TRUE){
   return(fig2e)
 }
 
+# effect size, with M fixed
+tableS2_M <- function(simdata_coop, p){
+  
+  # extract data with specified p
+  subdata <- simdata_coop[simdata_coop$Metric == "cooperation_all" & 
+                          simdata_coop$p == p &
+                          simdata_coop$M <= Mmax, ]
+  
+  effectdata <- subdata %>%
+    group_by(M, v) %>%
+    summarise(
+      minK        = min(K),
+      Mean_minK   = Mean[K == min(K)],
+      maxK        = max(K),
+      Mean_maxK   = Mean[K == max(K)],
+      effect_size = (Mean[K == max(K)] - Mean[K == min(K)]) / Mean[K == min(K)]*100
+    ) %>%
+    arrange(v)
+  
+  stargazer(as.data.frame(effectdata), summary=FALSE, rownames=FALSE)
+  return(effectdata)
+}
+
+# effect size, with K fixed
+tableS2_K <- function(simdata_coop, p){
+  
+  # extract data with specified p
+  subdata <- simdata_coop[simdata_coop$Metric == "cooperation_all" & 
+                            simdata_coop$p == p &
+                            simdata_coop$M <= Mmax, ]
+  
+  effectdata <- subdata %>%
+    group_by(K, v) %>%
+    summarise(
+      minM        = min(M),
+      Mean_minM   = Mean[M == min(M)],
+      maxM        = max(M),
+      Mean_maxM   = Mean[M == max(M)],
+      effect_size = (Mean[M == max(M)] - Mean[M == min(M)]) / Mean[M == min(M)]*100,
+    ) %>%
+    arrange(v)
+
+  return(stargazer(as.data.frame(effectdata), summary=FALSE, rownames=FALSE))
+}
+
+
 ###########################################
 # Figure 2
 ###########################################
@@ -509,10 +548,10 @@ if(saveplots == 1){
   
   png(filename = paste0("plots/figs/", plottype, "_", 
                         format(Sys.Date(), format="%y%m%d"), "_SD.png"), # !!! change !!!
-      width = figW*1.75*1.65, height = figW*ratio*1.8, units = "in", res = 600)
+      width = figW*1.75*1.5, height = figW*ratio*1.8, units = "in", res = 600)
   multiplot(fig2a, fig2b, fig2c, fig2d, fig2e, fig2f,
-            layout = matrix(c(1,1,1,1,3,3,3,5,5,2,2,2,2,4,4,4,6,6), ncol = 9, byrow = TRUE))
-            # layout = matrix(c(1,2,3,4,5,6), ncol = 3, byrow = FALSE))
+            layout = matrix(c(1,1,1,3,3,3,5,5,2,2,2,4,4,4,6,6), ncol = 8, byrow = TRUE))
+            # layout = matrix(c(1,1,1,1,3,3,3,5,5,2,2,2,2,4,4,4,6,6), ncol = 9, byrow = TRUE))
   dev.off()
   
 }
@@ -541,8 +580,29 @@ if(saveplots == 1){
       width = figW*1.75*1.25, height = figW*ratio*1.8, units = "in", res = 600)
   multiplot(fig2a, fig2b, fig2c, fig2d,
             layout = matrix(c(1,3,2,4), ncol = 2, byrow = TRUE))
-  # layout = matrix(c(1,2,3,4,5,6), ncol = 3, byrow = FALSE))
   dev.off()
   
 }
+
+###########################################
+# Figure S2 with effect sizes
+###########################################
+
+if(saveplots == 1){
+  
+  threshcount <- if(threshold %in% c(0,1)){ 
+    paste0("thresh_", threshold, "_", min(casecount$COUNT))
+  }
+  plottype <- paste0("figSA_p_", p, "_", threshcount)
+  
+  png(filename = paste0("plots/figs/", plottype, "_", 
+                        format(Sys.Date(), format="%y%m%d"), "_SD.png"), # !!! change !!!
+      width = figW*1.75*1.25, height = figW*ratio*1.8, units = "in", res = 600)
+  multiplot(fig2a, fig2b, fig2c, fig2d,
+            layout = matrix(c(1,3,2,4), ncol = 2, byrow = TRUE))
+  dev.off()
+  
+}
+
+
 
