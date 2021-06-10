@@ -24,6 +24,7 @@ u     <- 0.001 # fixed, for now
 gens  <- 20000000
 saveplots <- 1
 Mmax      <- 5
+threshold <- 1
 
 vs     <- c(0.001, 0.005, 0.025, 0.125, 0.625) # for plotting vsweep data
 
@@ -53,6 +54,7 @@ for (i in 1:length(file_list)){
 # select vs
 simdata   <- simdata[(simdata$v %in% vs) & (simdata$β == beta),]
 casecount <- simdata %>% group_by(M, K, v, p1, β) %>% summarize(COUNT = n())
+if(threshold == 1){simdata <- simdata %>% group_by(M, K, v, p1, β) %>% slice_head( n = min(casecount$COUNT) ) }
 
 # plotting parameters
 ymax      <- 0.3    # max y for plotting
@@ -478,7 +480,7 @@ if(saveplots == 1){
   
   plottype <- paste0("fig4_normed")
   png(filename = paste0("plots/figs/", plottype, "_vsweep_",
-                        format(Sys.Date(), format="%y%m%d"), "_SD.png"), # !!! change !!! 
+                        format(Sys.Date(), format="%y%m%d"), "_", min(casecount$COUNT), "_SD.png"), # !!! change !!! 
       width = figW*1.9/1.5, height = figW*ratio*1.75*2, units = "in", res = 600)
   multiplot(figSa, figSb, cols = 1)
   dev.off()
@@ -495,7 +497,7 @@ if(saveplots == 1){
   
   plottype <- paste0("figSC_unnormed")
   png(filename = paste0("plots/figs/", plottype, "_vsweep_",
-                        format(Sys.Date(), format="%y%m%d"), "_SD.png"), # !!! change !!! 
+                        format(Sys.Date(), format="%y%m%d"), "_", min(casecount$COUNT), "_SD.png"), # !!! change !!! 
       width = figW*1.9/1.5, height = figW*ratio*1.75*2, units = "in", res = 600)
   multiplot(figSa_unnormed, figSb_unnormed, cols = 1)
   dev.off()
@@ -514,7 +516,7 @@ if(saveplots == 1){
   
   plottype <- paste0("figSC_poplevel")
   png(filename = paste0("plots/figs/", plottype, "_vsweep_",
-                        format(Sys.Date(), format="%y%m%d"), "_SD.png"), # !!! change !!! 
+                        format(Sys.Date(), format="%y%m%d"), "_", min(casecount$COUNT), "_SD.png"), # !!! change !!! 
       width = figW*1.9/0.75/2, height = figW*ratio*1.75*2, units = "in", res = 600)
   multiplot(figSa_normed, figSb_normed, 
             # figSa_unnormed, figSb_unnormed, cols = 2)

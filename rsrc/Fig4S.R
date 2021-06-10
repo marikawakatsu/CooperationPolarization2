@@ -20,6 +20,7 @@ u     <- 0.001 # fixed, for now
 gens  <- 20000000
 saveplots <- 1
 Mmax      <- 5
+threshold <- 1
 
 vs     <- c(0.001, 0.005, 0.025) # for plotting run_multi data
 # vs     <- c(0.001, 0.005, 0.025, 0.125, 0.625) # for plotting vsweep data
@@ -50,7 +51,8 @@ for (i in 1:length(file_list)){
 
 # for fixed gamma, consider only the rows with gamma == gamma
 simdata <- simdata[(simdata$v %in% vs) & (simdata$β == beta),]
-# not needed because all "run_multi" files have the same vs
+casecount <- simdata %>% group_by(M, K, v, p1, β) %>% summarize(COUNT = n())
+if(threshold == 1){simdata <- simdata %>% group_by(M, K, v, p1, β) %>% slice_head( n = min(casecount$COUNT) ) }
 
 # plotting parameters
 

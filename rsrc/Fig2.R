@@ -27,7 +27,7 @@ Mmax    <- 5
 
 # load data
 file_dir  <- sprintf( "data/gens_%s/", format(gens, scientific = FALSE) )
-pattern   <- sprintf( "run_multi" ) # select files sweeping across M and K
+pattern   <- sprintf( "run_multi|vsweep|other" ) # select file types sweeping across M and K
 file_list <- list.files(path = file_dir, pattern = pattern)
 simdata   <- data.frame() # initialize data frame
 
@@ -67,6 +67,11 @@ if(threshold == 0){
   threshdata_all <- simdata %>% group_by(M, K, v, p1) %>% 
     slice_head( n = min(casecount$COUNT) ) 
 }
+
+thresh_casecount <- threshdata_all %>% 
+  group_by(M, K, v, p1, β) %>% 
+  summarize(COUNT = n())
+  
 # plotting parameters
 ymax      <- 0.3    # max y for plotting
 ymin      <- 0.2
@@ -318,7 +323,7 @@ plot_fig2b <- function(simdata_strat, p, v, tag = "B", labeled = TRUE, wlegend =
                            simdata_strat$v == v &
                            simdata_strat$M <= Mmax, ]
   
-  ylabel <- if(labeled){"Relative abundance"}else{""}
+  ylabel <- if(labeled){"Frequency"}else{""}
   
   fig2b <- ggplot(subdata,
                   aes(x = K2, y = Mean, label = K2, color = Strategy)) +
@@ -402,12 +407,19 @@ plot_fig2e <- function(simdata_coop, v, tag = "E", legend = TRUE){
 plot_fig2e_v3 <- function(simdata_coop, v, tag = "E", legend = TRUE){
   
   subdata <- simdata_coop[simdata_coop$Metric == "cooperation_all" & 
-                            simdata_coop$v == v & 
-                            simdata_coop$M <= Mmax, ]
-  subdata$p <- factor(subdata$p)
+                          simdata_coop$v == v & 
+                          simdata_coop$M <= Mmax, ] %>% 
+    arrange(p) # sort by p
+  subdata$pmin <- rep( c(-0.025, 0.125, 0.375, 0.625, 0.775, 0.825, 0.875, 0.925, 0.975, 0.975), each = 15 )
+  subdata$pmax <- rep( c( 0.125, 0.375, 0.625, 0.775, 0.825, 0.875, 0.925, 0.975, 0.975, 1.025), each = 15 )
+  # subdata$p <- factor(subdata$p)
+  labels <- subdata %>% 
+    group_by(M, K) %>% 
+    summarize( M2 = unique(M2), 
+               K2 = unique(K2))
   
   fig2e <- ggplot(data = subdata,
-                  aes(x = p, y = M2, fill = Mean)) +
+                  aes(x = p, y = M, fill = Mean)) +
     theme_classic() +
     theme(plot.title = element_text(hjust  = 0.5,
                                     size   = 10,  
@@ -416,10 +428,10 @@ plot_fig2e_v3 <- function(simdata_coop, v, tag = "E", legend = TRUE){
            legend.title = element_text(size = 8),
            legend.key.width = unit(0.01, "npc"),
            legend.key.height = unit(0.03, "npc"),
-           panel.spacing = unit(0.05,"lines"),
+           panel.spacing = unit(0.01, "npc"),
            legend.margin = margin(t=0, r=0, b=0.5, l=0, unit="cm"),
            axis.text.y = element_text(size = 7),
-           axis.text.x = element_text(size = 7)
+           axis.text.x = element_text(size = 7),
     ) +
     ggtitle( paste0("v = ", v) ) +
     scale_fill_viridis(limit = c(0.2, 0.55),
@@ -428,9 +440,16 @@ plot_fig2e_v3 <- function(simdata_coop, v, tag = "E", legend = TRUE){
     labs(x = "Partisan bias (p)",
          y = "",
          tag = tag) +
-    geom_tile( show.legend = legend ) + 
+    # geom_tile( show.legend = legend, 
+               # width = rep(c(0.05, 0.25, 0.25, 0.25, 0.05, 0.05, 0.05, 0.05, 0.01, 0.05), 15)) + 
+    geom_rect( aes(xmin = pmin, xmax = pmax, ymin = M-0.5, ymax = M+0.5) ) + 
+    scale_y_continuous( breaks=1:5, 
+                        labels=unique(labels$M2), 
+                        expand = c(0, 0)
+                        ) +
+    scale_x_continuous( limits = c(-0.05, 1.05) ) +
     facet_grid(K2 ~ ., space="free", 
-               switch = "y", scales="free") +
+               switch = "y", scales="free_y") +
     theme(strip.placement = "outside") +
     theme(axis.title.y = element_blank(), 
           strip.background = element_blank(),
@@ -554,7 +573,7 @@ if(saveplots == 1){
             # layout = matrix(c(1,1,1,1,3,3,3,5,5,2,2,2,2,4,4,4,6,6), ncol = 9, byrow = TRUE))
   dev.off()
   
-}
+} 
 
 ###########################################
 # Figure S? with p = 1
