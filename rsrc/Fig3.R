@@ -140,21 +140,20 @@ simdata_strat_all <- simdata_strat_all %>% mutate( M2 = paste0( "M=", M ), K2 = 
 ###########################################
 # LOAD CALC DATA
 ###########################################
-calcdata <- read.csv( "analytics/calc_data_strat.csv", header = TRUE)
-# calcdatap1 <- read.csv( "analytics/calc_data_strat_p1.csv", header = TRUE)
+calcdata   <- read.csv( "analytics/calc_data_strat.csv", header = TRUE)
+calcdatap1 <- read.csv( "analytics/calc_data_strat_p1.csv", header = TRUE)
+
+# add values of p as labels + combine dfs
+calcdata$p   <- 0
+calcdatap1$p <- 1
+calcdata <- rbind(calcdata, calcdatap1)
 
 # group calcdata
 calcdata <- as.data.frame(calcdata)
 calcdata_plot <- calcdata %>% 
-  gather("variable","value",-u,-v) %>%
+  gather("variable","value",-u,-v,-p) %>%
   rename( Value = value, Strategy = variable ) %>%
   group_by(v)
-
-# calcdatap1 <- as.data.frame(calcdatap1)
-# calcdatap1_plot <- calcdatap1 %>% 
-#   gather("variable","value",-u,-v) %>%
-#   rename( Value = value, Strategy = variable ) %>%
-#   group_by(v)
 
 ###########################################
 # Plotting functions
@@ -242,23 +241,26 @@ plot_figSXstrat <- function(simdata_strat, p, M = 1, K = 1, tag = "B", labeled =
 # plot with theoretical predictions
 plot_figSWstrat <- function(simdata_plot, calcdata_plot_in, p, tag = "B", labeled = TRUE, wlegend = TRUE){
   
-  subdata <- simdata_plot[simdata_plot$p == p & 
-                            simdata_plot$M == 1,, ]
+  subdata <- simdata_plot[simdata_plot$p == p & simdata_plot$M == 1, ]
   
-  calcsubdata   <- calcdata_plot_in
-  calcsubdata$u <- factor(calcdata_plot_in$u) # dummy variable
-  
+  if(p==1){
+    calcsubdata <- calcdata_plot_in[calcdata_plot_in$p == 1,]
+  }else{
+    calcsubdata <- calcdata_plot_in[calcdata_plot_in$p == 0,]
+  }
+  calcsubdata$u <- factor(calcsubdata$u) # dummy variable
+
   figSWstrat <- ggplot(subdata,
                        aes(x = v, y = Mean, color = Strategy, group = Strategy, fill = Strategy)) +
     theme_classic() +
     theme(plot.title = element_text(hjust = 0.5,
-                                    size = 10, 
+                                    size = 10,
                                     margin = margin(0,0,0,0) ) ) +
     theme (legend.text = element_text (size = 7),
            legend.title = element_text (size = 8),
            # legend.key.size = unit(0.025, "npc"),
            legend.key.width = unit(0.02, "npc"),
-           legend.key.height = unit(0.4, "cm"),           
+           legend.key.height = unit(0.4, "cm"),
            panel.spacing = unit(0.2,  "lines"),
            legend.margin = margin(t = 0, unit="npc")
     ) +
@@ -276,19 +278,22 @@ plot_figSWstrat <- function(simdata_plot, calcdata_plot_in, p, tag = "B", labele
     # plot calculation data
     geom_line(data = calcsubdata, aes(x = v, y = Value, linetype = u),
               alpha = 0.9, size = 0.4) +
-    scale_linetype_manual(labels = c("theoretical\nprediction"), 
+    scale_linetype_manual(labels = c("theoretical\nprediction"),
                           values = c("solid")) +
     guides(linetype = guide_legend("")) +
     # plot simulation data
     # geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0., size = 0.3) +
     geom_ribbon(aes(ymin = Mean - SD, ymax = Mean + SD), alpha = 0.1, color = NA) +
     # geom_line(aes(group = v), size = 0.4, alpha = 1, lty = 1) +
-    geom_point(size = 1.6, alpha = 0.9, stroke = 0.0) +
-    geom_vline( 
+    geom_point(size = 1.6, alpha = 0.9, stroke = 0.0)
+  
+  if(p<1){
+    figSWstrat <- figSWstrat + geom_vline(
       xintercept = ( -2*(b/c) + 3 + sqrt(4*(b/c)^2 - 3) ) / ( 2*(b/c - 1) ) / N,
       linetype = "dashed", colour = "gray"
-      )
-  
+    )
+  }
+
   return(figSWstrat)
 }
 
@@ -339,7 +344,7 @@ if(saveplots == 1){
                         format(Sys.Date(), format="%y%m%d"), "_SD+calc.png"), 
       width = figW*1.5, height = figW*ratio*1.5/2*5, units = "in", res = 600)
   multiplot(figSXa, figSXb, figSXc, figSXd, figSXe, 
-            figSWf, figSWg, figSWh, figSWi, figSXj, 
+            figSWf, figSWg, figSWh, figSWi, figSWj, 
             layout = matrix(c(1,2,3,4,5,6,7,8,9,10), ncol = 2, byrow = FALSE))
   dev.off()
 
@@ -385,7 +390,7 @@ if(saveplots == 1){
       width = figW*1.5, height = figW*ratio*1.5/2*3, units = "in", res = 600)
   # multiplot(fig4a, fig4b, fig4c, emp,
   #           layout = matrix(c(1,2,3,4), ncol = 2, byrow = TRUE))
-  multiplot(fig4a, fig4b, fig4c, fig4Wd, fig4We, fig4f,
+  multiplot(fig4a, fig4b, fig4c, fig4Wd, fig4We, fig4Wf,
             layout = matrix(c(1,2,3,4,5,6), ncol = 2, byrow = FALSE))
   dev.off()
   
