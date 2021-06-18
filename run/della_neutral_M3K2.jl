@@ -42,7 +42,7 @@ const β = 0.000    # selection strength
 # const ϵ = 1.       # damping factor (0 = no bias in mutation, 1 = max bias (= p) in mutation)
 # note: α = 0 automatically
 
-const pvals = repeat([0.0, 0.25, 0.5, 0.75, 1.0], 2) # uniform populations for now
+const pvals = repeat([0.0, 0.25, 0.5, 0.75, 1.0], 1) # uniform populations for now
 const us    = [0.001]
 const vs    = [0.001, 10^((log10(0.001)+log10(0.005))/2), 0.005, 10^((log10(0.005)+log10(0.025))/2), 0.025, 10^((log10(0.025)+log10(0.125))/2), 0.125, 10^((log10(0.125)+log10(0.625))/2), 0.625] 
 const ϵ     = 1.
