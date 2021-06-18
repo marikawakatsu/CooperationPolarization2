@@ -204,6 +204,13 @@ plot_figSXstrat <- function(simdata_strat, p, M = 1, K = 1, tag = "B", labeled =
   subdata <- simdata_strat[simdata_strat$p == p & 
                            simdata_strat$M == M &
                            simdata_strat$K == K, ]
+  if(M==1){
+    ylimits <- c(0.163, 0.337)
+  }else if(M==2){
+    ylimits <- c(0.13, 0.39)
+  }else if(M==3){
+    ylimits <- c(0.11, 0.43)
+  }
   
   figSXstrat <- ggplot(subdata,
                   aes(x = v, y = Mean, color = Strategy, group = Strategy, fill = Strategy)) +
@@ -225,7 +232,7 @@ plot_figSXstrat <- function(simdata_strat, p, M = 1, K = 1, tag = "B", labeled =
     ggtitle( paste0("M = ", M, ", K = ", K, ", p = ", p) ) +
     scale_color_manual(values = c("#0571b0","#92c5de","#f4a582","#ca0020")) +
     scale_fill_manual(values = c("#0571b0","#92c5de","#f4a582","#ca0020")) +
-    scale_y_continuous(limits = c(0.163, 0.337),
+    scale_y_continuous(limits = ylimits,
                        breaks = seq(0.01, 0.53, 0.04)) +
     scale_x_continuous(limits = c(0.001, 0.625),
                        breaks = c(0.001, 0.005, 0.025, 0.125, 0.625),
@@ -249,6 +256,10 @@ plot_figSWstrat <- function(simdata_plot, calcdata_plot_in, p, tag = "B", labele
     calcsubdata <- calcdata_plot_in[calcdata_plot_in$p == 0,]
   }
   calcsubdata$u <- factor(calcsubdata$u) # dummy variable
+  
+  if(M==1){
+    ylimits <- c(0.163, 0.337)
+  }
 
   figSWstrat <- ggplot(subdata,
                        aes(x = v, y = Mean, color = Strategy, group = Strategy, fill = Strategy)) +
@@ -270,7 +281,7 @@ plot_figSWstrat <- function(simdata_plot, calcdata_plot_in, p, tag = "B", labele
     ggtitle( paste0("M = 1, K = 1, p = ", p) ) +
     scale_color_manual(values = c("#0571b0","#92c5de","#f4a582","#ca0020")) +
     scale_fill_manual(values = c("#0571b0","#92c5de","#f4a582","#ca0020")) +
-    scale_y_continuous(limits = c(0.163, 0.337),
+    scale_y_continuous(limits = ylimits,
                        breaks = seq(0.01, 0.53, 0.04)) +
     scale_x_continuous(limits = c(0.001, 0.625),
                        breaks = c(0.001, 0.005, 0.025, 0.125, 0.625),
@@ -374,16 +385,6 @@ if(saveplots == 1){
   }
   plottype <- paste0("fig3_", threshcount)
   
-  # # without theoretical predictions
-  # png(filename = paste0("plots/figs/", plottype, "_", 
-  #                       format(Sys.Date(), format="%y%m%d"), "_SD.png"), 
-  #     width = figW*1.5, height = figW*ratio*1.5/2*3, units = "in", res = 600)
-  # # multiplot(fig4a, fig4b, fig4c, emp,
-  # #           layout = matrix(c(1,2,3,4), ncol = 2, byrow = TRUE))
-  # multiplot(fig4a, fig4b, fig4c, fig4d, fig4e, fig4f,
-  #           layout = matrix(c(1,2,3,4,5,6), ncol = 2, byrow = FALSE))
-  # dev.off()
-  
   # with theoretical predictions
   png(filename = paste0("plots/figs/", plottype, "_", 
                         format(Sys.Date(), format="%y%m%d"), "_SD+calc.png"), 
@@ -396,4 +397,53 @@ if(saveplots == 1){
   
 }
 
+###########################################
+# M2 + M3 cases
+###########################################
+M <- 2
+fig5a <- plot_figSXstrat( simdata_strat_all, 0.0, M, 1, "A")
+fig5b <- plot_figSXstrat( simdata_strat_all, 0.5, M, 1, "B")
+fig5c <- plot_figSXstrat( simdata_strat_all, 1.0, M, 1, "C")
+fig5d <- plot_figSXstrat( simdata_strat_all, 0.0, M, 2, "D")
+fig5e <- plot_figSXstrat( simdata_strat_all, 0.5, M, 2, "E")
+fig5f <- plot_figSXstrat( simdata_strat_all, 1.0, M, 2, "F")
 
+M <- 3
+fig6a <- plot_figSXstrat( simdata_strat_all, 0.0, M, 1, "A")
+fig6b <- plot_figSXstrat( simdata_strat_all, 0.5, M, 1, "B")
+fig6c <- plot_figSXstrat( simdata_strat_all, 1.0, M, 1, "C")
+fig6d <- plot_figSXstrat( simdata_strat_all, 0.0, M, 2, "D")
+fig6e <- plot_figSXstrat( simdata_strat_all, 0.5, M, 2, "E")
+fig6f <- plot_figSXstrat( simdata_strat_all, 1.0, M, 2, "F")
+fig6g <- plot_figSXstrat( simdata_strat_all, 0.0, M, 3, "G")
+fig6h <- plot_figSXstrat( simdata_strat_all, 0.5, M, 3, "H")
+fig6i <- plot_figSXstrat( simdata_strat_all, 1.0, M, 3, "I")
+
+if(saveplots == 1){
+  
+  # M = 2
+  threshcount <- if(threshold %in% c(0,1)){ 
+    paste0("thresh_", threshold, "_", min(casecount$COUNT))
+  }
+  plottype <- paste0("fig5_M2_", threshcount)
+  
+  # with theoretical predictions
+  png(filename = paste0("plots/figs/", plottype, "_", 
+                        format(Sys.Date(), format="%y%m%d"), "_SD.png"), 
+      width = figW*1.5, height = figW*ratio*1.5/2*3, units = "in", res = 600)
+  multiplot(fig5a, fig5b, fig5c, fig5d, fig5e, fig5f,
+            layout = matrix(c(1,2,3,4,5,6), ncol = 2, byrow = FALSE))
+  dev.off()
+  
+  # M = 3
+  plottype <- paste0("fig5_M3_", threshcount)
+  
+  # with theoretical predictions
+  png(filename = paste0("plots/figs/", plottype, "_", 
+                        format(Sys.Date(), format="%y%m%d"), "_SD.png"), 
+      width = figW*1.5*1.5, height = figW*ratio*1.5/2*3, units = "in", res = 600)
+  multiplot(fig6a, fig6b, fig6c, fig6d, fig6e, fig6f, fig6g, fig6h, fig6i,
+            layout = matrix(c(1,2,3,4,5,6,7,8,9), ncol = 3, byrow = FALSE))
+  dev.off()
+  
+}

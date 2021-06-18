@@ -81,7 +81,7 @@ function compute_payoffs!( pop::Population, i::Int64, j::Int64, k::Int64 )
     if pop.sets.h[i,k] == 0 || pop.sets.h[j,k] == 0
         # if either i or j does not belong to set k, something's wrong
         # leave pop.sim.i_action, pop.sim.j_action as -1 so that the compute_payoffs! throws an error when assigning payoffs
-        @warn("$i and $j should not be intercting in set $k"); return
+        @warn("$i and $j should not be interacting in set $k"); return
     elseif pop.sets.h[i,k] == pop.sets.h[j,k]                              
         pop.sim.i_action, pop.sim.j_action = pop.strategies[i,1], pop.strategies[j,1] # if they agree, play s_agree
     else                                                              

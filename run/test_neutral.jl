@@ -8,9 +8,9 @@ using Random
 const b = 1.0 # benefit to cooperating
 const c = 0.2 # cost to cooperating
 
-const N = 20 # population size
-const M = 1 # number of sets
-const K = 1 # number of issues to care about
+const N = 10 # population size
+const M = 3 # number of sets
+const K = 2 # number of issues to care about
 const P = 2 # number of parties
 
 const β = 0.000    # selection strength

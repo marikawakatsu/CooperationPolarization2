@@ -15,6 +15,13 @@ mutable struct NeutralTracker
     ens_h::Array{Float64, 1}                    # track quantity h = <h_j h_l I(s_ia == s_ja) | i != j != l != i>
     ens_h_running::Array{Float64, 1}            # track running average of h
 
+    ens_zp::Array{Float64, 1}                    # track quantity z' = < |h_i||h_l| | i != j>
+    ens_zp_running::Array{Float64, 1}            # track running average of z'
+    ens_gp::Array{Float64, 1}                    # track quantity g' = < |h_i||h_l| I(s_ia == s_la) | i != l>
+    ens_gp_running::Array{Float64, 1}            # track running average of g'
+    ens_hp::Array{Float64, 1}                    # track quantity h' = < |h_i||h_l| I(s_ia == s_ja) | i != j != l != i>
+    ens_hp_running::Array{Float64, 1}            # track running average of h'
+
     ens_sia_sjd::Array{Float64, 1}              # track quantity q = <s_ia s_jd | i, j> # not requiring i != j
     ens_sia_sjd_running::Array{Float64, 1}      # track running average of <s_ia s_jd | i, j> # not requiring i != j
 
@@ -46,6 +53,13 @@ mutable struct NeutralTracker
         ens_h         = Float64[0.0 for gens=1:generations]
         ens_h_running = Float64[0.0 for gens=1:generations]
 
+        ens_zp         = Float64[0.0 for gens=1:generations]
+        ens_zp_running = Float64[0.0 for gens=1:generations]
+        ens_gp         = Float64[0.0 for gens=1:generations]
+        ens_gp_running = Float64[0.0 for gens=1:generations]
+        ens_hp         = Float64[0.0 for gens=1:generations]
+        ens_hp_running = Float64[0.0 for gens=1:generations]
+
         ens_sia_sjd         = Float64[0.0 for gens=1:generations]
         ens_sia_sjd_running = Float64[0.0 for gens=1:generations]
         ens_sia_sid         = Float64[0.0 for gens=1:generations]
@@ -55,7 +69,9 @@ mutable struct NeutralTracker
                 ens_strat_dist, ens_strat_running,
                 ens_y, ens_y_running, ens_z, ens_z_running,
                 ens_g, ens_g_running, ens_h, ens_h_running,
-                ens_sia_sjd, ens_sia_sjd_running,
+                ens_zp, ens_zp_running, ens_gp, ens_gp_running, 
+                ens_hp, ens_hp_running,
+                ens_sia_sjd, ens_sia_sjd_running, 
                 ens_sia_sid, ens_sia_sid_running
                 )
     end
@@ -76,13 +92,18 @@ function track_neutral!( n_tracker::NeutralTracker, gen::Int64 )
     for i in 1:n_tracker.pop.sets.N # keep it simple
         for j in i+1:n_tracker.pop.sets.N # i != j
             n_tracker.ens_y[gen] += get_sia_eq_sja(n_tracker, i, j)
-            n_tracker.ens_z[gen] += get_hi_times_hj(n_tracker, i, j)
-            n_tracker.ens_g[gen] += get_hi_times_hj_sia_eq_sja(n_tracker, i, j)
+            n_tracker.ens_z[gen] += get_hi_dot_hj(n_tracker, i, j)
+            n_tracker.ens_g[gen] += get_hi_dot_hj_sia_eq_sja(n_tracker, i, j)
+
+            n_tracker.ens_zp[gen] += get_hbari_dot_hbarj(n_tracker, i, j)
+            n_tracker.ens_gp[gen] += get_hbari_dot_hbarj_sia_eq_sja(n_tracker, i, j)
         end
     end
-    n_tracker.ens_y[gen] = n_tracker.ens_y[gen] / n_tracker.pop.sets.n_pairs
-    n_tracker.ens_z[gen] = n_tracker.ens_z[gen] / n_tracker.pop.sets.n_pairs
-    n_tracker.ens_g[gen] = n_tracker.ens_g[gen] / n_tracker.pop.sets.n_pairs
+    n_tracker.ens_y[gen]  = n_tracker.ens_y[gen] / n_tracker.pop.sets.n_pairs
+    n_tracker.ens_z[gen]  = n_tracker.ens_z[gen] / n_tracker.pop.sets.n_pairs
+    n_tracker.ens_g[gen]  = n_tracker.ens_g[gen] / n_tracker.pop.sets.n_pairs
+    n_tracker.ens_zp[gen] = n_tracker.ens_zp[gen] / n_tracker.pop.sets.n_pairs
+    n_tracker.ens_gp[gen] = n_tracker.ens_gp[gen] / n_tracker.pop.sets.n_pairs
 
     # duplets, i == j included
     for i in 1:n_tracker.pop.sets.N # keep it simple
@@ -97,14 +118,20 @@ function track_neutral!( n_tracker::NeutralTracker, gen::Int64 )
     for i in 1:n_tracker.pop.sets.N # keep it simple
         for j in i+1:n_tracker.pop.sets.N # i != j
             for l in j+1:n_tracker.pop.sets.N
-                n_tracker.ens_h[gen] += get_hi_times_hl_sia_eq_sja(n_tracker, i, j, l)
-                n_tracker.ens_h[gen] += get_hi_times_hl_sia_eq_sja(n_tracker, j, l, i)
-                n_tracker.ens_h[gen] += get_hi_times_hl_sia_eq_sja(n_tracker, l, i, j)
+                n_tracker.ens_h[gen] += get_hi_dot_hl_sia_eq_sja(n_tracker, i, j, l)
+                n_tracker.ens_h[gen] += get_hi_dot_hl_sia_eq_sja(n_tracker, j, l, i)
+                n_tracker.ens_h[gen] += get_hi_dot_hl_sia_eq_sja(n_tracker, l, i, j)
+
+                n_tracker.ens_hp[gen] += get_hbari_dot_hbarl_sia_eq_sja(n_tracker, i, j, l)
+                n_tracker.ens_hp[gen] += get_hbari_dot_hbarl_sia_eq_sja(n_tracker, j, l, i)
+                n_tracker.ens_hp[gen] += get_hbari_dot_hbarl_sia_eq_sja(n_tracker, l, i, j)
+
                 triplet_counter += 3
             end
         end
     end
-    n_tracker.ens_h[gen] = n_tracker.ens_h[gen] / triplet_counter
+    n_tracker.ens_h[gen]  = n_tracker.ens_h[gen] / triplet_counter
+    n_tracker.ens_hp[gen] = n_tracker.ens_hp[gen] / triplet_counter
 
     # update running average
     if gen == 1 
@@ -113,6 +140,9 @@ function track_neutral!( n_tracker::NeutralTracker, gen::Int64 )
         n_tracker.ens_z_running[gen] = n_tracker.ens_z[gen]
         n_tracker.ens_g_running[gen] = n_tracker.ens_g[gen]
         n_tracker.ens_h_running[gen] = n_tracker.ens_h[gen]
+        n_tracker.ens_zp_running[gen] = n_tracker.ens_zp[gen]
+        n_tracker.ens_gp_running[gen] = n_tracker.ens_gp[gen]
+        n_tracker.ens_hp_running[gen] = n_tracker.ens_hp[gen]
         n_tracker.ens_sia_sjd_running[gen] = n_tracker.ens_sia_sjd[gen]
         n_tracker.ens_sia_sid_running[gen] = n_tracker.ens_sia_sid[gen]
     else 
@@ -121,6 +151,9 @@ function track_neutral!( n_tracker::NeutralTracker, gen::Int64 )
         n_tracker.ens_z_running[gen] = ( n_tracker.ens_z_running[gen-1]*(gen-1) + n_tracker.ens_z[gen] ) / gen
         n_tracker.ens_g_running[gen] = ( n_tracker.ens_g_running[gen-1]*(gen-1) + n_tracker.ens_g[gen] ) / gen
         n_tracker.ens_h_running[gen] = ( n_tracker.ens_h_running[gen-1]*(gen-1) + n_tracker.ens_h[gen] ) / gen
+        n_tracker.ens_zp_running[gen] = ( n_tracker.ens_zp_running[gen-1]*(gen-1) + n_tracker.ens_zp[gen] ) / gen
+        n_tracker.ens_gp_running[gen] = ( n_tracker.ens_gp_running[gen-1]*(gen-1) + n_tracker.ens_gp[gen] ) / gen
+        n_tracker.ens_hp_running[gen] = ( n_tracker.ens_hp_running[gen-1]*(gen-1) + n_tracker.ens_hp[gen] ) / gen
         n_tracker.ens_sia_sjd_running[gen] = ( n_tracker.ens_sia_sjd_running[gen-1]*(gen-1) + n_tracker.ens_sia_sjd[gen] ) / gen
         n_tracker.ens_sia_sid_running[gen] = ( n_tracker.ens_sia_sid_running[gen-1]*(gen-1) + n_tracker.ens_sia_sid[gen] ) / gen
     end
@@ -141,21 +174,71 @@ function get_sia_times_sjd( n_tracker::NeutralTracker, i::Int64, j::Int64 )
     return Float64( n_tracker.pop.strategies[i,1] * n_tracker.pop.strategies[j,2] )
 end
 
-function get_hi_times_hj( n_tracker::NeutralTracker, i::Int64, j::Int64 )
+function get_hi_dot_hj( n_tracker::NeutralTracker, i::Int64, j::Int64 )
     # for z = <h_i h_l | i != j>
-    return Float64( n_tracker.pop.sets.h[i] * n_tracker.pop.sets.h[j] )
+    product = 0.
+    for k in 1:n_tracker.pop.sets.M
+        product += Float64( n_tracker.pop.sets.h[i,k] * n_tracker.pop.sets.h[j,k] )
+    end
+    return product
+    # return Float64( n_tracker.pop.sets.h[i] * n_tracker.pop.sets.h[j] )
 end
 
-function get_hi_times_hj_sia_eq_sja( n_tracker::NeutralTracker, i::Int64, j::Int64 )
+function get_hi_dot_hj_sia_eq_sja( n_tracker::NeutralTracker, i::Int64, j::Int64 )
     # for g = <h_i h_l I(s_ia == s_la) | i != l>
     # ie h_i h_l if s_ia = s_la is true, else 0
-    return n_tracker.pop.strategies[i,1]==n_tracker.pop.strategies[j,1] ? Float64( n_tracker.pop.sets.h[i] * n_tracker.pop.sets.h[j] ) : 0.0
+    product = 0.
+    if n_tracker.pop.strategies[i,1]==n_tracker.pop.strategies[j,1]
+        for k in 1:n_tracker.pop.sets.M
+            product += Float64( n_tracker.pop.sets.h[i,k] * n_tracker.pop.sets.h[j,k] )
+        end
+    end
+    return product
+    # return n_tracker.pop.strategies[i,1]==n_tracker.pop.strategies[j,1] ? Float64( n_tracker.pop.sets.h[i] * n_tracker.pop.sets.h[j] ) : 0.0
 end
 
-function get_hi_times_hl_sia_eq_sja( n_tracker::NeutralTracker, i::Int64, j::Int64, l::Int64)
+function get_hi_dot_hl_sia_eq_sja( n_tracker::NeutralTracker, i::Int64, j::Int64, l::Int64)
     # for h = <h_j h_l I(s_ia == s_ja) | i != j != l != i>
     # ie h_i h_l if s_ia = s_ja is true, else 0
-    return n_tracker.pop.strategies[i,1]==n_tracker.pop.strategies[j,1] ? Float64( n_tracker.pop.sets.h[i] * n_tracker.pop.sets.h[l] ) : 0.0
+    product = 0.
+    if n_tracker.pop.strategies[i,1]==n_tracker.pop.strategies[j,1]
+        for k in 1:n_tracker.pop.sets.M
+            product += Float64( n_tracker.pop.sets.h[i,k] * n_tracker.pop.sets.h[l,k] )
+        end
+    end
+    return product
+    # return n_tracker.pop.strategies[i,1]==n_tracker.pop.strategies[j,1] ? Float64( n_tracker.pop.sets.h[i] * n_tracker.pop.sets.h[l] ) : 0.0
+end
+
+function get_hbari_dot_hbarj( n_tracker::NeutralTracker, i::Int64, j::Int64 )
+    # for z' = < |h_i||h_l| | i != j>
+    product = 0.
+    for k in 1:n_tracker.pop.sets.M
+        product += Float64( n_tracker.pop.sets.h_bar[i,k] * n_tracker.pop.sets.h_bar[j,k] )
+    end
+    return product
+end
+
+function get_hbari_dot_hbarj_sia_eq_sja( n_tracker::NeutralTracker, i::Int64, j::Int64 )
+    # for g' = < |h_i||h_l| I(s_ia == s_la) | i != l>
+    product = 0.
+    if n_tracker.pop.strategies[i,1]==n_tracker.pop.strategies[j,1]
+        for k in 1:n_tracker.pop.sets.M
+            product += Float64( n_tracker.pop.sets.h_bar[i,k] * n_tracker.pop.sets.h_bar[j,k] )
+        end
+    end
+    return product
+end
+
+function get_hbari_dot_hbarl_sia_eq_sja( n_tracker::NeutralTracker, i::Int64, j::Int64, l::Int64)
+    # for h' = < |h_j||h_l| I(s_ia == s_ja) | i != j != l != i>
+    product = 0.
+    if n_tracker.pop.strategies[i,1]==n_tracker.pop.strategies[j,1]
+        for k in 1:n_tracker.pop.sets.M
+            product += Float64( n_tracker.pop.sets.h_bar[i,k] * n_tracker.pop.sets.h_bar[l,k] )
+        end
+    end
+    return product
 end
 
 function track_strat_dist!( n_tracker::NeutralTracker, gen::Int64 )
