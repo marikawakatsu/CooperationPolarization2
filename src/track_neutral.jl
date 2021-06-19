@@ -180,7 +180,7 @@ function get_hi_dot_hj( n_tracker::NeutralTracker, i::Int64, j::Int64 )
     for k in 1:n_tracker.pop.sets.M
         product += Float64( n_tracker.pop.sets.h[i,k] * n_tracker.pop.sets.h[j,k] )
     end
-    return product
+    return product / n_tracker.pop.sets.M
     # return Float64( n_tracker.pop.sets.h[i] * n_tracker.pop.sets.h[j] )
 end
 
@@ -193,7 +193,7 @@ function get_hi_dot_hj_sia_eq_sja( n_tracker::NeutralTracker, i::Int64, j::Int64
             product += Float64( n_tracker.pop.sets.h[i,k] * n_tracker.pop.sets.h[j,k] )
         end
     end
-    return product
+    return product / n_tracker.pop.sets.M
     # return n_tracker.pop.strategies[i,1]==n_tracker.pop.strategies[j,1] ? Float64( n_tracker.pop.sets.h[i] * n_tracker.pop.sets.h[j] ) : 0.0
 end
 
@@ -206,7 +206,7 @@ function get_hi_dot_hl_sia_eq_sja( n_tracker::NeutralTracker, i::Int64, j::Int64
             product += Float64( n_tracker.pop.sets.h[i,k] * n_tracker.pop.sets.h[l,k] )
         end
     end
-    return product
+    return product / n_tracker.pop.sets.M
     # return n_tracker.pop.strategies[i,1]==n_tracker.pop.strategies[j,1] ? Float64( n_tracker.pop.sets.h[i] * n_tracker.pop.sets.h[l] ) : 0.0
 end
 
@@ -216,7 +216,7 @@ function get_hbari_dot_hbarj( n_tracker::NeutralTracker, i::Int64, j::Int64 )
     for k in 1:n_tracker.pop.sets.M
         product += Float64( n_tracker.pop.sets.h_bar[i,k] * n_tracker.pop.sets.h_bar[j,k] )
     end
-    return product
+    return product / n_tracker.pop.sets.M
 end
 
 function get_hbari_dot_hbarj_sia_eq_sja( n_tracker::NeutralTracker, i::Int64, j::Int64 )
@@ -227,7 +227,7 @@ function get_hbari_dot_hbarj_sia_eq_sja( n_tracker::NeutralTracker, i::Int64, j:
             product += Float64( n_tracker.pop.sets.h_bar[i,k] * n_tracker.pop.sets.h_bar[j,k] )
         end
     end
-    return product
+    return product / n_tracker.pop.sets.M
 end
 
 function get_hbari_dot_hbarl_sia_eq_sja( n_tracker::NeutralTracker, i::Int64, j::Int64, l::Int64)
@@ -238,7 +238,7 @@ function get_hbari_dot_hbarl_sia_eq_sja( n_tracker::NeutralTracker, i::Int64, j:
             product += Float64( n_tracker.pop.sets.h_bar[i,k] * n_tracker.pop.sets.h_bar[l,k] )
         end
     end
-    return product
+    return product / n_tracker.pop.sets.M
 end
 
 function track_strat_dist!( n_tracker::NeutralTracker, gen::Int64 )
