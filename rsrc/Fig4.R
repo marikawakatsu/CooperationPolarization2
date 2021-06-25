@@ -272,7 +272,7 @@ plotB_normed <- function(simdata_dist, tag = "B", option = "all", colors = hammi
           title = element_text(size = 18)
     ) +
     labs(x = "Partisan bias (p)",
-         y = "Average issue distance",
+         y = "Average interest distance",
          tag = tag) + 
     scale_linetype_manual(values = linetypes, 
                           labels = labels,
@@ -428,7 +428,7 @@ plotB_unnormed <- function(simdata_dist, tag = "B", option = "all", colors = ham
           title = element_text(size = 18)
     ) +
     labs(x = "Partisan bias (p)",
-         y = "Average issue distance",
+         y = "Average interest distance",
          tag = tag) + 
     scale_linetype_manual(values = linetypes, 
                           labels = labels,
