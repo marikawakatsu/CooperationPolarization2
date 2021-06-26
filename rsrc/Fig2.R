@@ -565,9 +565,11 @@ if(saveplots == 1){
     }
   plottype <- paste0("fig2_p_", p, "_", threshcount)
   
-  png(filename = paste0("plots/figs/", plottype, "_", 
-                        format(Sys.Date(), format="%y%m%d"), "_SD.png"), # !!! change !!!
-      width = figW*1.75*1.5, height = figW*ratio*1.8, units = "in", res = 600)
+  # png(filename = paste0("plots/figs/", plottype, "_", 
+  #                       format(Sys.Date(), format="%y%m%d"), "_SD.png"), # !!! change !!!
+  pdf(file = paste0("plots/figs/", plottype, "_", 
+                    format(Sys.Date(), format="%y%m%d"), "_SD.pdf"), #  PDF
+      width = figW*1.75*1.5, height = figW*ratio*1.8)
   multiplot(fig2a, fig2b, fig2c, fig2d, fig2e, fig2f,
             layout = matrix(c(1,1,1,3,3,3,5,5,2,2,2,4,4,4,6,6), ncol = 8, byrow = TRUE))
             # layout = matrix(c(1,1,1,1,3,3,3,5,5,2,2,2,2,4,4,4,6,6), ncol = 9, byrow = TRUE))
@@ -593,10 +595,10 @@ if(saveplots == 1){
     paste0("thresh_", threshold, "_", min(casecount$COUNT))
   }
   plottype <- paste0("figSA_p_", p, "_", threshcount)
-  
-  png(filename = paste0("plots/figs/", plottype, "_", 
+
+  png(filename = paste0("plots/figs/", plottype, "_",
                         format(Sys.Date(), format="%y%m%d"), "_SD.png"), # !!! change !!!
-      width = figW*1.75*1.25, height = figW*ratio*1.8, units = "in", res = 600)
+      width = figW*1.75*1.25, height = figW*ratio*1.8)
   multiplot(fig2a, fig2b, fig2c, fig2d,
             layout = matrix(c(1,3,2,4), ncol = 2, byrow = TRUE))
   dev.off()

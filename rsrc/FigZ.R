@@ -36,7 +36,7 @@ setwd("~/.julia/dev/CooperationPolarization2/") # to be updated later
 
 # load data
 file_dir  <- sprintf( "data/gens_%s/", format(gens, scientific = FALSE) )
-pattern   <- sprintf( "neutral" ) # select files sweeping across M and K
+pattern   <- sprintf( "neutral_M1" ) # select files sweeping across M and K
 file_list <- list.files(path = file_dir, pattern = pattern)
 simdata   <- data.frame() # initialize data frame
 
@@ -64,9 +64,9 @@ for (i in 1:length(file_list)){
 # LOAD CALCULATION DATA 
 #########################
 calcdata   <- read.csv( "analytics/calc_data_yzgh.csv", header = TRUE)
-calcdatap1 <- read.csv( "analytics/calc_data_y_p1.csv", header = TRUE)
+# calcdatap1 <- read.csv( "analytics/calc_data_y_p1.csv", header = TRUE)
 
-calcdata$y1 <- calcdatap1$y # add p=1 data for y only
+# calcdata$y1 <- calcdatap1$y # add p=1 data for y only
 
 #########################
 # PREP DATA
@@ -132,7 +132,7 @@ calcdata_plot <- calcdata %>%
 # plot simulated data with predictions, with v on x-axis
 plot_figZb <- function(simdata_plot, calcdata_plot, Metric, tag = "", wtitle = FALSE, Title = ""){
   
-  if(Metric == "y"){
+  if(Metric == "yy"){
     # for y, plot two prediction lines + p <= 1 data
     calcsubdata   <- calcdata_plot[calcdata_plot$Metric %in% c("y","y1"), ]
     simsubdata    <- simdata_plot[simdata_plot$Metric == Metric, ]

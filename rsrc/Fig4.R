@@ -479,9 +479,12 @@ figSb <- plotB_normed(simdata_dist, "B", "two")
 if(saveplots == 1){
   
   plottype <- paste0("fig4_normed")
-  png(filename = paste0("plots/figs/", plottype, "_vsweep_",
-                        format(Sys.Date(), format="%y%m%d"), "_", min(casecount$COUNT), "_SD.png"), # !!! change !!! 
-      width = figW*1.9/1.5, height = figW*ratio*1.75*2, units = "in", res = 600)
+  # png(filename = paste0("plots/figs/", plottype, "_vsweep_",
+  #                       format(Sys.Date(), format="%y%m%d"), "_", min(casecount$COUNT), "_SD.png"), # !!! change !!! 
+  #     width = figW*1.9/1.5, height = figW*ratio*1.75*2, units = "in", res = 600)
+  pdf(file = paste0("plots/figs/", plottype, "_vsweep_",
+                     format(Sys.Date(), format="%y%m%d"), "_", min(casecount$COUNT), "_SD.pdf"), # !!! change !!! 
+      width = figW*1.9/1.5, height = figW*ratio*1.75*2)
   multiplot(figSa, figSb, cols = 1)
   dev.off()
   

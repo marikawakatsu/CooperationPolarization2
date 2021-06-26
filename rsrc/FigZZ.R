@@ -86,7 +86,8 @@ if(threshold == 0){
   threshdata_all <- simdata %>% group_by(M, K, v, p1) 
 }else if(threshold == 1){
   threshdata_all <- simdata %>% group_by(M, K, v, p1) %>% 
-    slice_head( n = min(casecount$COUNT) ) 
+    # slice_head( n = min(casecount$COUNT) ) 
+    slice_head( n = 75 ) 
 }
 
 # prep sim data
@@ -133,7 +134,7 @@ calcdata_plot <- calcdata %>%
 # plot simulated data with predictions, with v on x-axis
 plot_figZb <- function(simdata_plot, calcdata_plot, Metric, M = 1, K = 1, tag = "", wtitle = FALSE, Title = ""){
   
-  if(Metric == "y"){
+  if(Metric == "yy"){
     # for y, plot two prediction lines + p <= 1 data
     calcsubdata   <- calcdata_plot[calcdata_plot$Metric %in% c("y","y1") &
                                    calcdata_plot$M == M &
@@ -250,6 +251,7 @@ figZg <- plot_figZc(simdata_plot, "hp", M, K, "G", FALSE)
 figZh <- plot_figZc(simdata_plot, "sia_sid", M, K, "H", FALSE)
 figZi <- plot_figZc(simdata_plot, "sia_sjd", M, K, "I", FALSE)
 
+
 if(saveplots == 1){
   
   threshcount <- 
@@ -270,7 +272,7 @@ if(saveplots == 1){
 
 # with data
 M <- 3
-K <- 3
+K <- 2
 figZa <- plot_figZb(simdata_plot, calcdata_plot, "y", M, K, "A", FALSE)
 figZb <- plot_figZb(simdata_plot, calcdata_plot, "z", M, K, "B", FALSE)
 figZc <- plot_figZb(simdata_plot, calcdata_plot, "g", M, K, "C", FALSE)
@@ -280,6 +282,7 @@ figZf <- plot_figZb(simdata_plot, calcdata_plot, "gp", M, K, "F", FALSE)
 figZg <- plot_figZb(simdata_plot, calcdata_plot, "hp", M, K, "G", FALSE)
 figZh <- plot_figZc(simdata_plot, "sia_sid", M, K, "H", FALSE)
 figZi <- plot_figZc(simdata_plot, "sia_sjd", M, K, "I", FALSE)
+emp <- ggplot() + theme_void()
 
 if(saveplots == 1){
   
@@ -292,9 +295,36 @@ if(saveplots == 1){
   
   png(filename = paste0("plots/figs/", plottype, "_", 
                         format(Sys.Date(), format="%y%m%d"), "_SD+calc.png"), 
-      width = figW*1.5*1.5, height = figW*ratio*2.7, units = "in", res = 600)
-  multiplot(figZa, figZb, figZc, figZd, figZe, figZf, figZg, figZh, figZi,
-            layout = matrix(c(1,2,3,4,5,6,7,8,9), ncol = 3, byrow = TRUE))
+      width = figW*1.5, height = figW*ratio*3.2, units = "in", res = 600)
+  multiplot(figZa, figZb, figZc, figZd, figZe, figZf, figZg, emp,
+            layout = matrix(c(1,2,3,4,5,6,7,8), ncol = 2, byrow = TRUE))
+  dev.off()
+  
+}
+
+
+# with data
+M <- 1
+K <- 1
+figZa <- plot_figZb(simdata_plot, calcdata_plot, "y", M, K, "A", FALSE)
+figZb <- plot_figZb(simdata_plot, calcdata_plot, "z", M, K, "B", FALSE)
+figZc <- plot_figZb(simdata_plot, calcdata_plot, "g", M, K, "C", FALSE)
+figZd <- plot_figZb(simdata_plot, calcdata_plot, "h", M, K, "D", FALSE)
+
+if(saveplots == 1){
+  
+  threshcount <- 
+    if(threshold %in% c(0,1)){ 
+      paste0("thresh_", threshold, "_", min(casecount$COUNT))
+    }
+  
+  plottype <- paste0("figSZ_", threshcount, "_M", M, "K", K)
+  
+  png(filename = paste0("plots/figs/", plottype, "_", 
+                        format(Sys.Date(), format="%y%m%d"), "_SD+calc.png"), 
+      width = figW*1.5, height = figW*ratio*2, units = "in", res = 600)
+  multiplot(figZa, figZb, figZc, figZd, 
+            layout = matrix(c(1,2,3,4), ncol = 2, byrow = TRUE))
   dev.off()
   
 }

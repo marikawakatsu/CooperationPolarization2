@@ -409,11 +409,12 @@ if(saveplots == 1){
   plottype <- paste0("fig3_", threshcount)
   
   # with theoretical predictions
-  png(filename = paste0("plots/figs/", plottype, "_", 
-                        format(Sys.Date(), format="%y%m%d"), "_SD+calc.png"), 
-      width = figW*1.5, height = figW*ratio*1.5/2*3, units = "in", res = 600)
-  # multiplot(fig4a, fig4b, fig4c, emp,
-  #           layout = matrix(c(1,2,3,4), ncol = 2, byrow = TRUE))
+  # png(filename = paste0("plots/figs/", plottype, "_", 
+  #                       format(Sys.Date(), format="%y%m%d"), "_SD+calc.png"), 
+  #     width = figW*1.5, height = figW*ratio*1.5/2*3, units = "in", res = 600)
+  pdf(file = paste0("plots/figs/", plottype, "_", 
+                     format(Sys.Date(), format="%y%m%d"), "_SD+calc.pdf"), 
+      width = figW*1.5, height = figW*ratio*1.5/2*3)
   multiplot(fig4a, fig4b, fig4c, fig4Wd, fig4We, fig4f, # no theoretical line in F
             layout = matrix(c(1,2,3,4,5,6), ncol = 2, byrow = FALSE))
   dev.off()
