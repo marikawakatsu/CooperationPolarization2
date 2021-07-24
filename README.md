@@ -9,4 +9,4 @@ This code repository accompanies the article "Interindividual cooperation mediat
 * ```analytics```: contains all Mathematica scripts for analytical calculations.
 
 ## Dependencies
-* Required packages are listed in ```Project.toml```
+* Required Julia packages are listed in ```Project.toml```
