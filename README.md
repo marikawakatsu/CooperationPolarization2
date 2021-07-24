@@ -8,5 +8,6 @@ This code repository accompanies the article "Interindividual cooperation mediat
 * ```rsrc```: contains R scripts for making figures.
 * ```analytics```: contains all Mathematica scripts for analytical calculations.
 
-## Dependencies
+## Requirements etc.
 * Required Julia packages are listed in ```Project.toml```
+* Required R libraries are listed in ```rsrc/utils/functions.R```
