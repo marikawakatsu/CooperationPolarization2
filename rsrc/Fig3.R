@@ -141,9 +141,7 @@ simdata_strat_all <- simdata_strat_all %>% mutate( M2 = paste0( "M=", M ), K2 = 
 # LOAD CALC DATA
 ###########################################
 calctype <- "small" # mu: "small" or "any"
-calcdata   <- read.csv( paste0("analytics/calc_data_strat_mu-",calctype,".csv"), header = TRUE) # new
-# calcdata   <- read.csv( "analytics/calc_data_strat.csv", header = TRUE) # old
-# calcdatap1 <- read.csv( "analytics/calc_data_strat_p1.csv", header = TRUE) # no longer needed
+calcdata <- read.csv( paste0("analytics/calc_data_strat_mu-",calctype,".csv"), header = TRUE) # new
 
 # add values of p as labels + combine dfs
 calcdata$p   <- 0

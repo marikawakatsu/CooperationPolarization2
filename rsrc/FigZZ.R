@@ -134,7 +134,7 @@ calcdata_plot <- calcdata %>%
 # plot simulated data with predictions, with v on x-axis
 plot_figZb <- function(simdata_plot, calcdata_plot, Metric, M = 1, K = 1, tag = "", wtitle = FALSE, Title = ""){
   
-  if(Metric == "yy"){
+  if(Metric == "yy"){ # old
     # for y, plot two prediction lines + p <= 1 data
     calcsubdata   <- calcdata_plot[calcdata_plot$Metric %in% c("y","y1") &
                                    calcdata_plot$M == M &
