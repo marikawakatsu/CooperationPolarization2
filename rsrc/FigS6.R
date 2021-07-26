@@ -1,7 +1,7 @@
 ################################################################################
 #
-# Figure Z: checking calculations against simulations
-# Last updated: 22 Feb 2021
+# Figure S6: checking calculations against simulations, with M = 1
+# Last updated: 26 Jul 2021
 #
 ################################################################################
 
@@ -14,7 +14,6 @@ u       <- 0.001 # fixed, for now
 gens    <- 20000000
 saveplots <- 1
 threshold <- 1 # 0 = use all data, 1 = threshold data by min(COUNT)
-# vs      <- c(0.001, 0.005, 0.025) 
 
 # plotting parameters
 ymax      <- 0.3    # max y for plotting
@@ -31,63 +30,34 @@ qinc   <- 0.25
 ########################
 # LOAD SIMULATION DATA 
 ########################
-
-setwd("~/.julia/dev/CooperationPolarization2/") # to be updated later
+# path to your directory
+setwd("~/.julia/dev/CooperationPolarization2/")
 
 # load data
-file_dir  <- sprintf( "data/gens_%s/", format(gens, scientific = FALSE) )
-pattern   <- sprintf( "neutral_M1" ) # select files sweeping across M and K
-file_list <- list.files(path = file_dir, pattern = pattern)
-simdata   <- data.frame() # initialize data frame
+file_dir <- sprintf( "data/gens_%s/", format(gens, scientific = FALSE) )
+simdata  <- read.csv( paste0(file_dir, "della_neutral_merged_M1.csv"), header = TRUE)
 
-for (i in 1:length(file_list)){
-  temp_data    <- read.csv( paste0(file_dir, file_list[i]), header = TRUE)
-  temp_data$id <- paste0("run",i) # add id to identify data source
-  
-  # TEMPORARY WHILE RUNNING SIMULATIONS
-  # if == 0:  ignore data sets where there is at least one line with 0's 
-  #           (ie consider only complete data sets at a given time)
-  # if != -1: include all simulation results (later thresholded by min(COUNT))
-  if ( dim(temp_data[temp_data$N == 0,])[1] == 0 ){
-    # select common columns
-    if (i == 1){
-      simdata    <- rbind(simdata, temp_data) #bind the new data to data
-    }else if (i > 1){
-      commoncols <- intersect(colnames(temp_data), colnames(simdata))
-      simdata    <- rbind(simdata[,commoncols], temp_data[,commoncols]) #bind new data
-    }
-  }
+# check that every case has the same number of simulations
+casecount <- simdata %>% group_by(M, K, v, p1, β) %>% summarize(COUNT = n())
+
+if( length(unique(casecount$COUNT)) == 1){
+  threshdata_all <- simdata %>% group_by(M, K, v, p1) 
+  print( sprintf("each parameter setting has %d runs", unique(casecount$COUNT)) )
+}else{
+  stop("!!! check casecount !!!")
 }
-# simdata <- simdata[simdata$p1 < 1,]
 
 #########################
 # LOAD CALCULATION DATA 
 #########################
-calcdata   <- read.csv( "analytics/calc_data_yzgh.csv", header = TRUE)
-# calcdatap1 <- read.csv( "analytics/calc_data_y_p1.csv", header = TRUE)
+calcdata   <- read.csv( "analytics/calc_data_yzgh_all.csv", header = TRUE)
 
+# calcdatap1  <- read.csv( "analytics/calc_data_y_p1.csv", header = TRUE)
 # calcdata$y1 <- calcdatap1$y # add p=1 data for y only
 
 #########################
 # PREP DATA
 #########################
-# select rows with specific M, v, beta values
-simdata <- simdata[simdata$v != 0,] # ignore sims that have not been run
-
-# because the number of simulations is uneven at the moment,
-# count the minimum number of simulations per case
-# so that every case has the same number of simulations
-casecount <- simdata %>% 
-  group_by(M, K, v, p1, β) %>% 
-  summarize(COUNT = n())
-
-if(threshold == 0){
-  threshdata_all <- simdata %>% group_by(M, K, v, p1) 
-}else if(threshold == 1){
-  threshdata_all <- simdata %>% group_by(M, K, v, p1) %>% 
-    slice_head( n = min(casecount$COUNT) ) 
-}
-
 # prep sim data
 simdata        <- relabel_cols(simdata)
 threshdata_all <- relabel_cols(threshdata_all)
@@ -121,7 +91,7 @@ simdata_plot <-
 
 # group calcdata
 calcdata <- as.data.frame(calcdata)
-calcdata_plot <- calcdata %>% 
+calcdata_plot <- calcdata[calcdata$M == 1,] %>% 
   gather("variable","value",-u,-v) %>%
   rename( Value = value, Metric = variable ) %>%
   group_by(v)
@@ -183,45 +153,6 @@ plot_figZb <- function(simdata_plot, calcdata_plot, Metric, tag = "", wtitle = F
   return(figZb)
 }
 
-# without calcdata, for E and F
-plot_figZc <- function(simdata_plot, Metric, tag = "", wtitle = FALSE, Title = ""){
-  
-  simsubdata    <- simdata_plot[simdata_plot$Metric == Metric, ] # select metric to plot
-  simsubdata$p  <- factor(simsubdata$p)
-  
-  figZb <- ggplot(simsubdata,
-                  aes(x = v, y = Mean, color = p, group = p)) +  
-    theme_classic() +
-    theme(plot.title = element_text(hjust = 0.5,
-                                    size = 10, 
-                                    margin = margin(0,0,0,0) ) ) +
-    theme (legend.text = element_text (size = 7),
-           legend.title = element_text (size = 8),
-           legend.key.width = unit(0.015, "npc"),
-           legend.key.height = unit(0.03, "npc"),
-           panel.spacing = unit(0.2,  "lines"),
-           legend.margin = margin(t = 0, unit="npc"),
-           axis.text = element_text (size = 8),
-           axis.title = element_text (size = 10),
-    ) +
-    labs(x = "Issue / opinion exploration (v)",
-         y = "Value",
-         tag = tag) +
-    ggtitle( paste0("quantity: ", if(wtitle){Title}else{Metric} ) ) +
-    scale_color_manual(values = rev(viridis(5)) ) + # magma(6)[2:5]) +
-    scale_y_continuous(limits = c(-0.05, 1)) +
-    scale_x_continuous(limits = c(0.001, 0.625),
-                       breaks = c(0.001, 0.005, 0.025, 0.125, 0.625),
-                       trans = 'log10') +
-    # plot simulation data
-    geom_errorbar(aes(ymin = Mean - SD, ymax = Mean + SD), width = 0., size = 0.3) +
-    # geom_line(aes(group = v), size = 0.4, alpha = 1, lty = 1) +
-    geom_point(size = 1.2, alpha = 0.9, stroke = 0.4, shape = 1)
-  
-  return(figZb)
-}
-
-
 ###########################################
 # Figure SZ, v2 with data
 ###########################################
@@ -230,36 +161,12 @@ figZa <- plot_figZb(simdata_plot, calcdata_plot, "y", "A")
 figZb <- plot_figZb(simdata_plot, calcdata_plot,"z", "B")
 figZc <- plot_figZb(simdata_plot, calcdata_plot,"g", "C")
 figZd <- plot_figZb(simdata_plot, calcdata_plot,"h", "D")
-figZe <- plot_figZc(simdata_plot, "sia_sid", "E", TRUE, "<s_ia s_id>")
-figZf <- plot_figZc(simdata_plot, "sia_sjd", "F", TRUE, "<s_ia s_jd>")
-
-if(saveplots == 1){
-  
-  threshcount <- 
-    if(threshold %in% c(0,1)){ 
-      paste0("thresh_", threshold, "_", min(casecount$COUNT))
-    }
-  
-  plottype <- paste0("figSZ_", threshcount)
-  
-  png(filename = paste0("plots/figs/", plottype, "_", 
-                        format(Sys.Date(), format="%y%m%d"), ".png"), 
-      width = figW*1.5, height = figW*ratio*2.7, units = "in", res = 600)
-  multiplot(figZa, figZb, figZc, figZd, figZe, figZf,
-            layout = matrix(c(1,2,3,4,5,6), ncol = 2, byrow = TRUE))
-  dev.off()
-  
-}
 
 # version without E/F
 if(saveplots == 1){
   
-  threshcount <- 
-    if(threshold %in% c(0,1)){ 
-      paste0("thresh_", threshold, "_", min(casecount$COUNT))
-    }
-  
-  plottype <- paste0("figSZ_", threshcount)
+  threshcount <- paste0("thresh_", threshold, "_", min(casecount$COUNT))
+  plottype    <- paste0("figSZ_", threshcount)
   
   png(filename = paste0("plots/figs/", plottype, "_", 
                         format(Sys.Date(), format="%y%m%d"), "_v2.png"), 

@@ -1,7 +1,7 @@
 ################################################################################
 #
-# Figure X: sweep through v
-# Last updated: 24 Jun 2021
+# Figure 3 and Figure S3: sweep through v
+# Last updated: 26 Jul 2021
 #
 ################################################################################
 
@@ -9,63 +9,17 @@ rm(list = ls())
 source("rsrc/utils/functions.R")
 
 #######################
-# LOAD DATA
+# SET PARAMETERS
 #######################
-
-setwd("~/.julia/dev/CooperationPolarization2/") # to be updated later
-
 # parameters
 beta      <- 0.001 # fixed, for now
 gens      <- 20000000
 saveplots <- 1
 threshold <- 1 
-# vs      <- c(0.001, 0.005, 0.01, 0.025, 0.05, 0.1, 0.5)
 Mmax      <- 5
 b         <- 1
 c         <- 0.2
 N         <- 40
-
-# load data
-file_dir  <- sprintf( "data/gens_%s/", format(gens, scientific = FALSE) )
-pattern   <- sprintf( "vsweep" )
-file_list <- list.files(path = file_dir, pattern = pattern)
-simdata   <- data.frame() # initialize data frame
-
-for (i in 1:length(file_list)){
-  temp_data    <- read.csv( paste0(file_dir, file_list[i]), header = TRUE)
-  temp_data$id <- paste0("run",i) # add id to identify data source
-  
-  # TEMPORARY
-  # if == 0:  ignore data sets where there is at least one line with 0's (out_of_memory)
-  # if != -1: include all simulation results (later thresholded by min(COUNT))
-  if ( dim(temp_data[temp_data$N == 0,])[1] == 0 ){
-    # select common columns
-    if (i == 1){
-      simdata    <- rbind(simdata, temp_data) #bind the new data to data
-    }else if (i > 1){
-      commoncols <- intersect(colnames(temp_data), colnames(simdata))
-      simdata    <- rbind(simdata[,commoncols], temp_data[,commoncols]) #bind new data
-    }
-  }
-}
-
-# select rows with specific M, v, beta values
-simdata <- simdata[(simdata$β == beta),]
-simdata <- simdata[(simdata$M != 0) & (simdata$M <= Mmax),]
-
-# because the number of simulations is uneven at the moment,
-# count the minimum number of simulations per case
-# so that every case has the same number of simulations
-casecount <- simdata %>% 
-  group_by(M, K, v, p1, β) %>% 
-  summarize(COUNT = n())
-
-if(threshold == 0){
-  threshdata_all <- simdata %>% group_by(M, K, v, p1,β) 
-}else if(threshold == 1){
-  threshdata_all <- simdata %>% group_by(M, K, v, p1, β) %>% 
-    slice_head( n = min(casecount$COUNT) ) 
-}
 
 # plotting parameters
 ymax      <- 0.3    # max y for plotting
@@ -79,11 +33,35 @@ qmax   <- 1
 qmin   <- 0
 qinc   <- 0.25
 
-############################################################################################
+########################
+# LOAD SIMULATION DATA 
+########################
+# path to your directory
+setwd("~/.julia/dev/CooperationPolarization2/")
+
+# load data
+file_dir  <- sprintf( "data/gens_%s/", format(gens, scientific = FALSE) )
+simdata   <- read.csv( paste0(file_dir, "della_vsweep_merged.csv"), header = TRUE)
+
+# select rows with specific M, v, beta values
+simdata <- simdata[(simdata$β == beta),]
+simdata <- simdata[(simdata$M != 0) & (simdata$M <= Mmax),]
+
+# check that every case has the same number of simulations
+casecount <- simdata %>% group_by(M, K, v, p1, β) %>% summarize(COUNT = n())
+
+if( length(unique(casecount$COUNT)) == 1){
+  threshdata_all <- simdata %>% group_by(M, K, v, p1) 
+  print( sprintf("each parameter setting has %d runs", unique(casecount$COUNT)) )
+}else{
+  stop("!!! check casecount !!!")
+}
+
+#####################
 # PREP DATA
-############################################################################################
+#####################
 # prep sim data
-simdata <- relabel_cols(simdata)
+simdata        <- relabel_cols(simdata)
 threshdata_all <- relabel_cols(threshdata_all)
 
 # melt data
@@ -97,11 +75,6 @@ id_vars       <- c("M","K","u","v","p","beta","epsilon")
 measure_strat  <- c("CC","CD","DC","DD")
 measure_strat2 <- c("CC_final","CD_final","DC_final","DD_final")
 measure_coop   <- c("cooperation_all", "cooperation_in", "cooperation_out")
-# measure_pol    <- c("set_1_mean", "topinion_mean","topinion_var",
-#                     "opn_simpson_mean","sets_simpson_mean",
-#                     "cooperation_all", "cooperation_in", "cooperation_out")
-# measure_dist   <- c("cityblock_all", "cityblock_in", "cityblock_out",
-#                     "hamming_all",   "hamming_in",   "hamming_out"   )
 
 # select columns
 simdata_bymeasure_all <- threshdata_all[ select_cols ] %>% 
@@ -377,8 +350,6 @@ if(saveplots == 1){
             figSWk, figSWl, figSWm, figSWn, figSXo, 
             layout = matrix(c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15), ncol = 3, byrow = FALSE))
   dev.off()
-
-  
 }
 
 ###########################################
@@ -401,15 +372,9 @@ emp <- ggplot() + theme_void()
 if(saveplots == 1){
   
   # MS Figure with p = 0, 0.5, 1.0
-  threshcount <- if(threshold %in% c(0,1)){ 
-    paste0("thresh_", threshold, "_", min(casecount$COUNT))
-  }
-  plottype <- paste0("fig3_", threshcount)
+  threshcount <- paste0("thresh_", threshold, "_", min(casecount$COUNT))
+  plottype    <- paste0("fig3_", threshcount)
   
-  # with theoretical predictions
-  # png(filename = paste0("plots/figs/", plottype, "_", 
-  #                       format(Sys.Date(), format="%y%m%d"), "_SD+calc.png"), 
-  #     width = figW*1.5, height = figW*ratio*1.5/2*3, units = "in", res = 600)
   pdf(file = paste0("plots/figs/", plottype, "_", 
                      format(Sys.Date(), format="%y%m%d"), "_SD+calc.pdf"), 
       width = figW*1.5, height = figW*ratio*1.5/2*3)
@@ -419,104 +384,3 @@ if(saveplots == 1){
   
 }
 
-###########################################
-# M2 + M3 cases, without data
-###########################################
-M <- 2
-fig5a <- plot_figSXstrat( simdata_strat_all, 0.0, M, 1, "A")
-fig5b <- plot_figSXstrat( simdata_strat_all, 0.5, M, 1, "B")
-fig5c <- plot_figSXstrat( simdata_strat_all, 1.0, M, 1, "C")
-fig5d <- plot_figSXstrat( simdata_strat_all, 0.0, M, 2, "D")
-fig5e <- plot_figSXstrat( simdata_strat_all, 0.5, M, 2, "E")
-fig5f <- plot_figSXstrat( simdata_strat_all, 1.0, M, 2, "F")
-
-M <- 3
-fig6a <- plot_figSXstrat( simdata_strat_all, 0.0, M, 1, "A")
-fig6b <- plot_figSXstrat( simdata_strat_all, 0.5, M, 1, "B")
-fig6c <- plot_figSXstrat( simdata_strat_all, 1.0, M, 1, "C")
-fig6d <- plot_figSXstrat( simdata_strat_all, 0.0, M, 2, "D")
-fig6e <- plot_figSXstrat( simdata_strat_all, 0.5, M, 2, "E")
-fig6f <- plot_figSXstrat( simdata_strat_all, 1.0, M, 2, "F")
-fig6g <- plot_figSXstrat( simdata_strat_all, 0.0, M, 3, "G")
-fig6h <- plot_figSXstrat( simdata_strat_all, 0.5, M, 3, "H")
-fig6i <- plot_figSXstrat( simdata_strat_all, 1.0, M, 3, "I")
-
-if(saveplots == 1){
-  
-  # M = 2
-  threshcount <- if(threshold %in% c(0,1)){ 
-    paste0("thresh_", threshold, "_", min(casecount$COUNT))
-  }
-  plottype <- paste0("fig5_M2_", threshcount)
-  
-  # with theoretical predictions
-  png(filename = paste0("plots/figs/", plottype, "_", 
-                        format(Sys.Date(), format="%y%m%d"), "_SD.png"), 
-      width = figW*1.5, height = figW*ratio*1.5/2*3, units = "in", res = 600)
-  multiplot(fig5a, fig5b, fig5c, fig5d, fig5e, fig5f,
-            layout = matrix(c(1,2,3,4,5,6), ncol = 2, byrow = FALSE))
-  dev.off()
-  
-  # M = 3
-  plottype <- paste0("fig5_M3_", threshcount)
-  
-  # with theoretical predictions
-  png(filename = paste0("plots/figs/", plottype, "_", 
-                        format(Sys.Date(), format="%y%m%d"), "_SD.png"), 
-      width = figW*1.5*1.5, height = figW*ratio*1.5/2*3, units = "in", res = 600)
-  multiplot(fig6a, fig6b, fig6c, fig6d, fig6e, fig6f, fig6g, fig6h, fig6i,
-            layout = matrix(c(1,2,3,4,5,6,7,8,9), ncol = 3, byrow = FALSE))
-  dev.off()
-  
-}
-
-###########################################
-# M2 + M3 cases, without data
-###########################################
-M <- 2
-fig5a <- plot_figSWstrat( simdata_strat_all, calcdata_plot, 0.0, M, 1, "A")
-fig5b <- plot_figSWstrat( simdata_strat_all, calcdata_plot, 0.5, M, 1, "B")
-fig5c <- plot_figSWstrat( simdata_strat_all, calcdata_plot, 1.0, M, 1, "C")
-fig5d <- plot_figSWstrat( simdata_strat_all, calcdata_plot, 0.0, M, 2, "D")
-fig5e <- plot_figSWstrat( simdata_strat_all, calcdata_plot, 0.5, M, 2, "E")
-fig5f <- plot_figSWstrat( simdata_strat_all, calcdata_plot, 1.0, M, 2, "F")
-
-M <- 3
-fig6a <- plot_figSWstrat( simdata_strat_all, calcdata_plot, 0.0, M, 1, "A")
-fig6b <- plot_figSWstrat( simdata_strat_all, calcdata_plot, 0.5, M, 1, "B")
-fig6c <- plot_figSWstrat( simdata_strat_all, calcdata_plot, 1.0, M, 1, "C")
-fig6d <- plot_figSWstrat( simdata_strat_all, calcdata_plot, 0.0, M, 2, "D")
-fig6e <- plot_figSWstrat( simdata_strat_all, calcdata_plot, 0.5, M, 2, "E")
-fig6f <- plot_figSWstrat( simdata_strat_all, calcdata_plot, 1.0, M, 2, "F")
-fig6g <- plot_figSWstrat( simdata_strat_all, calcdata_plot, 0.0, M, 3, "G")
-fig6h <- plot_figSWstrat( simdata_strat_all, calcdata_plot, 0.5, M, 3, "H")
-fig6i <- plot_figSWstrat( simdata_strat_all, calcdata_plot, 1.0, M, 3, "I")
-
-if(saveplots == 1){
-  
-  # M = 2
-  threshcount <- if(threshold %in% c(0,1)){ 
-    paste0("thresh_", threshold, "_", min(casecount$COUNT))
-  }
-  plottype <- paste0("fig5_M2_", threshcount)
-  
-  # with theoretical predictions
-  png(filename = paste0("plots/figs/", plottype, "_", 
-                        format(Sys.Date(), format="%y%m%d"), "_SD+calc_mu-",calctype,".png"), 
-      width = figW*1.5, height = figW*ratio*1.5/2*3, units = "in", res = 600)
-  multiplot(fig5a, fig5b, fig5c, fig5d, fig5e, fig5f,
-            layout = matrix(c(1,2,3,4,5,6), ncol = 2, byrow = FALSE))
-  dev.off()
-  
-  # M = 3
-  plottype <- paste0("fig5_M3_", threshcount)
-  
-  # with theoretical predictions
-  png(filename = paste0("plots/figs/", plottype, "_", 
-                        format(Sys.Date(), format="%y%m%d"), "_SD+calc_mu-",calctype,".png"), 
-      width = figW*1.5*1.6, height = figW*ratio*1.5/2*3, units = "in", res = 600)
-  multiplot(fig6a, fig6b, fig6c, fig6d, fig6e, fig6f, fig6g, fig6h, fig6i,
-            layout = matrix(c(1,2,3,4,5,6,7,8,9), ncol = 3, byrow = FALSE))
-  dev.off()
-  
-}

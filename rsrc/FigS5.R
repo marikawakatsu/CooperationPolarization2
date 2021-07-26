@@ -1,7 +1,7 @@
 ################################################################################
 #
-# Figure 4, supplementary versions
-# Last updated: 14 Feb 2020
+# Figure S5, supplementary versions
+# Last updated: 26 Jul 2021
 #
 ################################################################################
 
@@ -9,12 +9,9 @@ rm(list = ls())
 source("rsrc/utils/functions.R")
 
 #######################
-# LOAD DATA
+# SET PARAMETERS
 #######################
-
-setwd("~/.julia/dev/CooperationPolarization2/") # to be updated later
-
-# parameters
+# parameters # not changed
 beta  <- 0.001
 u     <- 0.001 # fixed, for now
 gens  <- 20000000
@@ -23,39 +20,9 @@ Mmax      <- 5
 threshold <- 1
 
 vs     <- c(0.001, 0.005, 0.025) # for plotting run_multi data
-# vs     <- c(0.001, 0.005, 0.025, 0.125, 0.625) # for plotting vsweep data
 vlabel <- if(length(vs) < 3){ paste0("v_",vs[1],"+",vs[2]) }else{ "all" }
 
-# load data
-file_dir  <- sprintf( "data/gens_%s/", format(gens, scientific = FALSE) )
-pattern   <- sprintf( "run_multi" ) # specify data type
-file_list <- list.files(path = file_dir, pattern = pattern)
-simdata   <- data.frame() # initialize data frame
-
-for (i in 1:length(file_list)){
-  temp_data    <- read.csv( paste0(file_dir, file_list[i]), header = TRUE)
-  temp_data$id <- paste0("run",i) # add id to identify data source
-  
-  # TEMPORARY
-  # ignore data sets where there is at least one line with 0's (out_of_memory)
-  if ( dim(temp_data[temp_data$N == 0,])[1] == 0){
-    # select common columns
-    if (i == 1){
-      simdata    <- rbind(simdata, temp_data) #bind the new data to data
-    }else if (i > 1){
-      commoncols <- intersect(colnames(temp_data), colnames(simdata))
-      simdata    <- rbind(simdata[,commoncols], temp_data[,commoncols]) #bind new data
-    }
-  }
-}
-
-# for fixed gamma, consider only the rows with gamma == gamma
-simdata <- simdata[(simdata$v %in% vs) & (simdata$β == beta),]
-casecount <- simdata %>% group_by(M, K, v, p1, β) %>% summarize(COUNT = n())
-if(threshold == 1){simdata <- simdata %>% group_by(M, K, v, p1, β) %>% slice_head( n = min(casecount$COUNT) ) }
-
 # plotting parameters
-
 ymax      <- 0.3    # max y for plotting
 ymin      <- 0.2
 yinc      <- 0.02   # y-axis increments
@@ -67,32 +34,36 @@ qmax   <- 1
 qmin   <- 0
 qinc   <- 0.25
 
-# # color palettes
-# if(length(vs) == 3){
-#   cityblock_colors <- rev(heat.colors(7)[c(1,4,5)])
-# }else if(length(vs) > 3){
-#   cityblock_colors <- rev(c("#992600","#FF0000","#FF6000","#FF9F00","#FFDF00"))# rev(heat.colors(2*length(vs)+2)[2+2*c(1:length(vs))])
-# }else if(0.025 %in% vs){
-#   cityblock_colors <- rev(heat.colors(7)[c(4,6)])
-# }else if(0.1 %in% vs){
-#   cityblock_colors <- rev(heat.colors(7)[c(1,4)])
-# }
-# 
-# if(length(vs) == 3){
-#   hamming_colors <- rev(plasma(7)[3:5])
-# }else if(length(vs) > 3){
-#   hamming_colors <- rev(plasma(length(vs)))
-# }else if(0.025 %in% vs){
-#   hamming_colors <- rev(plasma(7)[4:5])
-# }else if(0.1 %in% vs){
-#   hamming_colors <- rev(plasma(7)[c(3,5)])
-# }
-cityblock_colors <- c("#7bccc4","#2b8cbe","#084081") # c("#FFFF2A", "#FFBF00", "#FF6000", "#FF0000", "#992600")
-hamming_colors   <- c("#8c96c6","#88419d","#4d004b") # rev(plasma(length(vs)))
+# color palettes
+cityblock_colors <- c("#7bccc4","#2b8cbe","#084081") 
+hamming_colors   <- c("#8c96c6","#88419d","#4d004b") 
 
-############################################################################################
+########################
+# LOAD SIMULATION DATA 
+########################
+# path to your directory
+setwd("~/.julia/dev/CooperationPolarization2/")
+
+# load data
+file_dir  <- sprintf( "data/gens_%s/", format(gens, scientific = FALSE) )
+simdata   <- read.csv( paste0(file_dir, "della_run_multi_merged.csv"), header = TRUE)
+
+# select rows with specific M, v, beta values
+simdata   <- simdata[(simdata$v %in% vs) & (simdata$β == beta),]
+
+# check that every case has the same number of simulations
+casecount <- simdata %>% group_by(M, K, v, p1, β) %>% summarize(COUNT = n())
+
+if( length(unique(casecount$COUNT)) == 1){
+  threshdata_all <- simdata %>% group_by(M, K, v, p1) 
+  print( sprintf("each parameter setting has %d runs", unique(casecount$COUNT)) )
+}else{
+  stop("!!! check casecount !!!")
+}
+
+####################
 # PREP DATA
-############################################################################################
+####################
 # prep sim data
 simdata        <- relabel_cols(simdata)
 threshdata_all <- relabel_cols(threshdata_all)
@@ -516,17 +487,6 @@ if(Mmax > 3){figW <- figW*1.5}
 figSA <- plotSA_unnormed(simdata_dist, "A", "all")
 figSB <- plotSB_unnormed(simdata_dist, "B", "all")
 
-# if(saveplots == 1){
-#   
-#   plottype <- paste0("figSB_unnormed")
-#   png(filename = paste0("plots/figs/", plottype, "_", vlabel, "_",
-#                         format(Sys.Date(), format="%y%m%d"), "_SD.png"),
-#       width = figW*1.9/1.5, height = figW*ratio*1.75*2, units = "in", res = 600)
-#   multiplot(figSA, figSB, cols = 1)
-#   dev.off()
-#   
-# }
-
 ###########################################
 # Figure 4 with normalization, without opinion dispersion
 ###########################################
@@ -536,12 +496,12 @@ figSB_normed <- plotSB_normed(simdata_dist, "B", "all")
 
 if(saveplots == 1){
   
-  plottype <- paste0("figSB_normed_horizontal")
-  png(filename = paste0("plots/figs/", plottype, "_", vlabel, "_",
-                        format(Sys.Date(), format="%y%m%d"), "_SD.png"), # !!! change !!! 
-      width = figW*3.8/1.5, height = figW*ratio*1.75, units = "in", res = 600)
-  multiplot(figSA_normed, figSB_normed, cols = 2)
-  dev.off()
+  # plottype <- paste0("figSB_normed_horizontal")
+  # png(filename = paste0("plots/figs/", plottype, "_", vlabel, "_",
+  #                       format(Sys.Date(), format="%y%m%d"), "_SD.png"), # !!! change !!! 
+  #     width = figW*3.8/1.5, height = figW*ratio*1.75, units = "in", res = 600)
+  # multiplot(figSA_normed, figSB_normed, cols = 2)
+  # dev.off()
   
   plottype <- paste0("figSB_normed")
   png(filename = paste0("plots/figs/", plottype, "_", vlabel, "_",

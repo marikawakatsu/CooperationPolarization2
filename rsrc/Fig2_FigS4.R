@@ -1,7 +1,7 @@
 ################################################################################
 #
-# Figure 2
-# Last updated: 24 May 2021
+# Figure 2 and Figure S4
+# Last updated: 26 Jul 2021
 #
 ################################################################################
 
@@ -9,11 +9,8 @@ rm(list = ls())
 source("rsrc/utils/functions.R")
 
 #######################
-# LOAD DATA
+# SET PARAMETERS
 #######################
-
-setwd("~/.julia/dev/CooperationPolarization2/") # to be updated later
-
 # parameters
 epsilon <- 1
 u       <- 0.001 # fixed, for now
@@ -21,57 +18,9 @@ beta    <- 0.001 # fixed, for now
 gens    <- 20000000
 saveplots <- 1
 threshold <- 1 # 0 = use all data, 1 = threshold data by min(COUNT)
-# p       <- 0.
-vs      <- c(0.001, 0.005, 0.025) 
-Mmax    <- 5
+vs        <- c(0.001, 0.005, 0.025) 
+Mmax      <- 5
 
-# load data
-file_dir  <- sprintf( "data/gens_%s/", format(gens, scientific = FALSE) )
-pattern   <- sprintf( "run_multi|vsweep|other" ) # select file types sweeping across M and K
-file_list <- list.files(path = file_dir, pattern = pattern)
-simdata   <- data.frame() # initialize data frame
-
-for (i in 1:length(file_list)){
-  temp_data    <- read.csv( paste0(file_dir, file_list[i]), header = TRUE)
-  temp_data$id <- paste0("run",i) # add id to identify data source
-  
-  # TEMPORARY WHILE RUNNING SIMULATIONS
-  # if == 0:  ignore data sets where there is at least one line with 0's 
-  #           (ie consider only complete data sets at a given time)
-  # if != -1: include all simulation results (later thresholded by min(COUNT))
-  if ( dim(temp_data[temp_data$N == 0,])[1] == 0 ){
-    # select common columns
-    if (i == 1){
-      simdata    <- rbind(simdata, temp_data) #bind the new data to data
-    }else if (i > 1){
-      commoncols <- intersect(colnames(temp_data), colnames(simdata))
-      simdata    <- rbind(simdata[,commoncols], temp_data[,commoncols]) #bind new data
-    }
-  }
-}
-
-# select rows with specific M, v, beta values
-simdata <- simdata[(simdata$v %in% vs) & (simdata$β == beta),]
-simdata <- simdata[(simdata$M != 0) & (simdata$M <= Mmax),]
-
-# because the number of simulations is uneven at the moment,
-# count the minimum number of simulations per case
-# so that every case has the same number of simulations
-casecount <- simdata %>% 
-  group_by(M, K, v, p1, β) %>% 
-  summarize(COUNT = n())
-
-if(threshold == 0){
-  threshdata_all <- simdata %>% group_by(M, K, v, p1) 
-}else if(threshold == 1){
-  threshdata_all <- simdata %>% group_by(M, K, v, p1) %>% 
-    slice_head( n = min(casecount$COUNT) ) 
-}
-
-thresh_casecount <- threshdata_all %>% 
-  group_by(M, K, v, p1, β) %>% 
-  summarize(COUNT = n())
-  
 # plotting parameters
 ymax      <- 0.3    # max y for plotting
 ymin      <- 0.2
@@ -84,6 +33,30 @@ qmax   <- 1
 qmin   <- 0
 qinc   <- 0.25
 
+########################
+# LOAD SIMULATION DATA 
+########################
+# path to your directory
+setwd("~/.julia/dev/CooperationPolarization2/")
+
+# load data
+file_dir  <- sprintf( "data/gens_%s/", format(gens, scientific = FALSE) )
+simdata   <- read.csv( paste0(file_dir, "della_all_merged.csv"), header = TRUE)
+
+# select rows with specific M, v, beta values
+simdata   <- simdata[(simdata$v %in% vs) & (simdata$β == beta),]
+simdata   <- simdata[(simdata$M != 0) & (simdata$M <= Mmax),]
+
+# check that every case has the same number of simulations
+casecount <- simdata %>% group_by(M, K, v, p1, β) %>% summarize(COUNT = n())
+
+if( length(unique(casecount$COUNT)) == 1){
+  threshdata_all <- simdata %>% group_by(M, K, v, p1) 
+  print( sprintf("each parameter setting has %d runs", unique(casecount$COUNT)) )
+}else{
+  stop("!!! check casecount !!!")
+}
+
 ############################################################################################
 # PREP DATA
 ############################################################################################
@@ -95,21 +68,13 @@ threshdata_all <- relabel_cols(threshdata_all)
 select_cols <- c("id","M","K","u","v","p","beta","epsilon","CC","CD","DC","DD",
                  "CC_final","CD_final","DC_final","DD_final","topinion_mean","topinion_var",
                  "cooperation_all", "cooperation_in", "cooperation_out"#, # cooperation
-                 # "opn_simpson_mean","sets_simpson_mean", # simpsons indices
-                 # "cityblock_all", "cityblock_in", "cityblock_out", # city block distances
-                 # "hamming_all",   "hamming_in",   "hamming_out"    # hamming distances
-)
+                 )
 id_vars       <- c("M","K","u","v","p","beta","epsilon")
 
 # different sets of measurements to plot
 measure_strat  <- c("CC","CD","DC","DD")
 measure_strat2 <- c("CC_final","CD_final","DC_final","DD_final")
 measure_coop   <- c("cooperation_all", "cooperation_in", "cooperation_out")
-# measure_pol    <- c("set_1_mean", "topinion_mean","topinion_var",
-#                     "opn_simpson_mean","sets_simpson_mean",
-#                     "cooperation_all", "cooperation_in", "cooperation_out")
-# measure_dist   <- c("cityblock_all", "cityblock_in", "cityblock_out",
-#                     "hamming_all",   "hamming_in",   "hamming_out"   )
 
 # select columns
 simdata_bymeasure_all <- threshdata_all[ select_cols ] %>% 
@@ -202,39 +167,8 @@ plot_fig2a <- function(simdata_coop, p, tag){
     theme(strip.placement = "outside") +
     theme(axis.title.x = element_blank(), 
           strip.background = element_blank(),
-          strip.text.x.bottom = element_text(angle = 60)) #+
-    # geom_blank(aes(x = ifelse(M>1,M+1.5,0.6) ))
+          strip.text.x.bottom = element_text(angle = 60))
   
-  #########
-  # effectdata <- subdata %>%
-  #   group_by(M, u, v, p, beta, epsilon) %>%
-  #   summarise(
-  #     effect  = (Mean[K == max(K)] - Mean[K == min(K)]) / Mean[K == min(K)],
-  #     K       = max(K),
-  #     Mean    = min(Mean)
-  #   ) %>%
-  #   mutate( M2 = paste0( "M=", M ), 
-  #           K2 = paste0( "K=", K ),
-  #           M3 = paste0( M ),
-  #           K3 = paste0( K )
-  #   )
-  # if(p < 1){
-  #   fig2a <- fig2a + geom_text(
-  #     effectdata,
-  #     mapping = aes(x = K, y = Mean,
-  #         label = ifelse(M==K & K > 1,paste0( 100*signif(effect, 3),"%" ),"")),
-  #     size = 1.6, nudge_y = 0., nudge_x = 0.85,
-  #   )
-  # }else{
-  #   fig2a <- fig2a + geom_text(
-  #     effectdata,
-  #     mapping = aes(x = K, y = Mean, 
-  #                   label = ifelse(M==K & K > 1,paste0( 100*signif(effect, 3),"%" ),"")),
-  #     size = 1.25, nudge_y = c(-0.05,0,0.05), nudge_x = 0.85,
-  #     # force_pull = 0, direction = "both", segment.size = 0, point.padding = 0.25, box.padding = 0.2,
-  #   )
-  # }
-  #########
   return(fig2a)
 }
 
@@ -280,40 +214,8 @@ plot_fig2a_v2 <- function(simdata_coop, p, tag){
     theme(strip.placement = "outside") +
     theme(axis.title.x = element_blank(), 
           strip.background = element_blank(),
-          strip.text.x.bottom = element_text(angle = 60)) #+
-    # geom_blank(aes(x = ifelse(M<5,(5-M+1)+1.5,0.6) )) 
+          strip.text.x.bottom = element_text(angle = 60))
   
-  ##########
-  # Uncomment to add effect sizes to text
-  # effectdata <- subdata %>%
-  #   group_by(K, u, v, p, beta, epsilon) %>%
-  #   summarise(
-  #     effect  = (Mean[M == max(M)] - Mean[M == min(M)]) / Mean[M == min(M)],
-  #     M       = min(M),
-  #     Mean    = max(Mean)
-  #   ) %>%
-  #   mutate( M2 = paste0( "M=", M ), 
-  #           K2 = paste0( "K=", K ),
-  #           M3 = paste0( M ),
-  #           K3 = paste0( K )
-  #   )
-  # if(p < 1){
-  #   fig2a <- fig2a + geom_text(
-  #     effectdata,
-  #     mapping = aes(x = 6-M, y = Mean,
-  #                   label = ifelse(M < 5,paste0( 100*signif(effect, 3),"%" ),"")),
-  #     size = 1.6, nudge_y = 0., nudge_x = 0.85,
-  #   )
-  # }else{
-  #   fig2a <- fig2a + geom_text(
-  #     effectdata,
-  #     mapping = aes(x = 6-M, y = Mean,
-  #                   label = ifelse(M < 5,paste0( 100*signif(effect, 3),"%" ),"")),
-  #     size = 1.25, nudge_y = c(-0.05,0,0.05), nudge_x = 0.85,
-  #     force_pull = 0, direction = "both", segment.size = 0, point.padding = 0.25, box.padding = 0.2,
-  #   )
-  # }
-  ##########
   return(fig2a)
 }
 
@@ -578,7 +480,7 @@ if(saveplots == 1){
 } 
 
 ###########################################
-# Figure S? with p = 1
+# Figure S4 with p = 1
 ###########################################
 # save multiplot
 p  <- 1.
@@ -590,39 +492,19 @@ fig2c <- plot_fig2b(simdata_strat_all, p, v1, "C", TRUE, TRUE)
 fig2d <- plot_fig2b(simdata_strat_all, p, v2, "D", TRUE, TRUE)
 
 if(saveplots == 1){
-  
-  threshcount <- if(threshold %in% c(0,1)){ 
+
+  threshcount <- if(threshold %in% c(0,1)){
     paste0("thresh_", threshold, "_", min(casecount$COUNT))
   }
   plottype <- paste0("figSA_p_", p, "_", threshcount)
 
   png(filename = paste0("plots/figs/", plottype, "_",
                         format(Sys.Date(), format="%y%m%d"), "_SD.png"), # !!! change !!!
-      width = figW*1.75*1.25, height = figW*ratio*1.8)
-  multiplot(fig2a, fig2b, fig2c, fig2d,
-            layout = matrix(c(1,3,2,4), ncol = 2, byrow = TRUE))
-  dev.off()
-  
-}
-
-###########################################
-# Figure S2 with effect sizes
-###########################################
-
-if(saveplots == 1){
-  
-  threshcount <- if(threshold %in% c(0,1)){ 
-    paste0("thresh_", threshold, "_", min(casecount$COUNT))
-  }
-  plottype <- paste0("figSA_p_", p, "_", threshcount)
-  
-  png(filename = paste0("plots/figs/", plottype, "_", 
-                        format(Sys.Date(), format="%y%m%d"), "_SD.png"), # !!! change !!!
       width = figW*1.75*1.25, height = figW*ratio*1.8, units = "in", res = 600)
   multiplot(fig2a, fig2b, fig2c, fig2d,
             layout = matrix(c(1,3,2,4), ncol = 2, byrow = TRUE))
   dev.off()
-  
+
 }
 
 
